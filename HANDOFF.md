@@ -2,9 +2,8 @@
 
 - 작성일: 2026-11-26
 - 대상: 다음 인수자(사람)와 다음 LLM 세션
-- 현재 브랜치 상태: `main`, Phase 0~7 완료, 작업 트리 클린
-- 최신 커밋: `feat(phase5): docker/compose, ci workflow, packaging checks and final readme`
-  (이 문서는 `docs(handoff)` 커밋이다. 커밋 해시는 이동하므로 `git log --oneline`으로 확인한다)
+- 현재 브랜치 상태: `main`, Phase 0~8 완료; 원격 CI 최초 실행은 R-001에서 확인 예정
+- 최신 커밋: `git log --oneline`으로 확인한다. 커밋 해시는 이동하므로 이 문서에 고정하지 않는다.
 
 이 문서 하나로 **무엇을 만들었고, 무엇이 검증됐고, 무엇이 남았고, 어떻게 이어서 하는지**를
 알 수 있게 하는 것이 목적이다. README는 외부 독자용, 이 문서는 인수자용이다.
@@ -256,9 +255,11 @@ POST /api/documents/{id}/revalidate
 
 - 왜: `.github/workflows/ci.yml`은 있지만 GitHub에서 실행된 적이 없다. 검증 전 배지는 금지.
 - 할 일:
-  1. 원격 저장소 생성·push (`main`).
-  2. Actions에서 `ci` 실행 결과 확인. 실패 시 로그 기반 수정.
-  3. 성공한 뒤에만 README 상단에 배지를 추가한다. 배지는 실제 워크플로 이름 `ci`와
+  1. 원격 기본 브랜치를 `main`으로 정렬하거나, 현재 `master`에 맞게 CI 트리거를 바꾼다.
+     (현재 워크플로는 `main` push만 감시한다.)
+  2. 원격 저장소 생성·push.
+  3. Actions에서 `ci` 실행 결과 확인. 실패 시 로그 기반 수정.
+  4. 성공한 뒤에만 README 상단에 배지를 추가한다. 배지는 실제 워크플로 이름 `ci`와
      기본 브랜치를 가리켜야 한다.
 - 수용 기준: Actions 성공 1회 이상, 배지 클릭 시 해당 실행으로 이동, README 문구와 실제 일치.
 - 주의: `render.yaml`·공개 URL은 만들지 않았다. 배포 주장도 하지 않는다.
@@ -270,8 +271,10 @@ POST /api/documents/{id}/revalidate
   ⑤ 사유 없음 422 / HOLD 승인 409 ⑥ 감사 이력.
 - 수용 기준: 공개 URL(Release asset/YouTube 일부공개), 첫 자막 `합성 데이터·mock`,
   한 번의 연속 녹화, README에 링크+촬영 날짜.
-- 주의: `docs/reference/PORTFOLIO_DEMO_AND_SITE_COPY.md`는 **다른 두 프로젝트** 원고다.
-  이 프로젝트 원고를 새로 쓰거나 그 문서에 섹션을 추가해야 한다.
+- 준비 완료: [DocumentOps 전용 촬영 가이드](docs/reference/DOCUMENTOPS_DEMO_RECORDING.md)에
+  55초 대본·격리 DB 실행법·409 서버 차단 장면·공개 전 체크리스트를 기록했다.
+- 주의: `docs/reference/PORTFOLIO_DEMO_AND_SITE_COPY.md`는 **다른 두 프로젝트** 원고이며,
+  이 프로젝트 촬영에는 사용하지 않는다.
 
 ### R-003 — 보류 해소용 필드 단위 사람 수정 (P2, 결정 필요: P-003)
 
@@ -368,7 +371,8 @@ POST /api/documents/{id}/revalidate
 | `feat(phase5)` | Docker·CI·패키징·README·스크린샷 |
 | `feat(phase6)` | rate-limit 만료 정리, subprocess UTF-8, 전체 pytest 재검증 |
 | `feat(phase7)` | 평가 리포트 버전 유도, 접근성, 문서 증거 정합화 |
+| `docs(phase8)` | DocumentOps 전용 영상 촬영 대본·증거 체크리스트 |
 | `docs(handoff)` | 인수인계 문서와 `handoff.seed.yaml` |
 
-각 페이즈의 발견·수정 이유는 `docs/reviews/phase-0.md` ~ `phase-7.md`에 있다.
+각 페이즈의 발견·수정 이유는 `docs/reviews/phase-0.md` ~ `phase-8.md`에 있다.
 

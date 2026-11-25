@@ -1,7 +1,7 @@
 ﻿schema: handoff-seed-1
 as_of: "2026-11-26"
 project: documentops-review-gateway
-status: phase-7-complete
+status: phase-8-complete-ci-pending
 language: ko
 
 goal: >
@@ -106,7 +106,7 @@ remaining:
       - "GitHub Actions ci 워크플로가 1회 이상 success"
       - "README 배지가 실제 워크플로와 기본 브랜치를 가리킴"
       - "실행 전에는 배지를 추가하지 않음"
-    notes: "원격 저장소가 아직 없거나 push되지 않았다. 배지 외 기능 변경 금지."
+    notes: "원격 저장소가 아직 없거나 push되지 않았다. 현재 브랜치는 master지만 워크플로는 main push만 감시하므로, 원격 기본 브랜치 또는 트리거를 먼저 정렬한다. 배지 외 기능 변경 금지."
 
   - id: R-002
     title: 45~60초 데모 영상 촬영과 README 링크
@@ -117,7 +117,7 @@ remaining:
       - "정상/HOLD/중복/승인/422/409/감사 장면이 한 번의 연속 녹화에 포함"
       - "첫 자막에 합성 데이터와 mock 고지"
       - "공개 URL과 촬영 날짜를 README에 기록"
-    notes: "docs/reference의 기존 원고는 다른 프로젝트용이다. 이 프로젝트 장면을 새로 작성해야 한다."
+    notes: "전용 대본은 docs/reference/DOCUMENTOPS_DEMO_RECORDING.md에 준비됐다. 녹화·공개 URL·README 날짜 추가만 남았다."
 
   - id: R-003
     title: 필드 단위 사람 수정과 보류 해소 계약

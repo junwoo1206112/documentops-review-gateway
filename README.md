@@ -6,7 +6,7 @@
 증명하려는 역량은 "AI가 답을 낸다"가 아니라,
 **AI 산출물을 실제 업무에 투입하기 전에 검증·보류·승인·추적하는 방법**입니다.
 
-**상태: Phase 0~7 구현 완료** (계약 → 데이터 → 추출·검증 → 검토 UI/감사 → 평가 → Docker/CI → 운영·접근성 보강).
+**상태: Phase 0~8 구현 완료** (계약 → 데이터 → 추출·검증 → 검토 UI/감사 → 평가 → Docker/CI → 운영·접근성 보강 → 데모 촬영 준비).
 공개 마감은 아직 남아 있습니다: R-001 원격 CI 성공·배지, R-002 45~60초 데모 영상.
 OCR·LLM 어댑터·인증은 의도적으로 보류했고, [보류 결정](docs/decisions/pending.md)에 근거를 남겼습니다.
 
@@ -132,6 +132,12 @@ docker compose exec -T gateway python -m app.evaluate --dataset fixtures/evaluat
 
 **아직 원격 GitHub Actions에서 실행한 적이 없어 배지를 붙이지 않았습니다.** 첫 push 후
 `ci` 워크플로가 성공하면 그때 배지를 추가합니다.
+
+## 데모 영상 촬영
+
+영상은 아직 공개하지 않았습니다. 실제 UI·API 차단 장면, 전용 격리 DB 실행법, 자막과 공개 전
+체크리스트는 [DocumentOps 데모 촬영 가이드](docs/reference/DOCUMENTOPS_DEMO_RECORDING.md)에
+고정했습니다. 촬영·검증 후에만 공개 URL과 날짜를 이곳에 추가합니다.
 
 ## API 요약
 
