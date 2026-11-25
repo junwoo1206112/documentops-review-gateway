@@ -15,7 +15,8 @@
 - 형식: WebM VP9, 1280×720, 25fps
 - 포함: 정상 문서, 금액 불일치 HOLD, 중복 HOLD, 사람 승인, 사유 없는 422, HOLD 직접 승인 409, 감사 흐름
 
-## 남은 외부 단계
+## 공개 완료
 
-영상은 아직 외부에 올리지 않았다. 사용자 계정으로 YouTube 일부공개 또는 GitHub Release asset에 업로드한 뒤,
-공개 URL과 촬영 날짜를 README에 추가해야 R-002가 완료된다.
+2026-11-26에 [GitHub Release v0.1.0-demo](https://github.com/junwoo1206112/documentops-review-gateway/releases/tag/v0.1.0-demo)에
+`documentops-demo.webm`을 공개 asset으로 올리고 README URL을 반영했다. 공개 전송·asset 무결성 확인은
+`docs/reviews/phase-12.md`에 기록한다.

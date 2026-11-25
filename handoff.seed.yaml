@@ -1,7 +1,7 @@
 ﻿schema: handoff-seed-1
 as_of: "2026-11-26"
 project: documentops-review-gateway
-status: phase-11-automation-complete-manual-checks-pending
+status: phase-12-release-published-manual-accessibility-check-pending
 language: ko
 
 goal: >
@@ -112,13 +112,17 @@ remaining:
   - id: R-002
     title: 45~60초 데모 영상 촬영과 README 링크
     priority: P0
-    state: recorded_locally
+    state: complete
     depends_on: []
     acceptance:
       - "정상/HOLD/중복/승인/422/409/감사 장면이 한 번의 연속 녹화에 포함 (로컬 확인 완료)"
       - "첫 자막에 합성 데이터와 mock 고지"
       - "공개 URL과 촬영 날짜를 README에 기록"
-    notes: "artifacts/documentops-demo.webm(1280x720, 56.8초)을 로컬 생성·검수했다. 공개 URL·README 날짜 추가만 남았다."
+    done:
+      - "GitHub Release v0.1.0-demo에 documentops-demo.webm 공개 업로드"
+      - "README에 asset URL·Release URL·2026-11-26 공개 날짜 기록"
+      - "Release asset SHA-256과 5.58MB 크기를 GitHub UI에서 확인"
+    notes: "https://github.com/junwoo1206112/documentops-review-gateway/releases/tag/v0.1.0-demo"
 
   - id: R-003
     title: 필드 단위 사람 수정과 보류 해소 계약
@@ -186,6 +190,6 @@ do_not:
 resume:
   read_first: [HANDOFF.md, README.md, docs/schema.md, docs/rules.md, docs/evaluation.md]
   gate: "python -m pytest -q && python tools/generate_dataset.py --check && python -m app.evaluate --dataset fixtures/evaluation"
-  next: [R-002]
-  review_log: docs/reviews/phase-{0..11}.md
+  next: [R-007]
+  review_log: docs/reviews/phase-{0..12}.md
 

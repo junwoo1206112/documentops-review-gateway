@@ -2,7 +2,7 @@
 
 - 작성일: 2026-11-26
 - 대상: 다음 인수자(사람)와 다음 LLM 세션
-- 현재 브랜치 상태: `main`, Phase 0~11 완료; 영상 공개 업로드와 스크린리더 실사용 검토 대기
+- 현재 브랜치 상태: `main`, Phase 0~12 완료; 스크린리더 실사용 검토와 P2 정책 결정 대기
 - 최신 커밋: `git log --oneline`으로 확인한다. 커밋 해시는 이동하므로 이 문서에 고정하지 않는다.
 
 이 문서 하나로 **무엇을 만들었고, 무엇이 검증됐고, 무엇이 남았고, 어떻게 이어서 하는지**를
@@ -22,7 +22,7 @@
 | 평가 | 36건 기준 문서 EM 36/36, HOLD 재현 19/19, 오보류 0/17, 규칙 일치 36/36, 근거 410/412 |
 | Docker | `docker compose up --build` → `healthy`, 데모 4건 처리, 컨테이너 내 평가 동일 |
 | 원격 CI | `main`의 첫 `ci` 성공. README 배지는 실제 실행으로 연결됨 |
-| 남은 일 | R-002 공개 업로드·README URL, 이후 결정 대기 항목 → 6절 |
+| 남은 일 | R-007 스크린리더 실사용 검토, 이후 결정 대기 항목 → 6절 |
 
 3개 명령으로 상태를 확인할 수 있다.
 
@@ -72,6 +72,7 @@ python -m app.evaluate --dataset fixtures/evaluation
 | 9 | GitHub 원격 `main` push, 첫 `ci` 성공, README 배지 | `docs(phase9): …` | [run #1](https://github.com/junwoo1206112/documentops-review-gateway/actions/runs/45697512065) |
 | 10 | 실제 UI 자동 녹화, 56.8초 영상·핵심 장면 검수 | `feat(phase10): …` | `artifacts/documentops-demo.webm` (git 미추적) |
 | 11 | 자동 대비 감사, 768/1024px 실제 화면 캡처 | `feat(phase11): …` | `artifacts/accessibility_audit.json` |
+| 12 | GitHub Release 공개, 데모 영상 asset 확인, README·인수 상태 갱신 | `docs(phase12): …` | [v0.1.0-demo](https://github.com/junwoo1206112/documentops-review-gateway/releases/tag/v0.1.0-demo) |
 
 ### 기준선 수치 (재현 가능)
 
@@ -262,14 +263,15 @@ POST /api/documents/{id}/revalidate
 - 조치: README 상단에 `ci.yml`의 `main` 배지를 추가하고, 클릭 시 첫 성공 실행으로 연결했다.
 - 주의: `render.yaml`·공개 URL은 만들지 않았다. 배포 주장도 하지 않는다.
 
-### R-002 — 45~60초 데모 영상 (공개 업로드 대기)
+### R-002 — 45~60초 데모 영상 (완료)
 
 - 왜: 포트폴리오에서 가장 중요한 증거. README의 60초 시나리오가 그대로 스토리보드다.
 - 장면: ① 정상 업로드(근거 표시) ② 금액 불일치 HOLD ③ 중복 HOLD ④ 사유 있는 승인
   ⑤ 사유 없음 422 / HOLD 승인 409 ⑥ 감사 이력.
 - 완료: `artifacts/documentops-demo.webm`을 실제 UI로 자동 녹화했다(1280×720, 56.8초).
   첫 고지, 정상·HOLD·중복·승인·422·409·감사 흐름을 프레임으로 검수했다.
-- 남은 수용 기준: 공개 URL(Release asset/YouTube 일부공개)과 촬영 날짜를 README에 기록한다.
+- 공개 완료: 2026-11-26, [GitHub Release v0.1.0-demo](https://github.com/junwoo1206112/documentops-review-gateway/releases/tag/v0.1.0-demo)에
+  `documentops-demo.webm`(5.58MB)을 첨부했다. README에 asset URL·Release URL·날짜를 기록했다.
 - 준비 완료: [DocumentOps 전용 촬영 가이드](docs/reference/DOCUMENTOPS_DEMO_RECORDING.md)에
   55초 대본·격리 DB 실행법·409 서버 차단 장면·공개 전 체크리스트를 기록했다.
 - 주의: `docs/reference/PORTFOLIO_DEMO_AND_SITE_COPY.md`는 **다른 두 프로젝트** 원고이며,
@@ -342,7 +344,7 @@ POST /api/documents/{id}/revalidate
 2. 3절의 검증 블록을 그대로 실행한다. **하나라도 실패하면 기능 추가를 시작하지 않는다.**
 3. `git status`가 깨끗한지 확인한다. 사용자 변경이 있으면 덮어쓰지 않는다.
 4. `docs/decisions/pending.md`를 읽고, 요청이 보류 결정을 건드리는지 확인한다.
-5. R-001 → R-002 순서로 진행한다. P2 항목은 사용자 결정 없이 시작하지 않는다.
+5. R-007 스크린리더 실사용 검토를 끝낸다. P2 항목은 사용자 결정 없이 시작하지 않는다.
 6. 계약을 바꾸면 5절 절차를 지키고, `docs/reviews/phase-N.md`에 A·B·C 검토를 남긴다. Phase 6의 운영 개선과 환경 제한은 `docs/reviews/phase-6.md`에 있다.
 7. 완료 시 `HANDOFF.md` 6절 상태, README 상태/수치, 이 문서의 "최신 커밋" 설명을 갱신한다.
 8. 커밋 단위는 페이즈/의미 단위로 유지한다: `feat(phaseN): …`, `docs(handoff): …`.
@@ -354,7 +356,7 @@ POST /api/documents/{id}/revalidate
 - [ ] `app.evaluate` exit 0, 기준선 수치 재현
 - [ ] `uvicorn app.asgi:app` + `scripts/seed_demo.py`로 5장면 재현
 - [ ] `docker compose up --build` 후 healthy
-- [ ] `docs/reviews/phase-0..5.md` 존재
+- [ ] `docs/reviews/phase-0..12.md` 존재
 - [ ] 실제 개인정보·실제 문서가 저장소에 없음
 - [ ] README의 주장이 테스트/실행 증거보다 강하지 않음
 
@@ -376,7 +378,8 @@ POST /api/documents/{id}/revalidate
 | `docs(phase9)` | 원격 CI 첫 성공 확인과 README 배지 |
 | `feat(phase10)` | 실제 UI 자동 녹화와 영상 검수 |
 | `feat(phase11)` | 자동 대비 감사와 태블릿 폭 화면 검수 |
+| `docs(phase12)` | GitHub Release 공개와 README·인수 상태 갱신 |
 | `docs(handoff)` | 인수인계 문서와 `handoff.seed.yaml` |
 
-각 페이즈의 발견·수정 이유는 `docs/reviews/phase-0.md` ~ `phase-11.md`에 있다.
+각 페이즈의 발견·수정 이유는 `docs/reviews/phase-0.md` ~ `phase-12.md`에 있다.
 

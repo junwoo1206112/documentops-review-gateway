@@ -8,8 +8,8 @@
 증명하려는 역량은 "AI가 답을 낸다"가 아니라,
 **AI 산출물을 실제 업무에 투입하기 전에 검증·보류·승인·추적하는 방법**입니다.
 
-**상태: Phase 0~8 구현 완료** (계약 → 데이터 → 추출·검증 → 검토 UI/감사 → 평가 → Docker/CI → 운영·접근성 보강 → 데모 촬영 준비).
-공개 마감은 아직 남아 있습니다: R-001 원격 CI 성공·배지, R-002 45~60초 데모 영상.
+**상태: Phase 0~12 완료** (계약 → 데이터 → 추출·검증 → 검토 UI/감사 → 평가 → Docker/CI → 운영·접근성 보강 → 데모 녹화·공개).
+원격 CI·배지와 56.8초 데모 영상 공개를 완료했습니다. OCR·LLM 어댑터·인증은 운영 정책 결정을 기다립니다.
 OCR·LLM 어댑터·인증은 의도적으로 보류했고, [보류 결정](docs/decisions/pending.md)에 근거를 남겼습니다.
 
 ![문서 목록 화면](docs/images/documents.png)
@@ -21,6 +21,8 @@ OCR·LLM 어댑터·인증은 의도적으로 보류했고, [보류 결정](docs
 3. **승인·반려는 사람만, 사유와 검토자 별칭을 필수로 남긴다.** 모든 상태 변경은 append-only 감사에 기록된다.
 
 ## 60초 데모
+
+[공개 데모 영상 다운로드 (WebM, 5.58MB)](https://github.com/junwoo1206112/documentops-review-gateway/releases/download/v0.1.0-demo/documentops-demo.webm) · [Release v0.1.0-demo](https://github.com/junwoo1206112/documentops-review-gateway/releases/tag/v0.1.0-demo) (2026-11-26)
 
 | # | 행동 | 확인할 결과 |
 |---|---|---|
@@ -139,10 +141,11 @@ docker compose exec -T gateway python -m app.evaluate --dataset fixtures/evaluat
 
 ## 데모 영상 촬영
 
-56.8초 로컬 연속 녹화본(WebM)은 생성·검수했지만 아직 공개 업로드하지 않았습니다. 실제 UI·API
-차단 장면, 전용 격리 DB 실행법, 자막과 공개 전 체크리스트는
+56.8초 연속 녹화본(WebM, 1280×720)은 실제 UI로 자동 생성·프레임 검수한 뒤
+[GitHub Release v0.1.0-demo](https://github.com/junwoo1206112/documentops-review-gateway/releases/tag/v0.1.0-demo)에 공개했습니다.
+실제 UI·API 차단 장면, 전용 격리 DB 실행법, 자막과 공개 전 체크리스트는
 [DocumentOps 데모 촬영 가이드](docs/reference/DOCUMENTOPS_DEMO_RECORDING.md)에 고정했습니다.
-공개 URL과 날짜는 업로드·확인 후에만 이곳에 추가합니다.
+asset SHA-256은 Release 화면에서 확인할 수 있습니다.
 
 ## API 요약
 
