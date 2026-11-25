@@ -14,7 +14,7 @@
   </div>
 </section>
 
-{% if error %}<p class="alert error">{{ error }}</p>{% endif %}
+{% if error %}<p class="alert error" role="alert">{{ error }}</p>{% endif %}
 
 {% if not report %}
 <section class="panel">
@@ -35,7 +35,8 @@
 <section class="panel">
   <h2>지표</h2>
   <table class="metrics">
-    <thead><tr><th>지표</th><th class="num">matched / total</th><th class="num">값</th></tr></thead>
+    <caption class="sr-only">고정 데이터셋 평가 지표</caption>
+    <thead><tr><th scope="col">지표</th><th scope="col" class="num">matched / total</th><th scope="col" class="num">값</th></tr></thead>
     <tbody>
       {% for name, metric in report.metrics.items() %}
         {% if name == "field_exact_match" %}

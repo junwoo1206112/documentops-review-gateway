@@ -1,7 +1,7 @@
 ﻿schema: handoff-seed-1
 as_of: "2026-11-26"
 project: documentops-review-gateway
-status: phase-6-complete
+status: phase-7-complete
 language: ko
 
 goal: >
@@ -42,7 +42,7 @@ versions:
 verified:
   date: "2026-11-26"
   platform: "Windows 11, Python 3.12.10"
-  tests_passed: 133
+  tests_passed: 140
   tests_collected_after_phase_6: 133
   dataset_check: pass
   evaluation_exit_code: 0
@@ -164,12 +164,16 @@ remaining:
   - id: R-007
     title: 접근성과 반응형 세부 점검
     priority: P2
-    state: optional
+    state: partial
     depends_on: []
+    done:
+      - "랜드마크, skip link, 표 scope/caption, aria-current, role=alert, focus-visible"
+      - "키보드 첫 Tab으로 본문 건너뛰기 확인"
     acceptance:
-      - "키보드만으로 업로드와 판정 가능"
-      - "최소 3개 화면 폭 점검 기록"
-    notes: "600px와 데스크톱만 확인된 상태다."
+      - "색 대비 자동 측정 기록"
+      - "768px·1024px 스크린샷"
+      - "스크린리더로 업로드→판정 1회 점검"
+    notes: "Phase 7에서 구조 개선과 테스트는 완료. 대비·중간 폭·스크린리더 확인이 남았다."
 
 do_not:
   - 실제 고객 문서나 개인정보를 추가하지 않는다.

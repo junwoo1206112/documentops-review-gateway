@@ -2,7 +2,7 @@
 
 - 작성일: 2026-11-26
 - 대상: 다음 인수자(사람)와 다음 LLM 세션
-- 현재 브랜치 상태: `main`, Phase 0~6 완료, 작업 트리 클린
+- 현재 브랜치 상태: `main`, Phase 0~7 완료, 작업 트리 클린
 - 최신 커밋: `feat(phase5): docker/compose, ci workflow, packaging checks and final readme`
   (이 문서는 `docs(handoff)` 커밋이다. 커밋 해시는 이동하므로 `git log --oneline`으로 확인한다)
 
@@ -19,7 +19,7 @@
 | 핵심 주장 | "AI가 답한다"가 아니라 **근거 없는 값은 승인 불가, blocking 오류는 HOLD, 판정은 사람만** |
 | 스택 | Python 3.12, FastAPI, SQLite, Jinja2 서버 렌더링, pytest, Docker, GitHub Actions |
 | 실행 | `uvicorn app.asgi:app` (주의: `app.main:app` 아님) |
-| 테스트 | **133 passed** (2026-11-26, Python 3.12.10, Windows 11) |
+| 테스트 | **140 passed** (2026-11-26, Python 3.12.10, Windows 11) |
 | 평가 | 36건 기준 문서 EM 36/36, HOLD 재현 19/19, 오보류 0/17, 규칙 일치 36/36, 근거 410/412 |
 | Docker | `docker compose up --build` → `healthy`, 데모 4건 처리, 컨테이너 내 평가 동일 |
 | 원격 CI | 워크플로 파일만 존재. **GitHub에서 실행된 적 없음 → 배지 없음** |
@@ -68,6 +68,7 @@ python -m app.evaluate --dataset fixtures/evaluation
 | 4 | 평가 엔진·리포트·CLI·실패 사례 3건·회귀 게이트 | `feat(phase4): …` | `artifacts/evaluation_report.json`, `tests/test_evaluation.py` 9개 |
 | 5 | Dockerfile/Compose, CI 워크플로, 패키징 검사, 최종 README·스크린샷 | `feat(phase5): …` | 이미지 207MB, healthy, 컨테이너 평가 동일 |
 | 6 | rate-limit 버킷 만료 정리, subprocess UTF-8 고정, 전체 회귀 재검증 | `feat(phase6): …` | 133 passed, exit 0 |
+| 7 | 평가 리포트 버전 유도, 접근성(랜드마크·skip link·표·알림), 인수 문서 정합화 | `feat(phase7): …` | 140 passed, 키보드 Tab 확인 |
 
 ### 기준선 수치 (재현 가능)
 
@@ -119,7 +120,7 @@ pip install -e ".[dev]"
 python -m pytest -q
 ```
 
-기대 결과: `133 passed`.
+기대 결과: `140 passed`.
 
 > `uv`와 Node.js는 필요 없다. UI는 Jinja2 서버 렌더링이다(ADR 0002).
 > Python은 3.12 이상이어야 한다.
@@ -198,7 +199,7 @@ app/
 │  └─ pages.py               HTML 6경로, 원문 하이라이트(escape 후 mark)
 ├─ templates/                base/index/detail/evaluation.html
 ├─ static/style.css          다크 테마, 상태 배지, 반응형
-tests/                       12개 파일, 133 tests
+tests/                       12개 파일, 140 tests
 tools/generate_dataset.py    합성 데이터·정답·manifest·vendors 생성기 (--check)
 scripts/seed_demo.py         데모 4건 HTTP 업로드
 fixtures/                    vendors.json, demo 4건, evaluation 36건+정답+manifest
@@ -300,10 +301,12 @@ POST /api/documents/{id}/revalidate
 - 조건: 레이아웃별 파서 선택 규칙, 422와 HOLD 경계 유지, 데이터셋 버전 갱신.
 - 수용 기준: 두 레이아웃 모두에서 기준선 유지 또는 명시적 하락과 사유 기록.
 
-### R-007 — 접근성·반응형 세부 점검 (P2)
+### R-007 — 접근성·반응형 세부 점검 (P2, 부분 완료)
 
-- 왜: 600px·데스크톱 두 폭만 확인했다. 키보드 포커스·대비·태블릿 폭 자동 검증이 없다.
-- 수용 기준: 키보드만으로 업로드→판정 가능, 대비 점검 기록, 최소 3개 폭 스크린샷.
+- 완료: skip link, 랜드마크, 표 `scope`/`caption`, 필터 `aria-current`, 오류 `role="alert"`,
+  `:focus-visible`. 키보드 첫 Tab으로 본문 건너뛰기를 확인했고 테스트로 고정했다.
+- 남음: 색 대비 자동 측정, 768/1024px 스크린샷, 스크린리더로 업로드→판정 1회 점검.
+- 수용 기준(전체 완료): 대비 측정 기록 + 중간 폭 2장 + 스크린리더 점검 기록.
 
 ### 명시적 비목표 (요구가 생기기 전에는 시작하지 않는다)
 
@@ -364,7 +367,8 @@ POST /api/documents/{id}/revalidate
 | `feat(phase4)` | 평가 엔진·리포트·사례 3건·회귀 게이트 |
 | `feat(phase5)` | Docker·CI·패키징·README·스크린샷 |
 | `feat(phase6)` | rate-limit 만료 정리, subprocess UTF-8, 전체 pytest 재검증 |
+| `feat(phase7)` | 평가 리포트 버전 유도, 접근성, 문서 증거 정합화 |
 | `docs(handoff)` | 인수인계 문서와 `handoff.seed.yaml` |
 
-각 페이즈의 발견·수정 이유는 `docs/reviews/phase-0.md` ~ `phase-6.md`에 있다.
+각 페이즈의 발견·수정 이유는 `docs/reviews/phase-0.md` ~ `phase-7.md`에 있다.
 

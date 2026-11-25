@@ -20,7 +20,7 @@ from app.domain.models import ExistingDocument
 from app.services.extraction.base import ExtractedField
 from app.services.pipeline import process_document
 from app.services.vendors import VendorRegistry
-from app.version import DATASET_VERSION, EXTRACTOR_VERSION, RULESET_VERSION
+from app.version import EXTRACTOR_VERSION, RULESET_VERSION
 
 SCHEMA_VERSION = "eval-report-1"
 SCALAR_FIELDS = ("vendor", "doc_no", "doc_date", "supply_amount", "vat", "total")
@@ -103,6 +103,16 @@ def evaluate_dataset(dataset_dir: Path, registry: VendorRegistry) -> dict[str, A
         for line in manifest_path.read_text(encoding="utf-8").splitlines()
         if line.strip()
     ]
+    if not entries:
+        raise ValueError(f"manifest가 비어 있습니다: {manifest_path}")
+
+    versions = {str(entry.get("dataset_version", "")) for entry in entries}
+    if len(versions) != 1 or "" in versions:
+        raise ValueError(
+            "manifest의 dataset_version이 일관되지 않습니다: " + ", ".join(sorted(versions))
+        )
+    dataset_version = versions.pop()
+
     existing: list[ExistingDocument] = []
     tallies = {key: _FieldTally() for key in (*SCALAR_FIELDS, *ITEM_FIELD_KEYS)}
     outcomes: list[_DocumentOutcome] = []
@@ -218,7 +228,7 @@ def evaluate_dataset(dataset_dir: Path, registry: VendorRegistry) -> dict[str, A
 
     return {
         "schema_version": SCHEMA_VERSION,
-        "dataset_version": DATASET_VERSION,
+        "dataset_version": dataset_version,
         "ruleset_version": RULESET_VERSION,
         "extractor_version": EXTRACTOR_VERSION,
         "documents": len(outcomes),

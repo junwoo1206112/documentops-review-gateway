@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import subprocess
 import sys
 from pathlib import Path
 
+import pytest
 from fastapi.testclient import TestClient
 
 from app.config import Settings
@@ -20,6 +22,33 @@ REGISTRY = VendorRegistry.load(PROJECT_ROOT / "fixtures" / "vendors.json")
 
 def report() -> dict:
     return evaluate_dataset(EVAL_DIR, REGISTRY)
+
+
+def _single_doc_dataset(tmp_path: Path, version: str) -> Path:
+    dataset = tmp_path / "dataset"
+    (dataset / "expected").mkdir(parents=True)
+    text = (EVAL_DIR / "DOC-0001.txt").read_bytes()
+    (dataset / "DOC-0001.txt").write_bytes(text)
+    expected = json.loads((EVAL_DIR / "expected" / "DOC-0001.json").read_text(encoding="utf-8"))
+    (dataset / "expected" / "DOC-0001.json").write_text(
+        json.dumps(expected, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    entry = {
+        "sequence": 1,
+        "document_id": "DOC-0001",
+        "filename": "DOC-0001.txt",
+        "sha256": hashlib.sha256(text).hexdigest(),
+        "bytes": len(text),
+        "category": "normal",
+        "expected_status": "PENDING_REVIEW",
+        "expected_rule_ids": [],
+        "dataset_version": version,
+    }
+    (dataset / "manifest.jsonl").write_text(
+        json.dumps(entry, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
+    return dataset
 
 
 def test_report_schema_and_versions() -> None:
@@ -109,6 +138,35 @@ def test_ratio_and_percentile_helpers() -> None:
     assert percentile([], 95) == 0.0
     assert percentile([1.0, 2.0, 3.0, 4.0], 50) == 2.0
     assert percentile([1.0, 2.0, 3.0, 4.0], 95) == 4.0
+
+
+def test_report_uses_manifest_dataset_version(tmp_path: Path) -> None:
+    dataset = _single_doc_dataset(tmp_path, "custom-2026-11-26.9")
+    data = evaluate_dataset(dataset, REGISTRY)
+    assert data["dataset_version"] == "custom-2026-11-26.9"
+    assert data["documents"] == 1
+    assert data["metrics"]["document_exact_match"]["total"] == 1
+
+
+def test_inconsistent_manifest_versions_are_rejected(tmp_path: Path) -> None:
+    dataset = _single_doc_dataset(tmp_path, "v-one")
+    manifest = dataset / "manifest.jsonl"
+    second = json.loads(manifest.read_text(encoding="utf-8"))
+    second["dataset_version"] = "v-two"
+    manifest.write_text(
+        manifest.read_text(encoding="utf-8") + json.dumps(second, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError):
+        evaluate_dataset(dataset, REGISTRY)
+
+
+def test_empty_manifest_is_rejected(tmp_path: Path) -> None:
+    dataset = tmp_path / "empty"
+    dataset.mkdir()
+    (dataset / "manifest.jsonl").write_text("", encoding="utf-8")
+    with pytest.raises(ValueError):
+        evaluate_dataset(dataset, REGISTRY)
 
 
 def test_cli_writes_report(tmp_path: Path) -> None:

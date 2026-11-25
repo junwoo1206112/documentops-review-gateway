@@ -27,12 +27,12 @@
   {% endif %}
 </section>
 
-{% if form_error %}<p class="alert error">{{ form_error }}</p>{% endif %}
+{% if form_error %}<p class="alert error" role="alert">{{ form_error }}</p>{% endif %}
 
 <section class="panel">
   <h2>검증 이슈 <span class="count">{{ issues|length }}</span></h2>
   {% if issues %}
-  <ul class="issues">
+  <ul class="issues" aria-label="검증 이슈 목록">
     {% for issue in issues %}
     <li class="issue">
       <div class="issue-head">
@@ -52,17 +52,18 @@
 <section class="split">
   <div class="panel">
     <h2>원문 <span class="hint">노란 표시 = 검증된 근거 span</span></h2>
-    <pre class="raw">{{ raw_highlighted }}</pre>
+    <pre class="raw" aria-label="업로드 원문">{{ raw_highlighted }}</pre>
   </div>
 
   <div class="panel">
     <h2>추출 필드</h2>
     <table class="fields">
+      <caption class="sr-only">추출 필드와 원문 근거</caption>
       <thead>
         <tr>
-          <th>필드</th>
-          <th>값</th>
-          <th>근거</th>
+          <th scope="col">필드</th>
+          <th scope="col">값</th>
+          <th scope="col">근거</th>
         </tr>
       </thead>
       <tbody>
@@ -92,8 +93,9 @@
 <section class="panel">
   <h2>품목</h2>
   <table class="items">
+    <caption class="sr-only">품목 상세</caption>
     <thead>
-      <tr><th>#</th><th>품목명</th><th class="num">수량</th><th class="num">단가</th><th class="num">금액</th></tr>
+      <tr><th scope="col">#</th><th scope="col">품목명</th><th scope="col" class="num">수량</th><th scope="col" class="num">단가</th><th scope="col" class="num">금액</th></tr>
     </thead>
     <tbody>
       {% for item in items %}
@@ -156,8 +158,9 @@
 <section class="panel">
   <h2>감사 이력 <span class="hint">append-only</span></h2>
   <table class="audit">
+    <caption class="sr-only">append-only 감사 이력</caption>
     <thead>
-      <tr><th>#</th><th>이벤트</th><th>상태 전이</th><th>행위자</th><th>시각</th></tr>
+      <tr><th scope="col">#</th><th scope="col">이벤트</th><th scope="col">상태 전이</th><th scope="col">행위자</th><th scope="col">시각</th></tr>
     </thead>
     <tbody>
       {% for event in detail.audit %}

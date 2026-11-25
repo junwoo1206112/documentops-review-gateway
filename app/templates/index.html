@@ -12,33 +12,36 @@
   </div>
   <form class="upload" action="/upload" method="post" enctype="multipart/form-data">
     <label for="file">문서 업로드</label>
-    <input id="file" type="file" name="file" accept=".txt" required />
+    <input id="file" type="file" name="file" accept=".txt" required aria-describedby="upload-hint" />
     <button type="submit">업로드하고 검증</button>
-    <span class="hint">UTF-8 · .txt · 512 KiB 이하</span>
+    <span class="hint" id="upload-hint">UTF-8 · .txt · 512 KiB 이하 · 합성 문서만</span>
   </form>
 </section>
 
-{% if error %}<p class="alert error">{{ error }}</p>{% endif %}
+{% if error %}<p class="alert error" role="alert">{{ error }}</p>{% endif %}
 
-<section class="filters">
-  <a class="chip {{ 'active' if not selected }}" href="/">전체 {{ total }}</a>
+<nav class="filters" aria-label="상태 필터">
+  <a class="chip {{ 'active' if not selected }}" href="/"
+     {% if not selected %}aria-current="page"{% endif %}>전체 {{ total }}</a>
   {% for status, label in status_labels.items() %}
-  <a class="chip {{ 'active' if selected == status }}" href="/?status={{ status }}">
+  <a class="chip {{ 'active' if selected == status }}" href="/?status={{ status }}"
+     {% if selected == status %}aria-current="page"{% endif %}>
     {{ label }} {{ counts.get(status, 0) }}
   </a>
   {% endfor %}
-</section>
+</nav>
 
 <section class="panel">
   <table class="documents">
+    <caption class="sr-only">접수된 문서 목록</caption>
     <thead>
       <tr>
-        <th>파일</th>
-        <th>거래처</th>
-        <th>문서번호</th>
-        <th class="num">총액</th>
-        <th>상태</th>
-        <th class="num col-blocking">blocking</th>
+        <th scope="col">파일</th>
+        <th scope="col">거래처</th>
+        <th scope="col">문서번호</th>
+        <th scope="col" class="num">총액</th>
+        <th scope="col">상태</th>
+        <th scope="col" class="num col-blocking">blocking</th>
       </tr>
     </thead>
     <tbody>

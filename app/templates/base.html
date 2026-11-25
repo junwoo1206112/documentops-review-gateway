@@ -7,12 +7,13 @@
     <link rel="stylesheet" href="/static/style.css" />
   </head>
   <body>
+    <a class="skip-link" href="#main">본문으로 건너뛰기</a>
     <header class="topbar">
       <a class="brand" href="/">
         <strong>DocumentOps</strong>
         <span>Review Gateway</span>
       </a>
-      <nav class="nav">
+      <nav class="nav" aria-label="주 메뉴">
         <a href="/">문서</a>
         <a href="/evaluation">평가</a>
         <a href="/api/meta">API 카탈로그</a>
@@ -20,7 +21,7 @@
       <span class="notice">합성 데이터 · 자동 승인 없음</span>
     </header>
 
-    <main class="page">
+    <main class="page" id="main" tabindex="-1">
       {% block content %}{% endblock %}
     </main>
 

@@ -94,3 +94,46 @@ def test_evaluation_page_without_report(client: TestClient) -> None:
     response = client.get("/evaluation")
     assert response.status_code == 200
     assert "아직 리포트가 없습니다" in response.text
+
+
+def test_landmarks_skip_link_and_table_semantics(client: TestClient) -> None:
+    html = client.get("/").text
+    assert 'class="skip-link"' in html
+    assert 'href="#main"' in html
+    assert 'id="main"' in html
+    assert 'aria-label="주 메뉴"' in html
+    assert 'aria-label="상태 필터"' in html
+    assert 'aria-current="page"' in html
+    assert 'aria-describedby="upload-hint"' in html
+    assert 'id="upload-hint"' in html
+    assert 'scope="col"' in html
+    assert 'class="sr-only"' in html
+
+
+def test_active_filter_reports_current_page(client: TestClient) -> None:
+    html = client.get("/?status=HOLD").text
+    assert 'aria-current="page"' in html
+    assert "보류 0" in html
+
+
+def test_detail_page_has_accessible_raw_text_and_tables(client: TestClient, demo_bytes) -> None:
+    created = client.post(
+        "/api/documents", files={"file": ("DEMO-0001.txt", demo_bytes("DEMO-0001.txt"))}
+    ).json()
+    html = client.get(f"/documents/{created['document']['id']}").text
+    assert 'aria-label="업로드 원문"' in html
+    assert html.count('scope="col"') >= 10
+    assert "추출 필드와 원문 근거" in html
+    assert "append-only 감사 이력" in html
+
+
+def test_error_message_has_alert_role(client: TestClient, demo_bytes) -> None:
+    created = client.post(
+        "/api/documents", files={"file": ("DEMO-0001.txt", demo_bytes("DEMO-0001.txt"))}
+    ).json()
+    response = client.post(
+        f"/documents/{created['document']['id']}/decision",
+        data={"decision": "APPROVE", "reviewer_alias": "reviewer-a", "reason": "  "},
+    )
+    assert response.status_code == 422
+    assert 'role="alert"' in response.text
