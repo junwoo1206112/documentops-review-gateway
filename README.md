@@ -1,5 +1,7 @@
 ﻿# DocumentOps Review Gateway
 
+[![CI](https://github.com/junwoo1206112/documentops-review-gateway/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/junwoo1206112/documentops-review-gateway/actions/runs/45697512065)
+
 > 합성 한국어 업무 문서를 **원문 근거 → 규칙 검증 → 사람 승인 → 감사 이력 → 공개 평가** 흐름으로
 > 안전하게 처리하는 포트폴리오 프로젝트입니다.
 
@@ -130,8 +132,9 @@ docker compose exec -T gateway python -m app.evaluate --dataset fixtures/evaluat
 5. `python -m pytest -q`
 6. `python -m app.evaluate …` 후 리포트 artifact 업로드
 
-**아직 원격 GitHub Actions에서 실행한 적이 없어 배지를 붙이지 않았습니다.** 첫 push 후
-`ci` 워크플로가 성공하면 그때 배지를 추가합니다.
+[`ci` 워크플로 첫 실행](https://github.com/junwoo1206112/documentops-review-gateway/actions/runs/45697512065)이
+`main`에서 성공했습니다. 배지는 이 실제 실행으로 연결되며, 포맷·린트·데이터셋·140개 테스트·평가·
+리포트 artifact 업로드를 모두 통과한 상태만 나타냅니다.
 
 ## 데모 영상 촬영
 

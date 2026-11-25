@@ -2,7 +2,7 @@
 
 - 작성일: 2026-11-26
 - 대상: 다음 인수자(사람)와 다음 LLM 세션
-- 현재 브랜치 상태: `main`, Phase 0~8 완료; 원격 CI 최초 실행은 R-001에서 확인 예정
+- 현재 브랜치 상태: `main`, Phase 0~9 완료; 원격 CI 최초 실행 확인·배지 반영 완료
 - 최신 커밋: `git log --oneline`으로 확인한다. 커밋 해시는 이동하므로 이 문서에 고정하지 않는다.
 
 이 문서 하나로 **무엇을 만들었고, 무엇이 검증됐고, 무엇이 남았고, 어떻게 이어서 하는지**를
@@ -21,8 +21,8 @@
 | 테스트 | **140 passed** (2026-11-26, Python 3.12.10, Windows 11) |
 | 평가 | 36건 기준 문서 EM 36/36, HOLD 재현 19/19, 오보류 0/17, 규칙 일치 36/36, 근거 410/412 |
 | Docker | `docker compose up --build` → `healthy`, 데모 4건 처리, 컨테이너 내 평가 동일 |
-| 원격 CI | 워크플로 파일만 존재. **GitHub에서 실행된 적 없음 → 배지 없음** |
-| 남은 일 | R-001(원격 CI·배지), R-002(데모 영상), 이후 결정 대기 항목 → 6절 |
+| 원격 CI | `main`의 첫 `ci` 성공. README 배지는 실제 실행으로 연결됨 |
+| 남은 일 | R-002(데모 영상), 이후 결정 대기 항목 → 6절 |
 
 3개 명령으로 상태를 확인할 수 있다.
 
@@ -68,6 +68,8 @@ python -m app.evaluate --dataset fixtures/evaluation
 | 5 | Dockerfile/Compose, CI 워크플로, 패키징 검사, 최종 README·스크린샷 | `feat(phase5): …` | 이미지 207MB, healthy, 컨테이너 평가 동일 |
 | 6 | rate-limit 버킷 만료 정리, subprocess UTF-8 고정, 전체 회귀 재검증 | `feat(phase6): …` | 133 passed, exit 0 |
 | 7 | 평가 리포트 버전 유도, 접근성(랜드마크·skip link·표·알림), 인수 문서 정합화 | `feat(phase7): …` | 140 passed, 키보드 Tab 확인 |
+| 8 | DocumentOps 전용 데모 촬영 대본·격리 DB·서버 409 증거 준비 | `docs(phase8): …` | `docs/reference/DOCUMENTOPS_DEMO_RECORDING.md` |
+| 9 | GitHub 원격 `main` push, 첫 `ci` 성공, README 배지 | `docs(phase9): …` | [run #1](https://github.com/junwoo1206112/documentops-review-gateway/actions/runs/45697512065) |
 
 ### 기준선 수치 (재현 가능)
 
@@ -251,17 +253,11 @@ POST /api/documents/{id}/revalidate
 
 우선순위는 P0(바로), P1(다음), P2(결정 후)다. 각 항목은 **수용 기준**을 만족할 때만 완료다.
 
-### R-001 — GitHub 원격 CI 실행 확인 + 배지 (P0)
+### R-001 — GitHub 원격 CI 실행 확인 + 배지 (완료, 2026-11-26)
 
-- 왜: `.github/workflows/ci.yml`은 있지만 GitHub에서 실행된 적이 없다. 검증 전 배지는 금지.
-- 할 일:
-  1. 원격 기본 브랜치를 `main`으로 정렬하거나, 현재 `master`에 맞게 CI 트리거를 바꾼다.
-     (현재 워크플로는 `main` push만 감시한다.)
-  2. 원격 저장소 생성·push.
-  3. Actions에서 `ci` 실행 결과 확인. 실패 시 로그 기반 수정.
-  4. 성공한 뒤에만 README 상단에 배지를 추가한다. 배지는 실제 워크플로 이름 `ci`와
-     기본 브랜치를 가리켜야 한다.
-- 수용 기준: Actions 성공 1회 이상, 배지 클릭 시 해당 실행으로 이동, README 문구와 실제 일치.
+- 결과: `main`을 원격에 push했고, [첫 `ci` 실행](https://github.com/junwoo1206112/documentops-review-gateway/actions/runs/45697512065)이 성공했다.
+  `verify` job의 install, format, lint, dataset, tests, evaluation, artifact upload 단계가 모두 성공했다.
+- 조치: README 상단에 `ci.yml`의 `main` 배지를 추가하고, 클릭 시 첫 성공 실행으로 연결했다.
 - 주의: `render.yaml`·공개 URL은 만들지 않았다. 배포 주장도 하지 않는다.
 
 ### R-002 — 45~60초 데모 영상 (P0)
@@ -372,7 +368,8 @@ POST /api/documents/{id}/revalidate
 | `feat(phase6)` | rate-limit 만료 정리, subprocess UTF-8, 전체 pytest 재검증 |
 | `feat(phase7)` | 평가 리포트 버전 유도, 접근성, 문서 증거 정합화 |
 | `docs(phase8)` | DocumentOps 전용 영상 촬영 대본·증거 체크리스트 |
+| `docs(phase9)` | 원격 CI 첫 성공 확인과 README 배지 |
 | `docs(handoff)` | 인수인계 문서와 `handoff.seed.yaml` |
 
-각 페이즈의 발견·수정 이유는 `docs/reviews/phase-0.md` ~ `phase-8.md`에 있다.
+각 페이즈의 발견·수정 이유는 `docs/reviews/phase-0.md` ~ `phase-9.md`에 있다.
 

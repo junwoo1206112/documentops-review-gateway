@@ -1,7 +1,7 @@
 ﻿schema: handoff-seed-1
 as_of: "2026-11-26"
 project: documentops-review-gateway
-status: phase-8-complete-ci-pending
+status: phase-9-complete-demo-pending
 language: ko
 
 goal: >
@@ -60,8 +60,9 @@ verified:
     compose_demo_documents: 4
     evaluation_in_container: baseline_reproduced
   ci_remote:
-    status: not_run
-    note: ".github/workflows/ci.yml exists but has never executed on GitHub; no badge is claimed."
+    status: success
+    run_url: "https://github.com/junwoo1206112/documentops-review-gateway/actions/runs/45697512065"
+    note: "main의 첫 ci 실행에서 install, format, lint, dataset, tests, evaluation, artifact upload가 모두 성공했다."
 
 commands:
   setup:
@@ -100,13 +101,13 @@ remaining:
   - id: R-001
     title: GitHub 원격 CI 실행 확인과 배지 추가
     priority: P0
-    state: ready
+    state: complete
     depends_on: []
     acceptance:
       - "GitHub Actions ci 워크플로가 1회 이상 success"
       - "README 배지가 실제 워크플로와 기본 브랜치를 가리킴"
       - "실행 전에는 배지를 추가하지 않음"
-    notes: "원격 저장소가 아직 없거나 push되지 않았다. 현재 브랜치는 master지만 워크플로는 main push만 감시하므로, 원격 기본 브랜치 또는 트리거를 먼저 정렬한다. 배지 외 기능 변경 금지."
+    notes: "main 첫 ci 실행 성공 및 README 배지 반영 완료. run_url은 verified.ci_remote에 기록한다."
 
   - id: R-002
     title: 45~60초 데모 영상 촬영과 README 링크
@@ -185,6 +186,6 @@ do_not:
 resume:
   read_first: [HANDOFF.md, README.md, docs/schema.md, docs/rules.md, docs/evaluation.md]
   gate: "python -m pytest -q && python tools/generate_dataset.py --check && python -m app.evaluate --dataset fixtures/evaluation"
-  next: [R-001, R-002]
-  review_log: docs/reviews/phase-{0..5}.md
+  next: [R-002]
+  review_log: docs/reviews/phase-{0..9}.md
 
