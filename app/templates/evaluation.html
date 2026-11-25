@@ -38,16 +38,32 @@
     <thead><tr><th>지표</th><th class="num">matched / total</th><th class="num">값</th></tr></thead>
     <tbody>
       {% for name, metric in report.metrics.items() %}
-      <tr>
-        <td class="mono">{{ name }}</td>
-        {% if metric is mapping %}
-        <td class="num">{{ metric.matched }} / {{ metric.total }}</td>
-        <td class="num">{{ "%.3f"|format(metric.value) }}</td>
+        {% if name == "field_exact_match" %}
+          <tr class="group">
+            <td class="mono">field_exact_match</td>
+            <td class="num">—</td>
+            <td class="num">{{ "%.3f"|format(report.metrics.field_exact_match_macro) }}</td>
+          </tr>
+          {% for field_name, field_metric in metric.items() %}
+          <tr class="sub">
+            <td class="mono">└ {{ field_name }}</td>
+            <td class="num">{{ field_metric.matched }} / {{ field_metric.total }}</td>
+            <td class="num">{{ "%.3f"|format(field_metric.value) }}</td>
+          </tr>
+          {% endfor %}
+        {% elif metric is mapping %}
+        <tr>
+          <td class="mono">{{ name }}</td>
+          <td class="num">{{ metric.matched }} / {{ metric.total }}</td>
+          <td class="num">{{ "%.3f"|format(metric.value) }}</td>
+        </tr>
         {% else %}
-        <td class="num">—</td>
-        <td class="num">{{ "%.3f"|format(metric) }}</td>
+        <tr>
+          <td class="mono">{{ name }}</td>
+          <td class="num">—</td>
+          <td class="num">{{ "%.3f"|format(metric) }}</td>
+        </tr>
         {% endif %}
-      </tr>
       {% endfor %}
     </tbody>
   </table>
