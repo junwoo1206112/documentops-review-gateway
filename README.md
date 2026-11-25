@@ -1,4 +1,4 @@
-# DocumentOps Review Gateway
+﻿# DocumentOps Review Gateway
 
 > 합성 한국어 업무 문서를 **원문 근거 → 규칙 검증 → 사람 승인 → 감사 이력 → 공개 평가** 흐름으로
 > 안전하게 처리하는 포트폴리오 프로젝트입니다.
@@ -90,7 +90,7 @@ python -m venv .venv
 # source .venv/bin/activate         # Linux/macOS
 pip install -e ".[dev]"
 
-python -m pytest -q                 # 130 passed (2026-11-26, Python 3.12.10)
+python -m pytest -q                 # 132 passed (2026-11-26, Python 3.12.10)
 python tools/generate_dataset.py --check
 python -m app.inspect fixtures/evaluation/DOC-0001.txt
 
@@ -181,9 +181,12 @@ OpenAPI는 `/api/openapi.json`에서 확인할 수 있습니다.
 | [docs/decisions/pending.md](docs/decisions/pending.md) | 의도적으로 보류한 결정 6건 |
 | [docs/reviews/](docs/reviews/) | Phase 0~5 전문가 A·B·C 교차 검증 기록 |
 | [docs/reference/](docs/reference/) | 인수인계 원본 계획·실행 로그·데모 원고 |
+| [HANDOFF.md](HANDOFF.md) | 인수자용: 현재 상태·검증 증거·남은 작업·재개 절차 |
+| [handoff.seed.yaml](handoff.seed.yaml) | 기계 판독용 인수인계 상태(작업 ID·수용 기준) |
 
 ## 인수인계 원본
 
 - [마스터 구현 계획](docs/reference/PORTFOLIO_IMPROVEMENT_MASTER_PLAN.md)
 - [포트폴리오 실행 로그](docs/reference/PORTFOLIO_PHASE_LOG_20261125.md)
 - [데모·사이트 원고](docs/reference/PORTFOLIO_DEMO_AND_SITE_COPY.md)
+

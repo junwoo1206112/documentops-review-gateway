@@ -112,3 +112,36 @@ def test_phase_reviews_exist_for_every_phase() -> None:
         "phase-4.md",
         "phase-5.md",
     ]
+
+
+def test_handoff_document_covers_resume_and_backlog() -> None:
+    handoff = read("HANDOFF.md")
+    for token in (
+        "30초 요약",
+        "절대 바뀌면 안 되는 계약",
+        "실행·검증 런북",
+        "남은 작업 백로그",
+        "알려진 함정",
+        "재개 체크리스트",
+        "Definition of Done",
+        "R-001",
+        "R-002",
+    ):
+        assert token in handoff, f"HANDOFF.md에 '{token}'이 없습니다"
+
+
+def test_handoff_seed_is_valid_and_tracks_state() -> None:
+    import yaml
+
+    data = yaml.safe_load(read("handoff.seed.yaml"))
+    assert data["schema"] == "handoff-seed-1"
+    assert data["status"] == "phase-0-5-complete"
+    assert data["versions"]["dataset"] == "synth-2026-11-26.2"
+    assert data["verified"]["tests_passed"] >= 130
+    assert data["verified"]["evaluation_exit_code"] == 0
+    assert data["verified"]["ci_remote"]["status"] == "not_run"
+
+    task_ids = {task["id"] for task in data["remaining"]}
+    assert {"R-001", "R-002", "R-003", "R-004", "R-005"} <= task_ids
+    assert data["do_not"]
+    assert data["resume"]["read_first"][0] == "HANDOFF.md"

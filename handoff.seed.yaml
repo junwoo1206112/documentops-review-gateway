@@ -1,0 +1,185 @@
+﻿schema: handoff-seed-1
+as_of: "2026-11-26"
+project: documentops-review-gateway
+status: phase-0-5-complete
+language: ko
+
+goal: >
+  합성 한국어 업무 문서를 원문 근거와 규칙 검증, 사람 승인, append-only 감사,
+  고정 데이터셋 평가로 안전하게 처리하는 검토 게이트를 포트폴리오 수준으로 유지·확장한다.
+
+constraints:
+  - 실제 개인정보와 실제 고객 문서를 사용하지 않는다.
+  - 승인과 반려는 사람만 수행하며 자동 승인 경로를 만들지 않는다.
+  - 기본 실행 경로는 외부 LLM API 키와 네트워크 없이 재현되어야 한다.
+  - OCR은 별도 결정 전까지 MVP 범위가 아니다.
+  - fixtures/evaluation은 생성기로만 수정하고 테스트 중에는 읽기 전용이다.
+
+invariants:
+  - id: no-auto-approval
+    rule: APPROVED 상태는 사람 별칭과 사유가 있는 decision 요청으로만 도달한다.
+    source: app/domain/statuses.py
+  - id: no-hold-to-approved
+    rule: HOLD에서 APPROVED로 가는 직접 전이는 금지된다.
+    source: app/domain/statuses.py
+  - id: blocking-means-hold
+    rule: severity=blocking 이슈가 1건 이상이면 HOLD다.
+    source: app/services/validation.py
+  - id: evidence-required
+    rule: verified 근거가 없는 값은 MISSING_EVIDENCE로 HOLD된다.
+    source: app/services/evidence.py
+  - id: append-only-audit
+    rule: audit_events는 UPDATE와 DELETE가 DB 트리거로 차단된다.
+    source: app/db.py
+
+versions:
+  app: "0.1.0"
+  extractor: deterministic-1.0.0
+  ruleset: rules-1.0.0
+  dataset: synth-2026-11-26.2
+  vendor_registry: vendors-2026-11-26.1
+
+verified:
+  date: "2026-11-26"
+  platform: "Windows 11, Python 3.12.10"
+  tests_passed: 132
+  dataset_check: pass
+  evaluation_exit_code: 0
+  metrics:
+    document_exact_match: {matched: 36, total: 36, value: 1.0}
+    hold_recall: {matched: 19, total: 19, value: 1.0}
+    false_hold_rate: {matched: 0, total: 17, value: 0.0}
+    rule_match: {matched: 36, total: 36, value: 1.0}
+    evidence_validity: {matched: 410, total: 412, value: 0.995}
+    regressions: 0
+  docker:
+    image_size: 207MB
+    user: "appuser uid 10001"
+    health: healthy
+    compose_demo_documents: 4
+    evaluation_in_container: baseline_reproduced
+  ci_remote:
+    status: not_run
+    note: ".github/workflows/ci.yml exists but has never executed on GitHub; no badge is claimed."
+
+commands:
+  setup:
+    - "python -m venv .venv"
+    - ".venv\\Scripts\\activate  # Windows"
+    - "pip install -e \".[dev]\""
+  verify:
+    - "python -m pytest -q"
+    - "python tools/generate_dataset.py --check"
+    - "python -m app.evaluate --dataset fixtures/evaluation"
+  run:
+    - "uvicorn app.asgi:app --reload"
+    - "python scripts/seed_demo.py"
+  docker:
+    - "docker compose up -d --build"
+    - "docker compose exec -T gateway python -m app.evaluate --dataset fixtures/evaluation"
+    - "docker compose down"
+
+key_paths:
+  contract_docs: [docs/schema.md, docs/rules.md, docs/evaluation.md]
+  single_sources:
+    statuses: app/domain/statuses.py
+    fields: app/domain/fields.py
+    rules: app/domain/rules.py
+    versions: app/version.py
+  pipeline: app/services/pipeline.py
+  review_service: app/services/review.py
+  api: app/api/routes.py
+  ui: app/templates/
+  evaluator: app/evaluate.py
+  dataset_generator: tools/generate_dataset.py
+  reviews: docs/reviews/
+  decisions: docs/decisions/pending.md
+
+remaining:
+  - id: R-001
+    title: GitHub 원격 CI 실행 확인과 배지 추가
+    priority: P0
+    state: ready
+    depends_on: []
+    acceptance:
+      - "GitHub Actions ci 워크플로가 1회 이상 success"
+      - "README 배지가 실제 워크플로와 기본 브랜치를 가리킴"
+      - "실행 전에는 배지를 추가하지 않음"
+    notes: "원격 저장소가 아직 없거나 push되지 않았다. 배지 외 기능 변경 금지."
+
+  - id: R-002
+    title: 45~60초 데모 영상 촬영과 README 링크
+    priority: P0
+    state: ready
+    depends_on: []
+    acceptance:
+      - "정상/HOLD/중복/승인/422/409/감사 장면이 한 번의 연속 녹화에 포함"
+      - "첫 자막에 합성 데이터와 mock 고지"
+      - "공개 URL과 촬영 날짜를 README에 기록"
+    notes: "docs/reference의 기존 원고는 다른 프로젝트용이다. 이 프로젝트 장면을 새로 작성해야 한다."
+
+  - id: R-003
+    title: 필드 단위 사람 수정과 보류 해소 계약
+    priority: P2
+    state: blocked_on_decision
+    depends_on: [P-003]
+    acceptance:
+      - "사람 수정 값의 근거 모델과 감사 이벤트 형식이 docs에 고정됨"
+      - "API/DB/UI/테스트가 함께 갱신됨"
+      - "근거 없는 값은 여전히 승인 불가"
+    notes: "결정 없이 구현하지 않는다. 현재 우회는 원문 수정 후 새 업로드 또는 revalidate."
+
+  - id: R-004
+    title: OCR 확장
+    priority: P2
+    state: blocked_on_decision
+    depends_on: [P-001]
+    acceptance:
+      - "source_kind=scan 전용 데이터셋과 지표표 분리"
+      - "낮은 신뢰도 또는 span 미확보 시 자동 HOLD"
+      - "텍스트 기준선 수치 불변"
+    notes: "CI 기본 경로에 외부 바이너리 의존을 넣지 않는다."
+
+  - id: R-005
+    title: LLM 추출 어댑터
+    priority: P2
+    state: blocked_on_decision
+    depends_on: [P-002]
+    acceptance:
+      - "ExtractionProvider 인터페이스와 apply_evidence를 통과"
+      - "키 없이 전체 테스트 통과, 기본 extractor 불변"
+    notes: "오프라인 스텁으로 계약 테스트를 먼저 만든다."
+
+  - id: R-006
+    title: 두 번째 문서 레이아웃 지원
+    priority: P2
+    state: optional
+    depends_on: []
+    acceptance:
+      - "레이아웃 선택 규칙과 422 경계가 문서화됨"
+      - "데이터셋 버전 갱신과 기준선 유지 또는 명시적 하락 기록"
+    notes: "현재는 레이아웃 1종이며 해석 불가는 422로 끝낸다."
+
+  - id: R-007
+    title: 접근성과 반응형 세부 점검
+    priority: P2
+    state: optional
+    depends_on: []
+    acceptance:
+      - "키보드만으로 업로드와 판정 가능"
+      - "최소 3개 화면 폭 점검 기록"
+    notes: "600px와 데스크톱만 확인된 상태다."
+
+do_not:
+  - 실제 고객 문서나 개인정보를 추가하지 않는다.
+  - 자동 승인, HOLD에서 APPROVED 직접 전이를 추가하지 않는다.
+  - fixtures를 손으로 수정하지 않는다.
+  - 검증 없이 CI 배지나 배포 URL을 주장하지 않는다.
+  - p50/p95를 성과 수치로 README에 옮기지 않는다.
+
+resume:
+  read_first: [HANDOFF.md, README.md, docs/schema.md, docs/rules.md, docs/evaluation.md]
+  gate: "python -m pytest -q && python tools/generate_dataset.py --check && python -m app.evaluate --dataset fixtures/evaluation"
+  next: [R-001, R-002]
+  review_log: docs/reviews/phase-{0..5}.md
+
