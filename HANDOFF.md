@@ -2,7 +2,7 @@
 
 - 작성일: 2026-11-26
 - 대상: 다음 인수자(사람)와 다음 LLM 세션
-- 현재 브랜치 상태: `main`, Phase 0~10 완료; 데모 영상은 로컬 검수 완료, 공개 업로드 대기
+- 현재 브랜치 상태: `main`, Phase 0~11 완료; 영상 공개 업로드와 스크린리더 실사용 검토 대기
 - 최신 커밋: `git log --oneline`으로 확인한다. 커밋 해시는 이동하므로 이 문서에 고정하지 않는다.
 
 이 문서 하나로 **무엇을 만들었고, 무엇이 검증됐고, 무엇이 남았고, 어떻게 이어서 하는지**를
@@ -71,6 +71,7 @@ python -m app.evaluate --dataset fixtures/evaluation
 | 8 | DocumentOps 전용 데모 촬영 대본·격리 DB·서버 409 증거 준비 | `docs(phase8): …` | `docs/reference/DOCUMENTOPS_DEMO_RECORDING.md` |
 | 9 | GitHub 원격 `main` push, 첫 `ci` 성공, README 배지 | `docs(phase9): …` | [run #1](https://github.com/junwoo1206112/documentops-review-gateway/actions/runs/45697512065) |
 | 10 | 실제 UI 자동 녹화, 56.8초 영상·핵심 장면 검수 | `feat(phase10): …` | `artifacts/documentops-demo.webm` (git 미추적) |
+| 11 | 자동 대비 감사, 768/1024px 실제 화면 캡처 | `feat(phase11): …` | `artifacts/accessibility_audit.json` |
 
 ### 기준선 수치 (재현 가능)
 
@@ -302,12 +303,14 @@ POST /api/documents/{id}/revalidate
 - 조건: 레이아웃별 파서 선택 규칙, 422와 HOLD 경계 유지, 데이터셋 버전 갱신.
 - 수용 기준: 두 레이아웃 모두에서 기준선 유지 또는 명시적 하락과 사유 기록.
 
-### R-007 — 접근성·반응형 세부 점검 (P2, 부분 완료)
+### R-007 — 접근성·반응형 세부 점검 (자동 검증 완료, 실사용 검토 대기)
 
 - 완료: skip link, 랜드마크, 표 `scope`/`caption`, 필터 `aria-current`, 오류 `role="alert"`,
   `:focus-visible`. 키보드 첫 Tab으로 본문 건너뛰기를 확인했고 테스트로 고정했다.
-- 남음: 색 대비 자동 측정, 768/1024px 스크린샷, 스크린리더로 업로드→판정 1회 점검.
-- 수용 기준(전체 완료): 대비 측정 기록 + 중간 폭 2장 + 스크린리더 점검 기록.
+- 완료: 주요 6개 색 조합이 WCAG AA 일반 텍스트 대비를 통과했고, 실제 768px·1024px
+  화면 캡처에서 반응형 레이아웃을 확인했다(`artifacts/accessibility_audit.json`).
+- 남음: 스크린리더로 업로드→판정 1회 점검.
+- 수용 기준(전체 완료): 스크린리더 점검 기록.
 
 ### 명시적 비목표 (요구가 생기기 전에는 시작하지 않는다)
 
@@ -371,7 +374,9 @@ POST /api/documents/{id}/revalidate
 | `feat(phase7)` | 평가 리포트 버전 유도, 접근성, 문서 증거 정합화 |
 | `docs(phase8)` | DocumentOps 전용 영상 촬영 대본·증거 체크리스트 |
 | `docs(phase9)` | 원격 CI 첫 성공 확인과 README 배지 |
+| `feat(phase10)` | 실제 UI 자동 녹화와 영상 검수 |
+| `feat(phase11)` | 자동 대비 감사와 태블릿 폭 화면 검수 |
 | `docs(handoff)` | 인수인계 문서와 `handoff.seed.yaml` |
 
-각 페이즈의 발견·수정 이유는 `docs/reviews/phase-0.md` ~ `phase-10.md`에 있다.
+각 페이즈의 발견·수정 이유는 `docs/reviews/phase-0.md` ~ `phase-11.md`에 있다.
 

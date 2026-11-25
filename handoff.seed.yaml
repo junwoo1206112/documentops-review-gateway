@@ -1,7 +1,7 @@
 ﻿schema: handoff-seed-1
 as_of: "2026-11-26"
 project: documentops-review-gateway
-status: phase-10-demo-recorded-publish-pending
+status: phase-11-automation-complete-manual-checks-pending
 language: ko
 
 goal: >
@@ -165,16 +165,16 @@ remaining:
   - id: R-007
     title: 접근성과 반응형 세부 점검
     priority: P2
-    state: partial
+    state: automated_checks_complete
     depends_on: []
     done:
       - "랜드마크, skip link, 표 scope/caption, aria-current, role=alert, focus-visible"
       - "키보드 첫 Tab으로 본문 건너뛰기 확인"
+      - "주요 6개 색 조합 WCAG AA 일반 텍스트 대비 통과"
+      - "768px·1024px 실제 화면 캡처 확인"
     acceptance:
-      - "색 대비 자동 측정 기록"
-      - "768px·1024px 스크린샷"
       - "스크린리더로 업로드→판정 1회 점검"
-    notes: "Phase 7에서 구조 개선과 테스트는 완료. 대비·중간 폭·스크린리더 확인이 남았다."
+    notes: "Phase 11에서 tools/audit_accessibility.py로 대비·중간 폭 캡처를 완료했다. 스크린리더 실사용만 남았다."
 
 do_not:
   - 실제 고객 문서나 개인정보를 추가하지 않는다.
@@ -187,5 +187,5 @@ resume:
   read_first: [HANDOFF.md, README.md, docs/schema.md, docs/rules.md, docs/evaluation.md]
   gate: "python -m pytest -q && python tools/generate_dataset.py --check && python -m app.evaluate --dataset fixtures/evaluation"
   next: [R-002]
-  review_log: docs/reviews/phase-{0..10}.md
+  review_log: docs/reviews/phase-{0..11}.md
 
