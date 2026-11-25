@@ -28,7 +28,8 @@
 | 알 수 없는 거래처 | 2 | `HOLD` | `UNKNOWN_VENDOR` |
 | 근거 없음 | 2 | `HOLD` | `MISSING_EVIDENCE` |
 
-합계 36건. 각 문서의 정답은 `fixtures/evaluation/expected/<document_id>.json`에 둔다.
+합계 36건. 문서 기준 집계는 `PENDING_REVIEW` 17건(정상 16 + 중복 첫 건), `HOLD` 19건이다.
+각 문서의 정답은 `fixtures/evaluation/expected/<document_id>.json`에 둔다.
 
 ### 정답 파일 스키마
 
@@ -57,8 +58,12 @@
 ```
 
 - `fields`·`items`의 값은 **정규화된 값**이다(쉼표 제거, 정수 변환).
+- 형식 오류로 파싱에 실패한 필드의 정답 값은 `null`이다. 원문 문자열(`2026-13-05`, `사십삼만원`)을
+  값으로 남기는 추출은 오답 처리한다. 문서에 적힌 **유효한 값**만 필드 값이다.
 - `expected_rule_ids`는 집합 비교다. 순서는 무시한다.
-- `evidence`는 값이 존재하는 필드에 대해 정답 span을 제공한다. `derived` 필드는 `null`이다.
+- `evidence`는 검증 가능한 span이 있는 필드만 담는다. 키는 `fields`와 같은 경로
+  (`vendor`, `items[0].qty`, `supply_amount` …)이고, 파생·누락 필드는 **키를 생략**한다.
+  `items` 자체(목록)의 span은 두지 않는다.
 
 ## 3. 지표 정의
 
@@ -83,14 +88,14 @@
 
 ### 3.3 HOLD 재현율 (hold recall)
 
-- 양성(positive): `expected_status == "HOLD"`인 20건.
-- `recall = (HOLD로 판정한 양성 수) / 20`
+- 양성(positive): `expected_status == "HOLD"`인 19건.
+- `recall = (HOLD로 판정한 양성 수) / 19`
 - 안전성 지표다. 낮으면 문제 문서를 승인 대기로 올려 보낸 것이다.
 
 ### 3.4 오보류율 (false hold rate)
 
-- 음성(negative): `expected_status == "PENDING_REVIEW"`인 16건.
-- `false_hold = (HOLD로 판정한 음성 수) / 16`
+- 음성(negative): `expected_status == "PENDING_REVIEW"`인 17건.
+- `false_hold = (HOLD로 판정한 음성 수) / 17`
 - 비용 지표다. 높으면 정상 문서가 사람을 불필요하게 부른다.
 - `recall`과 항상 함께 보고한다. 한쪽만 인용하지 않는다.
 
@@ -129,8 +134,8 @@
     "field_exact_match": {"vendor": {"matched": 34, "total": 36, "value": 0.944}, "...": {}},
     "field_exact_match_macro": 0.981,
     "document_exact_match": {"matched": 33, "total": 36, "value": 0.917},
-    "hold_recall": {"matched": 20, "total": 20, "value": 1.0},
-    "false_hold_rate": {"matched": 0, "total": 16, "value": 0.0},
+    "hold_recall": {"matched": 19, "total": 19, "value": 1.0},
+    "false_hold_rate": {"matched": 0, "total": 17, "value": 0.0},
     "rule_match": {"matched": 36, "total": 36, "value": 1.0},
     "evidence_validity": {"matched": 192, "total": 196, "value": 0.98}
   },

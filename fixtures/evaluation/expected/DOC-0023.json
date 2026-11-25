@@ -1,0 +1,80 @@
+{
+  "dataset_version": "synth-2026-11-26.1",
+  "document_id": "DOC-0023",
+  "evidence": {
+    "doc_no": {
+      "char_end": 36,
+      "char_start": 24,
+      "excerpt": "TX-2026-3024",
+      "page": 1
+    },
+    "items[0].amount": {
+      "char_end": 125,
+      "char_start": 118,
+      "excerpt": "112,800",
+      "page": 1
+    },
+    "items[0].name": {
+      "char_end": 105,
+      "char_start": 99,
+      "excerpt": "공압 실린더",
+      "page": 1
+    },
+    "items[0].qty": {
+      "char_end": 109,
+      "char_start": 107,
+      "excerpt": "24",
+      "page": 1
+    },
+    "items[0].unit_price": {
+      "char_end": 116,
+      "char_start": 111,
+      "excerpt": "4,700",
+      "page": 1
+    },
+    "supply_amount": {
+      "char_end": 140,
+      "char_start": 133,
+      "excerpt": "112,800",
+      "page": 1
+    },
+    "total": {
+      "char_end": 164,
+      "char_start": 157,
+      "excerpt": "124,080",
+      "page": 1
+    },
+    "vat": {
+      "char_end": 152,
+      "char_start": 146,
+      "excerpt": "11,280",
+      "page": 1
+    },
+    "vendor": {
+      "char_end": 17,
+      "char_start": 13,
+      "excerpt": "가온상사",
+      "page": 1
+    }
+  },
+  "expected_rule_ids": [
+    "INVALID_DATE"
+  ],
+  "expected_status": "HOLD",
+  "fields": {
+    "doc_date": null,
+    "doc_no": "TX-2026-3024",
+    "supply_amount": 112800,
+    "total": 124080,
+    "vat": 11280,
+    "vendor": "가온상사"
+  },
+  "items": [
+    {
+      "amount": 112800,
+      "name": "공압 실린더",
+      "qty": 24,
+      "unit_price": 4700
+    }
+  ]
+}

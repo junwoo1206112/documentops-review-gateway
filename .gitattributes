@@ -1,0 +1,12 @@
+* text=auto eol=lf
+
+# 합성 데이터셋은 SHA-256으로 고정되므로 줄바꿈이 바뀌면 안 된다.
+*.txt text eol=lf
+*.jsonl text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+*.png binary
+*.jpg binary

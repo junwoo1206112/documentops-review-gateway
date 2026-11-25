@@ -1,0 +1,80 @@
+{
+  "dataset_version": "synth-2026-11-26.1",
+  "document_id": "DOC-0017",
+  "evidence": {
+    "doc_date": {
+      "char_end": 43,
+      "char_start": 33,
+      "excerpt": "2026-06-08",
+      "page": 1
+    },
+    "doc_no": {
+      "char_end": 26,
+      "char_start": 14,
+      "excerpt": "TX-2026-3018",
+      "page": 1
+    },
+    "items[0].amount": {
+      "char_end": 117,
+      "char_start": 111,
+      "excerpt": "34,000",
+      "page": 1
+    },
+    "items[0].name": {
+      "char_end": 98,
+      "char_start": 89,
+      "excerpt": "알루미늄 프로파일",
+      "page": 1
+    },
+    "items[0].qty": {
+      "char_end": 102,
+      "char_start": 100,
+      "excerpt": "10",
+      "page": 1
+    },
+    "items[0].unit_price": {
+      "char_end": 109,
+      "char_start": 104,
+      "excerpt": "3,400",
+      "page": 1
+    },
+    "supply_amount": {
+      "char_end": 131,
+      "char_start": 125,
+      "excerpt": "34,000",
+      "page": 1
+    },
+    "total": {
+      "char_end": 153,
+      "char_start": 147,
+      "excerpt": "37,400",
+      "page": 1
+    },
+    "vat": {
+      "char_end": 142,
+      "char_start": 137,
+      "excerpt": "3,400",
+      "page": 1
+    }
+  },
+  "expected_rule_ids": [
+    "MISSING_REQUIRED"
+  ],
+  "expected_status": "HOLD",
+  "fields": {
+    "doc_date": "2026-06-08",
+    "doc_no": "TX-2026-3018",
+    "supply_amount": 34000,
+    "total": 37400,
+    "vat": 3400,
+    "vendor": null
+  },
+  "items": [
+    {
+      "amount": 34000,
+      "name": "알루미늄 프로파일",
+      "qty": 10,
+      "unit_price": 3400
+    }
+  ]
+}

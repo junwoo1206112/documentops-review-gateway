@@ -1,0 +1,114 @@
+{
+  "dataset_version": "synth-2026-11-26.1",
+  "document_id": "DOC-0005",
+  "evidence": {
+    "doc_date": {
+      "char_end": 53,
+      "char_start": 43,
+      "excerpt": "2026-03-14",
+      "page": 1
+    },
+    "doc_no": {
+      "char_end": 36,
+      "char_start": 24,
+      "excerpt": "TX-2026-1005",
+      "page": 1
+    },
+    "items[0].amount": {
+      "char_end": 126,
+      "char_start": 119,
+      "excerpt": "282,000",
+      "page": 1
+    },
+    "items[0].name": {
+      "char_end": 106,
+      "char_start": 99,
+      "excerpt": "리니어 가이드",
+      "page": 1
+    },
+    "items[0].qty": {
+      "char_end": 110,
+      "char_start": 108,
+      "excerpt": "60",
+      "page": 1
+    },
+    "items[0].unit_price": {
+      "char_end": 117,
+      "char_start": 112,
+      "excerpt": "4,700",
+      "page": 1
+    },
+    "items[1].amount": {
+      "char_end": 152,
+      "char_start": 145,
+      "excerpt": "178,000",
+      "page": 1
+    },
+    "items[1].name": {
+      "char_end": 132,
+      "char_start": 127,
+      "excerpt": "포장 박스",
+      "page": 1
+    },
+    "items[1].qty": {
+      "char_end": 136,
+      "char_start": 134,
+      "excerpt": "20",
+      "page": 1
+    },
+    "items[1].unit_price": {
+      "char_end": 143,
+      "char_start": 138,
+      "excerpt": "8,900",
+      "page": 1
+    },
+    "supply_amount": {
+      "char_end": 167,
+      "char_start": 160,
+      "excerpt": "460,000",
+      "page": 1
+    },
+    "total": {
+      "char_end": 191,
+      "char_start": 184,
+      "excerpt": "506,000",
+      "page": 1
+    },
+    "vat": {
+      "char_end": 179,
+      "char_start": 173,
+      "excerpt": "46,000",
+      "page": 1
+    },
+    "vendor": {
+      "char_end": 17,
+      "char_start": 13,
+      "excerpt": "마루테크",
+      "page": 1
+    }
+  },
+  "expected_rule_ids": [],
+  "expected_status": "PENDING_REVIEW",
+  "fields": {
+    "doc_date": "2026-03-14",
+    "doc_no": "TX-2026-1005",
+    "supply_amount": 460000,
+    "total": 506000,
+    "vat": 46000,
+    "vendor": "마루테크"
+  },
+  "items": [
+    {
+      "amount": 282000,
+      "name": "리니어 가이드",
+      "qty": 60,
+      "unit_price": 4700
+    },
+    {
+      "amount": 178000,
+      "name": "포장 박스",
+      "qty": 20,
+      "unit_price": 8900
+    }
+  ]
+}

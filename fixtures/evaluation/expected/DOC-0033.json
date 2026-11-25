@@ -1,0 +1,86 @@
+{
+  "dataset_version": "synth-2026-11-26.1",
+  "document_id": "DOC-0033",
+  "evidence": {
+    "doc_date": {
+      "char_end": 54,
+      "char_start": 44,
+      "excerpt": "2026-09-28",
+      "page": 1
+    },
+    "doc_no": {
+      "char_end": 37,
+      "char_start": 25,
+      "excerpt": "TX-2026-3034",
+      "page": 1
+    },
+    "items[0].amount": {
+      "char_end": 128,
+      "char_start": 122,
+      "excerpt": "47,000",
+      "page": 1
+    },
+    "items[0].name": {
+      "char_end": 109,
+      "char_start": 100,
+      "excerpt": "알루미늄 프로파일",
+      "page": 1
+    },
+    "items[0].qty": {
+      "char_end": 113,
+      "char_start": 111,
+      "excerpt": "10",
+      "page": 1
+    },
+    "items[0].unit_price": {
+      "char_end": 120,
+      "char_start": 115,
+      "excerpt": "4,700",
+      "page": 1
+    },
+    "supply_amount": {
+      "char_end": 142,
+      "char_start": 136,
+      "excerpt": "47,000",
+      "page": 1
+    },
+    "total": {
+      "char_end": 164,
+      "char_start": 158,
+      "excerpt": "51,700",
+      "page": 1
+    },
+    "vat": {
+      "char_end": 153,
+      "char_start": 148,
+      "excerpt": "4,700",
+      "page": 1
+    },
+    "vendor": {
+      "char_end": 18,
+      "char_start": 13,
+      "excerpt": "미등록물산",
+      "page": 1
+    }
+  },
+  "expected_rule_ids": [
+    "UNKNOWN_VENDOR"
+  ],
+  "expected_status": "HOLD",
+  "fields": {
+    "doc_date": "2026-09-28",
+    "doc_no": "TX-2026-3034",
+    "supply_amount": 47000,
+    "total": 51700,
+    "vat": 4700,
+    "vendor": "미등록물산"
+  },
+  "items": [
+    {
+      "amount": 47000,
+      "name": "알루미늄 프로파일",
+      "qty": 10,
+      "unit_price": 4700
+    }
+  ]
+}

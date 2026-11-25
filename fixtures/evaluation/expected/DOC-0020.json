@@ -1,0 +1,80 @@
+{
+  "dataset_version": "synth-2026-11-26.1",
+  "document_id": "DOC-0020",
+  "evidence": {
+    "doc_date": {
+      "char_end": 34,
+      "char_start": 24,
+      "excerpt": "2026-06-29",
+      "page": 1
+    },
+    "items[0].amount": {
+      "char_end": 106,
+      "char_start": 99,
+      "excerpt": "187,500",
+      "page": 1
+    },
+    "items[0].name": {
+      "char_end": 86,
+      "char_start": 80,
+      "excerpt": "센서 하우징",
+      "page": 1
+    },
+    "items[0].qty": {
+      "char_end": 90,
+      "char_start": 88,
+      "excerpt": "30",
+      "page": 1
+    },
+    "items[0].unit_price": {
+      "char_end": 97,
+      "char_start": 92,
+      "excerpt": "6,250",
+      "page": 1
+    },
+    "supply_amount": {
+      "char_end": 121,
+      "char_start": 114,
+      "excerpt": "187,500",
+      "page": 1
+    },
+    "total": {
+      "char_end": 145,
+      "char_start": 138,
+      "excerpt": "206,250",
+      "page": 1
+    },
+    "vat": {
+      "char_end": 133,
+      "char_start": 127,
+      "excerpt": "18,750",
+      "page": 1
+    },
+    "vendor": {
+      "char_end": 17,
+      "char_start": 13,
+      "excerpt": "한결기계",
+      "page": 1
+    }
+  },
+  "expected_rule_ids": [
+    "MISSING_REQUIRED"
+  ],
+  "expected_status": "HOLD",
+  "fields": {
+    "doc_date": "2026-06-29",
+    "doc_no": null,
+    "supply_amount": 187500,
+    "total": 206250,
+    "vat": 18750,
+    "vendor": "한결기계"
+  },
+  "items": [
+    {
+      "amount": 187500,
+      "name": "센서 하우징",
+      "qty": 30,
+      "unit_price": 6250
+    }
+  ]
+}
