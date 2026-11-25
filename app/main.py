@@ -126,12 +126,30 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                 return next((hop.strip() for hop in forwarded.split(",") if hop.strip()), "unknown")
         return request.client.host if request.client else "unknown"
 
+    def _prune_expired_buckets(self, now: float) -> None:
+        """Remove stale client buckets after a high-cardinality burst.
+
+        A client that never sends another request would otherwise never enter
+        the per-client cleanup path below. Pruning all buckets only once the
+        map is large keeps the normal request path inexpensive while bounding
+        retained rate-limit state.
+        """
+        if len(self._hits) <= 10_000:
+            return
+        cutoff = now - 60
+        for key, bucket in list(self._hits.items()):
+            while bucket and bucket[0] < cutoff:
+                bucket.popleft()
+            if not bucket:
+                self._hits.pop(key, None)
+
     async def dispatch(self, request: Request, call_next):
         if self.limit <= 0 or not request.url.path.startswith("/api"):
             return await call_next(request)
         client = self._client_key(request)
         now = time.monotonic()
         with self._lock:
+            self._prune_expired_buckets(now)
             bucket = self._hits[client]
             while bucket and bucket[0] < now - 60:
                 bucket.popleft()
@@ -149,9 +167,6 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                     },
                 )
             bucket.append(now)
-            if len(self._hits) > 10_000:
-                for key in [key for key, value in self._hits.items() if not value]:
-                    self._hits.pop(key, None)
         return await call_next(request)
 
 

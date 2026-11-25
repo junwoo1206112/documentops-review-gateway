@@ -1,7 +1,7 @@
 ﻿schema: handoff-seed-1
 as_of: "2026-11-26"
 project: documentops-review-gateway
-status: phase-0-5-complete
+status: phase-6-complete
 language: ko
 
 goal: >
@@ -42,7 +42,8 @@ versions:
 verified:
   date: "2026-11-26"
   platform: "Windows 11, Python 3.12.10"
-  tests_passed: 132
+  tests_passed: 133
+  tests_collected_after_phase_6: 133
   dataset_check: pass
   evaluation_exit_code: 0
   metrics:

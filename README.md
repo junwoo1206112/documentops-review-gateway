@@ -6,7 +6,8 @@
 증명하려는 역량은 "AI가 답을 낸다"가 아니라,
 **AI 산출물을 실제 업무에 투입하기 전에 검증·보류·승인·추적하는 방법**입니다.
 
-**상태: Phase 0~5 완료** (계약 → 데이터 → 추출·검증 → 검토 UI/감사 → 평가 → Docker/CI).
+**상태: Phase 0~6 구현 완료** (계약 → 데이터 → 추출·검증 → 검토 UI/감사 → 평가 → Docker/CI → 운영 보강).
+공개 마감은 아직 남아 있습니다: R-001 원격 CI 성공·배지, R-002 45~60초 데모 영상.
 OCR·LLM 어댑터·인증은 의도적으로 보류했고, [보류 결정](docs/decisions/pending.md)에 근거를 남겼습니다.
 
 ![문서 목록 화면](docs/images/documents.png)
@@ -90,7 +91,7 @@ python -m venv .venv
 # source .venv/bin/activate         # Linux/macOS
 pip install -e ".[dev]"
 
-python -m pytest -q                 # 132 passed (2026-11-26, Python 3.12.10)
+python -m pytest -q                 # 133 passed (2026-11-26, Python 3.12.10)
 python tools/generate_dataset.py --check
 python -m app.inspect fixtures/evaluation/DOC-0001.txt
 
@@ -179,7 +180,7 @@ OpenAPI는 `/api/openapi.json`에서 확인할 수 있습니다.
 | [docs/evaluation.md](docs/evaluation.md) | 데이터셋 분리, 지표 정의·분모, 리포트 스키마 |
 | [docs/security.md](docs/security.md) | 데이터 정책, 위협 모델, 배포 검증 |
 | [docs/decisions/pending.md](docs/decisions/pending.md) | 의도적으로 보류한 결정 6건 |
-| [docs/reviews/](docs/reviews/) | Phase 0~5 전문가 A·B·C 교차 검증 기록 |
+| [docs/reviews/](docs/reviews/) | Phase 0~6 전문가 A·B·C 교차 검증 기록 |
 | [docs/reference/](docs/reference/) | 인수인계 원본 계획·실행 로그·데모 원고 |
 | [HANDOFF.md](HANDOFF.md) | 인수자용: 현재 상태·검증 증거·남은 작업·재개 절차 |
 | [handoff.seed.yaml](handoff.seed.yaml) | 기계 판독용 인수인계 상태(작업 ID·수용 기준) |

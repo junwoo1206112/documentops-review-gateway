@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+from collections import deque
+
 import pytest
 from fastapi.testclient import TestClient
 
 from app.config import Settings
-from app.main import create_app
+from app.main import RateLimitMiddleware, create_app
 
 
 def upload(client: TestClient, name: str, data: bytes):
@@ -196,6 +198,17 @@ def test_security_headers(client: TestClient) -> None:
     assert response.headers["Content-Security-Policy"].startswith("default-src 'none'")
     assert response.headers["X-Content-Type-Options"] == "nosniff"
     assert response.headers["X-Frame-Options"] == "DENY"
+
+
+def test_rate_limiter_prunes_stale_high_cardinality_buckets() -> None:
+    middleware = RateLimitMiddleware(app=lambda scope, receive, send: None, limit_per_minute=1)
+    now = 1_000.0
+    middleware._hits = {f"stale-{index}": deque([now - 61]) for index in range(10_001)}
+    middleware._hits["active"] = deque([now - 1])
+
+    middleware._prune_expired_buckets(now)
+
+    assert set(middleware._hits) == {"active"}
 
 
 def test_unknown_api_route_returns_404(client: TestClient) -> None:
