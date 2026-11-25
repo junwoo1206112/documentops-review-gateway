@@ -24,6 +24,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+from app.services.textnorm import is_valid_doc_no, normalize_doc_no  # noqa: E402
 from app.version import DATASET_VERSION, VENDOR_REGISTRY_VERSION  # noqa: E402
 
 EVAL_DIR = ROOT / "fixtures" / "evaluation"
@@ -73,7 +74,8 @@ DERIVED_TOTAL_NOTE = "※ 총액은 공급가액과 부가세의 합으로 확�
 
 CATEGORY_COUNTS: dict[str, int] = {
     "normal": 16,
-    "missing_required": 5,
+    "missing_required": 3,
+    "invalid_doc_no": 2,
     "invalid_date": 2,
     "invalid_money": 1,
     "line_total_mismatch": 6,
@@ -212,9 +214,13 @@ def expected_payload(spec: Spec, spans: dict[str, dict[str, object]]) -> dict[st
     if spec.derive_total and supply is not None and vat is not None:
         total = supply + vat
 
+    doc_no = spec.doc_no
+    if doc_no is not None and not is_valid_doc_no(normalize_doc_no(doc_no)):
+        doc_no = None
+
     fields = {
         "vendor": spec.vendor,
-        "doc_no": spec.doc_no,
+        "doc_no": doc_no,
         "doc_date": parse_date(spec.date_raw),
         "supply_amount": supply,
         "vat": vat,
@@ -329,15 +335,24 @@ def make_error_specs(start: int, rng: random.Random) -> list[Spec]:
             total_raw=money(supply + vat),
         )
 
-    # 필수값 누락 5건
-    for missing, count in (("vendor", 2), ("doc_no", 2), ("doc_date", 1)):
+    # 필수값 누락 3건
+    for attribute, count in (("vendor", 1), ("doc_no", 1), ("date_raw", 1)):
         for _ in range(count):
             doc_id = next_id()
             spec = base(doc_id)
-            setattr(spec, missing, None)
+            setattr(spec, attribute, None)
             spec.category = "missing_required"
             spec.expected_rules = ("MISSING_REQUIRED",)
             specs.append(spec)
+
+    # 문서번호 형식 2건
+    for raw in ("TX-26-1", "TX2026-4001"):
+        doc_id = next_id()
+        spec = base(doc_id)
+        spec.doc_no = raw
+        spec.category = "invalid_doc_no"
+        spec.expected_rules = ("INVALID_DOC_NO",)
+        specs.append(spec)
 
     # 날짜 형식 2건
     for raw in ("2026-13-05", "2026.03.04"):

@@ -29,6 +29,12 @@ RULES: tuple[RuleDef, ...] = (
         message_template="{field} 값이 없습니다.",
     ),
     RuleDef(
+        rule_id="INVALID_DOC_NO",
+        severity=SEVERITY_BLOCKING,
+        summary="문서번호가 정해진 패턴을 따르지 않는다",
+        message_template="문서번호 형식이 올바르지 않습니다: {raw}",
+    ),
+    RuleDef(
         rule_id="INVALID_DATE",
         severity=SEVERITY_BLOCKING,
         summary="날짜가 YYYY-MM-DD 형식의 실제 달력 날짜가 아니다",

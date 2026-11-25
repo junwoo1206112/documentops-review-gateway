@@ -129,7 +129,7 @@
 |---|---|---|---|
 | GET | `/api/health` | 200 `{status, version}` | - |
 | GET | `/api/meta` | 200 버전·필드·규칙 카탈로그 | - |
-| POST | `/api/documents` | 201 문서 상세 | 413 크기 초과, 415 형식·인코딩, 422 필수 파트 누락 |
+| POST | `/api/documents` | 201 문서 상세 | 413 크기 초과, 415 형식·인코딩, 422 필수 파트 누락 또는 문서 레이아웃 해석 불가 |
 | GET | `/api/documents` | 200 `{items, total}` (`status`, `limit`, `offset` 쿼리) | 422 잘못된 쿼리 |
 | GET | `/api/documents/{id}` | 200 문서 상세 | 404 |
 | POST | `/api/documents/{id}/revalidate` | 200 문서 상세 | 404, 409 종료 상태 |

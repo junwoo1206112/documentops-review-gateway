@@ -18,6 +18,7 @@
 | 상위 원인 | 건너뛰는 검사 |
 |---|---|
 | `vendor` 누락 | 이 문서의 `UNKNOWN_VENDOR` |
+| `doc_no` 누락 | 이 문서의 `INVALID_DOC_NO` |
 | `doc_date` 누락 | 이 문서의 `INVALID_DATE` |
 | 금액 필드 누락 | 그 필드가 필요한 산술 검사 전체 |
 | 금액 필드 파싱 실패(`INVALID_MONEY`) | 그 값을 쓰는 산술 검사 전체 |
@@ -28,6 +29,7 @@
 | rule_id | 심각도 | 판정 조건 | 메시지 예시 |
 |---|---|---|---|
 | `MISSING_REQUIRED` | `blocking` | 필수 필드가 없거나 공백뿐이다 | `거래처 값이 없습니다.` |
+| `INVALID_DOC_NO` | `blocking` | `doc_no`가 `^[A-Z]{2,4}-\d{4}-\d{4}$`를 만족하지 않는다 | `문서번호 형식이 올바르지 않습니다: TX-26-1` |
 | `INVALID_DATE` | `blocking` | `doc_date`가 `YYYY-MM-DD`가 아니거나 존재하지 않는 날짜다 | `날짜 형식이 올바르지 않습니다: 2026-13-05` |
 | `INVALID_MONEY` | `blocking` | 수량·단가·금액을 원/개 단위 정수로 해석할 수 없다 | `금액 형식이 올바르지 않습니다: 사십삼만원` |
 | `LINE_TOTAL_MISMATCH` | `blocking` | 4개 산술 관계 중 하나라도 어긋난다 | `금액 합계가 일치하지 않습니다: 품목 2 금액 250,000 ≠ 수량×단가 240,000` |
@@ -70,7 +72,11 @@ span은 다음을 모두 만족해야 `verified`다.
 1. `1 <= page`
 2. `0 <= char_start < char_end <= len(raw_text)`
 3. `raw_text[char_start:char_end]`가 `evidence_excerpt`와 같다
-4. `evidence_excerpt`를 정규화(쉼표·`원`·`₩`·공백 제거)한 값이 추출값의 정규화 값과 같다
+4. 값이 해석된 경우, `evidence_excerpt`를 정규화(쉼표·`원`·`₩`·공백 제거)한 값이 추출값의 정규화 값과 같다
+
+4번은 해석에 성공한 필드에만 적용한다. `INVALID_MONEY`·`INVALID_DATE`처럼 값 해석이 실패한
+필드는 형식 규칙이 원인을 갖고, 근거 규칙은 span 일치(1~3)만 본다. 원인 하나가 두 규칙을
+동시에 만들지 않게 하기 위해서다.
 
 `char_start`가 없거나, 값이 파생(`derived`)이면 `verified`가 아니다. 값이 정답과 같아도
 근거가 없으면 `HOLD`다. 이것이 이 프로젝트의 핵심 주장이다.
@@ -79,7 +85,7 @@ span은 다음을 모두 만족해야 `verified`다.
 
 ```text
 1. 필드 존재       → MISSING_REQUIRED
-2. 형식            → INVALID_DATE, INVALID_MONEY
+2. 형식            → INVALID_DOC_NO, INVALID_DATE, INVALID_MONEY
 3. 산술            → LINE_TOTAL_MISMATCH
 4. 거래처          → UNKNOWN_VENDOR
 5. 중복            → DUPLICATE_DOCUMENT

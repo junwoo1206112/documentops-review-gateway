@@ -20,7 +20,8 @@
 | 구분 | 건수 | 기대 상태 | 기대 규칙 |
 |---|---|---|---|
 | 정상 | 16 | `PENDING_REVIEW` | 없음 |
-| 필수값 누락 | 5 | `HOLD` | `MISSING_REQUIRED` |
+| 필수값 누락 | 3 | `HOLD` | `MISSING_REQUIRED` |
+| 문서번호 형식 오류 | 2 | `HOLD` | `INVALID_DOC_NO` |
 | 날짜 형식 오류 | 2 | `HOLD` | `INVALID_DATE` |
 | 금액 형식 오류 | 1 | `HOLD` | `INVALID_MONEY` |
 | 금액 불일치 | 6 | `HOLD` | `LINE_TOTAL_MISMATCH` |

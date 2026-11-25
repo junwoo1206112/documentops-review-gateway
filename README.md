@@ -48,11 +48,14 @@
 | Phase | 내용 | 상태 |
 |---|---|---|
 | 0 | 계약 고정(상태·필드·규칙·평가 정의) | 완료 |
-| 1 | 합성 문서 36건 + 정답 manifest + SHA-256 | 예정 |
-| 2 | 추출·근거·규칙 검증 MVP | 예정 |
+| 1 | 합성 문서 36건 + 정답 manifest + SHA-256 | 완료 |
+| 2 | 추출·근거·규칙 검증 MVP | 완료 |
 | 3 | 검토 UI/API + 감사 이력 | 예정 |
 | 4 | 고정 평가 + 실패 사례 공개 | 예정 |
 | 5 | Docker·CI·README 마감 (OCR 제외) | 예정 |
+
+Phase 2 기준 확인된 사실: 평가셋 36건에서 8개 규칙 판정과 정답이 전부 일치하고,
+`HOLD` 19건 / `PENDING_REVIEW` 17건이 재현된다. 아직 DB·화면은 없다.
 
 ## 실행
 
@@ -63,6 +66,9 @@ python -m venv .venv
 pip install -e ".[dev]"
 
 pytest                            # 전체 테스트
+
+# DB 없이 문서 1건의 추출·검증 결과 보기
+python -m app.inspect fixtures/evaluation/DOC-0001.txt
 ```
 
 Phase 3 이후 추가되는 명령:

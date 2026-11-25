@@ -23,7 +23,8 @@ VENDOR_PATH = PROJECT_ROOT / "fixtures" / "vendors.json"
 
 CATEGORY_COUNTS = {
     "normal": 16,
-    "missing_required": 5,
+    "missing_required": 3,
+    "invalid_doc_no": 2,
     "invalid_date": 2,
     "invalid_money": 1,
     "line_total_mismatch": 6,

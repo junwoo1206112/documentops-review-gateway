@@ -1,52 +1,52 @@
 {
-  "dataset_version": "synth-2026-11-26.1",
+  "dataset_version": "synth-2026-11-26.2",
   "document_id": "DOC-0020",
   "evidence": {
     "doc_date": {
-      "char_end": 34,
-      "char_start": 24,
+      "char_end": 48,
+      "char_start": 38,
       "excerpt": "2026-06-29",
       "page": 1
     },
     "items[0].amount": {
-      "char_end": 106,
-      "char_start": 99,
+      "char_end": 120,
+      "char_start": 113,
       "excerpt": "187,500",
       "page": 1
     },
     "items[0].name": {
-      "char_end": 86,
-      "char_start": 80,
+      "char_end": 100,
+      "char_start": 94,
       "excerpt": "센서 하우징",
       "page": 1
     },
     "items[0].qty": {
-      "char_end": 90,
-      "char_start": 88,
+      "char_end": 104,
+      "char_start": 102,
       "excerpt": "30",
       "page": 1
     },
     "items[0].unit_price": {
-      "char_end": 97,
-      "char_start": 92,
+      "char_end": 111,
+      "char_start": 106,
       "excerpt": "6,250",
       "page": 1
     },
     "supply_amount": {
-      "char_end": 121,
-      "char_start": 114,
+      "char_end": 135,
+      "char_start": 128,
       "excerpt": "187,500",
       "page": 1
     },
     "total": {
-      "char_end": 145,
-      "char_start": 138,
+      "char_end": 159,
+      "char_start": 152,
       "excerpt": "206,250",
       "page": 1
     },
     "vat": {
-      "char_end": 133,
-      "char_start": 127,
+      "char_end": 147,
+      "char_start": 141,
       "excerpt": "18,750",
       "page": 1
     },
@@ -58,7 +58,7 @@
     }
   },
   "expected_rule_ids": [
-    "MISSING_REQUIRED"
+    "INVALID_DOC_NO"
   ],
   "expected_status": "HOLD",
   "fields": {
