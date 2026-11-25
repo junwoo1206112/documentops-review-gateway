@@ -4,7 +4,20 @@
 통과하는 모습을 한 번의 연속 녹화로 보여 준다. 이 문서는 다른 프로젝트용
 `PORTFOLIO_DEMO_AND_SITE_COPY.md`를 대체하지 않으며, 이 저장소의 R-002 전용 대본이다.
 
-## 촬영 전 준비
+## 자동 녹화(권장)
+
+Playwright와 Chromium이 있는 Python에서는 실제 로컬 UI를 조작해 1280×720 WebM을 자동 생성할 수 있다.
+이 도구는 임시 SQLite DB·로컬 uvicorn만 사용하고, `data/`의 기존 DB와 외부 서비스는 건드리지 않는다.
+
+```powershell
+C:\Users\junwo\AppData\Local\Programs\Python\Python312\python.exe `
+  tools\record_demo.py --output artifacts\documentops-demo.webm
+```
+
+생성본은 2026-11-26에 56.8초로 검증했다. 첫 장면의 합성·mock 고지, 정상·HOLD·중복·승인,
+422와 409 서버 차단 장면을 모두 포함한다. 공개 전에는 아래 체크리스트로 다시 검토한다.
+
+## 수동 촬영 전 준비
 
 PowerShell 두 창을 사용한다. 기존 개발 DB를 건드리지 않도록 전용 데모 DB를 쓴다.
 

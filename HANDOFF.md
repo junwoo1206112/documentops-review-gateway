@@ -2,7 +2,7 @@
 
 - 작성일: 2026-11-26
 - 대상: 다음 인수자(사람)와 다음 LLM 세션
-- 현재 브랜치 상태: `main`, Phase 0~9 완료; 원격 CI 최초 실행 확인·배지 반영 완료
+- 현재 브랜치 상태: `main`, Phase 0~10 완료; 데모 영상은 로컬 검수 완료, 공개 업로드 대기
 - 최신 커밋: `git log --oneline`으로 확인한다. 커밋 해시는 이동하므로 이 문서에 고정하지 않는다.
 
 이 문서 하나로 **무엇을 만들었고, 무엇이 검증됐고, 무엇이 남았고, 어떻게 이어서 하는지**를
@@ -22,7 +22,7 @@
 | 평가 | 36건 기준 문서 EM 36/36, HOLD 재현 19/19, 오보류 0/17, 규칙 일치 36/36, 근거 410/412 |
 | Docker | `docker compose up --build` → `healthy`, 데모 4건 처리, 컨테이너 내 평가 동일 |
 | 원격 CI | `main`의 첫 `ci` 성공. README 배지는 실제 실행으로 연결됨 |
-| 남은 일 | R-002(데모 영상), 이후 결정 대기 항목 → 6절 |
+| 남은 일 | R-002 공개 업로드·README URL, 이후 결정 대기 항목 → 6절 |
 
 3개 명령으로 상태를 확인할 수 있다.
 
@@ -70,6 +70,7 @@ python -m app.evaluate --dataset fixtures/evaluation
 | 7 | 평가 리포트 버전 유도, 접근성(랜드마크·skip link·표·알림), 인수 문서 정합화 | `feat(phase7): …` | 140 passed, 키보드 Tab 확인 |
 | 8 | DocumentOps 전용 데모 촬영 대본·격리 DB·서버 409 증거 준비 | `docs(phase8): …` | `docs/reference/DOCUMENTOPS_DEMO_RECORDING.md` |
 | 9 | GitHub 원격 `main` push, 첫 `ci` 성공, README 배지 | `docs(phase9): …` | [run #1](https://github.com/junwoo1206112/documentops-review-gateway/actions/runs/45697512065) |
+| 10 | 실제 UI 자동 녹화, 56.8초 영상·핵심 장면 검수 | `feat(phase10): …` | `artifacts/documentops-demo.webm` (git 미추적) |
 
 ### 기준선 수치 (재현 가능)
 
@@ -260,13 +261,14 @@ POST /api/documents/{id}/revalidate
 - 조치: README 상단에 `ci.yml`의 `main` 배지를 추가하고, 클릭 시 첫 성공 실행으로 연결했다.
 - 주의: `render.yaml`·공개 URL은 만들지 않았다. 배포 주장도 하지 않는다.
 
-### R-002 — 45~60초 데모 영상 (P0)
+### R-002 — 45~60초 데모 영상 (공개 업로드 대기)
 
 - 왜: 포트폴리오에서 가장 중요한 증거. README의 60초 시나리오가 그대로 스토리보드다.
 - 장면: ① 정상 업로드(근거 표시) ② 금액 불일치 HOLD ③ 중복 HOLD ④ 사유 있는 승인
   ⑤ 사유 없음 422 / HOLD 승인 409 ⑥ 감사 이력.
-- 수용 기준: 공개 URL(Release asset/YouTube 일부공개), 첫 자막 `합성 데이터·mock`,
-  한 번의 연속 녹화, README에 링크+촬영 날짜.
+- 완료: `artifacts/documentops-demo.webm`을 실제 UI로 자동 녹화했다(1280×720, 56.8초).
+  첫 고지, 정상·HOLD·중복·승인·422·409·감사 흐름을 프레임으로 검수했다.
+- 남은 수용 기준: 공개 URL(Release asset/YouTube 일부공개)과 촬영 날짜를 README에 기록한다.
 - 준비 완료: [DocumentOps 전용 촬영 가이드](docs/reference/DOCUMENTOPS_DEMO_RECORDING.md)에
   55초 대본·격리 DB 실행법·409 서버 차단 장면·공개 전 체크리스트를 기록했다.
 - 주의: `docs/reference/PORTFOLIO_DEMO_AND_SITE_COPY.md`는 **다른 두 프로젝트** 원고이며,
@@ -371,5 +373,5 @@ POST /api/documents/{id}/revalidate
 | `docs(phase9)` | 원격 CI 첫 성공 확인과 README 배지 |
 | `docs(handoff)` | 인수인계 문서와 `handoff.seed.yaml` |
 
-각 페이즈의 발견·수정 이유는 `docs/reviews/phase-0.md` ~ `phase-9.md`에 있다.
+각 페이즈의 발견·수정 이유는 `docs/reviews/phase-0.md` ~ `phase-10.md`에 있다.
 

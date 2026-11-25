@@ -138,9 +138,10 @@ docker compose exec -T gateway python -m app.evaluate --dataset fixtures/evaluat
 
 ## 데모 영상 촬영
 
-영상은 아직 공개하지 않았습니다. 실제 UI·API 차단 장면, 전용 격리 DB 실행법, 자막과 공개 전
-체크리스트는 [DocumentOps 데모 촬영 가이드](docs/reference/DOCUMENTOPS_DEMO_RECORDING.md)에
-고정했습니다. 촬영·검증 후에만 공개 URL과 날짜를 이곳에 추가합니다.
+56.8초 로컬 연속 녹화본(WebM)은 생성·검수했지만 아직 공개 업로드하지 않았습니다. 실제 UI·API
+차단 장면, 전용 격리 DB 실행법, 자막과 공개 전 체크리스트는
+[DocumentOps 데모 촬영 가이드](docs/reference/DOCUMENTOPS_DEMO_RECORDING.md)에 고정했습니다.
+공개 URL과 날짜는 업로드·확인 후에만 이곳에 추가합니다.
 
 ## API 요약
 

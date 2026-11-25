@@ -103,7 +103,10 @@ def test_artifacts_and_db_are_not_tracked_candidates() -> None:
 
 
 def test_phase_reviews_exist_for_every_phase() -> None:
-    reviews = sorted((PROJECT_ROOT / "docs" / "reviews").glob("phase-*.md"))
+    reviews = sorted(
+        (PROJECT_ROOT / "docs" / "reviews").glob("phase-*.md"),
+        key=lambda path: int(path.stem.removeprefix("phase-")),
+    )
     assert [path.name for path in reviews] == [
         "phase-0.md",
         "phase-1.md",
@@ -115,6 +118,7 @@ def test_phase_reviews_exist_for_every_phase() -> None:
         "phase-7.md",
         "phase-8.md",
         "phase-9.md",
+        "phase-10.md",
     ]
 
 
@@ -139,7 +143,7 @@ def test_handoff_seed_is_valid_and_tracks_state() -> None:
 
     data = yaml.safe_load(read("handoff.seed.yaml"))
     assert data["schema"] == "handoff-seed-1"
-    assert data["status"] == "phase-9-complete-demo-pending"
+    assert data["status"] == "phase-10-demo-recorded-publish-pending"
     assert data["versions"]["dataset"] == "synth-2026-11-26.2"
     assert data["verified"]["tests_passed"] >= 140
     assert data["verified"]["tests_collected_after_phase_6"] == 133
