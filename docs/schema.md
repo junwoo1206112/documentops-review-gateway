@@ -108,7 +108,7 @@
 | 테이블 | 핵심 컬럼 | 규칙 |
 |---|---|---|
 | `documents` | `id`, `sha256`, `filename`, `raw_text`, `size_bytes`, `source_kind`, `status`, `extractor_version`, `ruleset_version`, `duplicate_of`, `received_at` | `raw_text`는 수정하지 않는다 |
-| `extracted_fields` | `document_id`, `path`, `value_text`, `value_int`, `page`, `char_start`, `char_end`, `evidence_excerpt`, `evidence_status`, `confidence` | `path`는 `vendor`, `items[0].qty` 형식 |
+| `extracted_fields` | `document_id`, `path`, `value_text`, `value_json`, `page`, `char_start`, `char_end`, `evidence_excerpt`, `evidence_status`, `confidence` | `path`는 `vendor`, `items[0].qty` 형식. 정규화 값은 JSON으로 타입 보존 |
 | `validation_issues` | `document_id`, `rule_id`, `severity`, `path`, `message`, `status`, `created_at` | `status`는 `open`/`resolved` |
 | `review_decisions` | `document_id`, `decision`, `reviewer_alias`, `reason`, `from_status`, `to_status`, `created_at` | 수정·삭제 API 없음 |
 | `audit_events` | `event_id`, `document_id`, `event_type`, `from_status`, `to_status`, `actor`, `metadata_json`, `created_at` | **append-only**. UPDATE/DELETE는 DB 트리거가 차단 |
@@ -137,18 +137,29 @@
 | GET | `/api/documents/{id}/audit` | 200 `{items}` | 404 |
 | GET | `/api/evaluation/latest` | 200 최신 평가 리포트 | 404 리포트 없음 |
 
+### 화면 경로
+
+| Method | Path | 동작 |
+|---|---|---|
+| GET | `/` | 문서 목록, 상태 필터, 업로드 폼 |
+| POST | `/upload` | 업로드 후 상세로 303 리다이렉트, 오류는 같은 화면에 표시 |
+| GET | `/documents/{id}` | 원문·필드·이슈·판정·감사 이력 |
+| POST | `/documents/{id}/decision` | 폼 판정(별칭·사유), 성공 시 303, 위반 시 해당 코드와 함께 상세 재렌더 |
+| POST | `/documents/{id}/revalidate` | 재검증, 성공 시 303 |
+| GET | `/evaluation` | 최신 평가 리포트 또는 실행 안내 |
+
 ### 문서 상세 응답
 
 ```json
 {
   "document": {
     "id": "…", "filename": "DOC-0001.txt", "sha256": "…", "size_bytes": 512,
-    "source_kind": "text", "status": "HOLD", "duplicate_of": null,
+    "source_kind": "text", "status": "HOLD", "doc_no": "TX-2026-0001", "duplicate_of": null,
     "extractor_version": "deterministic-1.0.0", "ruleset_version": "rules-1.0.0",
     "received_at": "2026-11-26T00:00:00+00:00"
   },
   "fields": [
-    {"path": "vendor", "label": "거래처", "value": "가온상사", "value_int": null,
+    {"path": "vendor", "label": "거래처", "value": "가온상사", "value_text": "가온상사",
      "page": 1, "char_start": 12, "char_end": 16,
      "evidence_excerpt": "가온상사", "evidence_status": "verified", "confidence": 1.0}
   ],

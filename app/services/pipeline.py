@@ -15,7 +15,12 @@ from app.errors import UnprocessableError
 from app.services.evidence import apply_evidence
 from app.services.extraction.base import ExtractedField, ExtractionResult, Item
 from app.services.extraction.deterministic import DocumentFormatError, parse_document
-from app.services.validation import ValidationIssue, status_for_issues, validate
+from app.services.validation import (
+    ValidationIssue,
+    find_duplicate,
+    status_for_issues,
+    validate,
+)
 from app.services.vendors import VendorRegistry
 
 
@@ -26,6 +31,7 @@ class ProcessedDocument:
     issues: tuple[ValidationIssue, ...]
     status: str
     elapsed_ms: float
+    duplicate_of: str | None = None
 
     def by_path(self) -> dict[str, ExtractedField]:
         return {field.path: field for field in self.fields}
@@ -54,10 +60,14 @@ def process_document(
         existing=existing,
         sha256=sha256,
     )
+    doc_no_field = extraction.by_path().get("doc_no")
+    doc_no = doc_no_field.value if doc_no_field and isinstance(doc_no_field.value, str) else None
+    duplicate = find_duplicate(existing, doc_no=doc_no, sha256=sha256)
     return ProcessedDocument(
         fields=extraction.fields,
         items=extraction.items,
         issues=issues,
         status=status_for_issues(issues),
         elapsed_ms=(perf_counter() - started) * 1000.0,
+        duplicate_of=duplicate[0].document_id if duplicate else None,
     )

@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block title %}{{ document.filename }} · DocumentOps{% endblock %}
+
+{% block content %}
+<section class="doc-head">
+  <div>
+    <p class="eyebrow">
+      <a href="/">문서 목록</a> / <span class="mono">{{ document.id }}</span>
+    </p>
+    <h1>{{ document.filename }}</h1>
+    <p class="meta">
+      <span class="badge status-{{ document.status }}">{{ status_labels[document.status] }}</span>
+      <span class="mono">SHA-256 {{ document.sha256[:16] }}…</span>
+      <span>{{ document.size_bytes }} bytes</span>
+      <span>{{ document.received_at }}</span>
+      <span>{{ document.ruleset_version }} / {{ document.extractor_version }}</span>
+    </p>
+    {% if document.duplicate_of %}
+    <p class="alert warn">중복 원본: <span class="mono">{{ document.duplicate_of }}</span></p>
+    {% endif %}
+  </div>
+  {% if can_revalidate %}
+  <form action="/documents/{{ document.id }}/revalidate" method="post">
+    <button type="submit" class="ghost">규칙 재검증</button>
+  </form>
+  {% endif %}
+</section>
+
+{% if form_error %}<p class="alert error">{{ form_error }}</p>{% endif %}
+
+<section class="panel">
+  <h2>검증 이슈 <span class="count">{{ issues|length }}</span></h2>
+  {% if issues %}
+  <ul class="issues">
+    {% for issue in issues %}
+    <li class="issue">
+      <div class="issue-head">
+        <span class="rule mono">{{ issue.rule_id }}</span>
+        <span class="path mono">{{ issue.path }}</span>
+        <span class="badge severity-{{ issue.severity }}">{{ issue.severity }}</span>
+      </div>
+      <p>{{ issue.message }}</p>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="ok">blocking 이슈가 없습니다. 사람 판정을 기다립니다.</p>
+  {% endif %}
+</section>
+
+<section class="split">
+  <div class="panel">
+    <h2>원문 <span class="hint">노란 표시 = 검증된 근거 span</span></h2>
+    <pre class="raw">{{ raw_highlighted }}</pre>
+  </div>
+
+  <div class="panel">
+    <h2>추출 필드</h2>
+    <table class="fields">
+      <thead>
+        <tr>
+          <th>필드</th>
+          <th>값</th>
+          <th>근거</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for field in fields %}
+        <tr>
+          <td>{{ field.label }}<span class="path mono">{{ field.path }}</span></td>
+          <td>{{ field.display if field.display is not none else "—" }}</td>
+          <td>
+            <span class="evidence evidence-{{ field.evidence_status }}">
+              {{ evidence_labels[field.evidence_status] }}
+            </span>
+            {% if field.char_start is not none %}
+            <span class="mono span">{{ field.page }}:{{ field.char_start }}-{{ field.char_end }}</span>
+            {% endif %}
+            {% if field.evidence_excerpt %}
+            <code class="excerpt">{{ field.evidence_excerpt }}</code>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+{% if items %}
+<section class="panel">
+  <h2>품목</h2>
+  <table class="items">
+    <thead>
+      <tr><th>#</th><th>품목명</th><th class="num">수량</th><th class="num">단가</th><th class="num">금액</th></tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+      <tr>
+        <td>{{ item.ordinal + 1 }}</td>
+        <td>{{ item.name }}</td>
+        <td class="num">{{ item.qty }}</td>
+        <td class="num">{{ item.unit_price|money }}</td>
+        <td class="num">{{ item.amount|money }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endif %}
+
+<section class="panel">
+  <h2>사람 판정</h2>
+  {% if not can_decide %}
+  <p class="hint">종료 상태입니다. 추가 판정은 허용되지 않습니다.</p>
+  {% else %}
+  <p class="hint">
+    승인은 <strong>검토 대기</strong> 문서에만 가능합니다. 보류 문서는 재검증으로 검토 대기 상태를
+    거친 뒤 승인할 수 있습니다(409).
+  </p>
+  <form class="decision" action="/documents/{{ document.id }}/decision" method="post">
+    <label>검토자 별칭
+      <input type="text" name="reviewer_alias" maxlength="40" required placeholder="reviewer-a" />
+    </label>
+    <label>사유
+      <textarea name="reason" maxlength="500" rows="2" required
+        placeholder="원문 대조 완료: 수량·단가·총액 확인"></textarea>
+    </label>
+    <div class="actions">
+      <button type="submit" name="decision" value="APPROVE"
+        {% if document.status != "PENDING_REVIEW" %}disabled{% endif %}>승인</button>
+      <button type="submit" name="decision" value="REJECT" class="danger">반려</button>
+    </div>
+  </form>
+  {% endif %}
+</section>
+
+{% if decisions %}
+<section class="panel">
+  <h2>판정 이력</h2>
+  <ul class="timeline">
+    {% for decision in decisions %}
+    <li>
+      <strong>{{ decision.decision }}</strong>
+      <span class="mono">{{ decision.from_status }} → {{ decision.to_status }}</span>
+      <span>{{ decision.reviewer_alias }}</span>
+      <span class="muted">{{ decision.created_at }}</span>
+      <p>{{ decision.reason }}</p>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+<section class="panel">
+  <h2>감사 이력 <span class="hint">append-only</span></h2>
+  <table class="audit">
+    <thead>
+      <tr><th>#</th><th>이벤트</th><th>상태 전이</th><th>행위자</th><th>시각</th></tr>
+    </thead>
+    <tbody>
+      {% for event in detail.audit %}
+      <tr>
+        <td>{{ event.event_id }}</td>
+        <td>
+          {{ event_labels.get(event.event_type, event.event_type) }}
+          <span class="path mono">{{ event.event_type }}</span>
+        </td>
+        <td class="mono">{{ event.from_status or "—" }} → {{ event.to_status or "—" }}</td>
+        <td>{{ event.actor }}</td>
+        <td class="muted">{{ event.created_at }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

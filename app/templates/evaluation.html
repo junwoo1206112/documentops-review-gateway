@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}평가 · DocumentOps{% endblock %}
+
+{% block content %}
+<section class="hero compact">
+  <div>
+    <p class="eyebrow">고정 데이터셋 평가</p>
+    <h1>정확도 하나로 말하지 않습니다.</h1>
+    <p class="lede">
+      필드 정확도, HOLD 재현율, 오보류율, 근거 유효율을 분모와 함께 봅니다.
+      데이터셋·규칙·추출기 버전이 리포트에 함께 기록됩니다.
+    </p>
+  </div>
+</section>
+
+{% if error %}<p class="alert error">{{ error }}</p>{% endif %}
+
+{% if not report %}
+<section class="panel">
+  <h2>아직 리포트가 없습니다</h2>
+  <p>다음 명령으로 고정 데이터셋을 평가하세요.</p>
+  <pre class="cmd">python -m app.evaluate --dataset fixtures/evaluation</pre>
+  <p class="hint">리포트 경로: <span class="mono">{{ path }}</span></p>
+</section>
+{% else %}
+
+<section class="meta-grid">
+  <div><span>dataset</span><strong class="mono">{{ report.dataset_version }}</strong></div>
+  <div><span>ruleset</span><strong class="mono">{{ report.ruleset_version }}</strong></div>
+  <div><span>extractor</span><strong class="mono">{{ report.extractor_version }}</strong></div>
+  <div><span>documents</span><strong>{{ report.documents }}</strong></div>
+</section>
+
+<section class="panel">
+  <h2>지표</h2>
+  <table class="metrics">
+    <thead><tr><th>지표</th><th class="num">matched / total</th><th class="num">값</th></tr></thead>
+    <tbody>
+      {% for name, metric in report.metrics.items() %}
+      <tr>
+        <td class="mono">{{ name }}</td>
+        {% if metric is mapping %}
+        <td class="num">{{ metric.matched }} / {{ metric.total }}</td>
+        <td class="num">{{ "%.3f"|format(metric.value) }}</td>
+        {% else %}
+        <td class="num">—</td>
+        <td class="num">{{ "%.3f"|format(metric) }}</td>
+        {% endif %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p class="hint">
+    처리 시간: p50 {{ report.measurement.p50_ms }} ms · p95 {{ report.measurement.p95_ms }} ms
+    ({{ report.measurement.runs }}건, 환경 의존)
+  </p>
+</section>
+
+{% if report.failures %}
+<section class="panel">
+  <h2>공개 실패 사례 <span class="count">{{ report.failures|length }}</span></h2>
+  {% for failure in report.failures %}
+  <article class="failure">
+    <h3 class="mono">{{ failure.document_id }}</h3>
+    <p><strong>입력</strong> {{ failure.expected_status }} / {{ failure.expected_rule_ids|join(", ") or "규칙 없음" }}</p>
+    <p><strong>실제</strong> {{ failure.actual_status }} / {{ failure.actual_rule_ids|join(", ") or "규칙 없음" }}</p>
+    <p><strong>왜</strong> {{ failure.why }}</p>
+    <p><strong>다음</strong> {{ failure.next }}</p>
+  </article>
+  {% endfor %}
+</section>
+{% endif %}
+
+<section class="panel">
+  <h2>한계</h2>
+  <ul class="limitations">
+    {% for item in report.limitations %}<li>{{ item }}</li>{% endfor %}
+  </ul>
+</section>
+{% endif %}
+{% endblock %}

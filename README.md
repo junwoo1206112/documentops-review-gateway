@@ -50,12 +50,13 @@
 | 0 | 계약 고정(상태·필드·규칙·평가 정의) | 완료 |
 | 1 | 합성 문서 36건 + 정답 manifest + SHA-256 | 완료 |
 | 2 | 추출·근거·규칙 검증 MVP | 완료 |
-| 3 | 검토 UI/API + 감사 이력 | 예정 |
+| 3 | 검토 UI/API + 감사 이력 | 완료 |
 | 4 | 고정 평가 + 실패 사례 공개 | 예정 |
 | 5 | Docker·CI·README 마감 (OCR 제외) | 예정 |
 
-Phase 2 기준 확인된 사실: 평가셋 36건에서 8개 규칙 판정과 정답이 전부 일치하고,
-`HOLD` 19건 / `PENDING_REVIEW` 17건이 재현된다. 아직 DB·화면은 없다.
+Phase 3 기준 확인된 사실: 업로드 → 추출 → 규칙 → `HOLD`/`PENDING_REVIEW` → 사람 승인·반려 →
+감사 이력이 API와 화면에서 재현된다. 승인 사유 누락은 422, `HOLD` 직접 승인은 409,
+감사 이벤트 UPDATE/DELETE는 SQLite 트리거가 차단한다. 평가 리포트는 아직 없다.
 
 ## 실행
 
@@ -74,7 +75,8 @@ python -m app.inspect fixtures/evaluation/DOC-0001.txt
 Phase 3 이후 추가되는 명령:
 
 ```bash
-uvicorn app.main:app --reload     # http://127.0.0.1:8000
+uvicorn app.asgi:app --reload         # http://127.0.0.1:8000
+python scripts/seed_demo.py           # 데모 4건을 순서대로 접수
 python -m app.evaluate --dataset fixtures/evaluation
 docker compose up --build
 ```

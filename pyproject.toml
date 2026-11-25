@@ -45,3 +45,7 @@ exclude = [".venv", "artifacts", "data"]
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM"]
 ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+# FastAPI의 File(...)/Query(...)는 프레임워크 표준 패턴이다.
+"app/api/*.py" = ["B008"]

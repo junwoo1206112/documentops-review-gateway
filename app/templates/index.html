@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero">
+  <div>
+    <p class="eyebrow">근거 기반 검토 게이트</p>
+    <h1>근거가 없으면 승인되지 않습니다.</h1>
+    <p class="lede">
+      합성 한국어 거래 문서를 구조화하고, 필드마다 원문 위치를 붙인 뒤, 규칙 위반은
+      <strong>HOLD(보류)</strong>로 멈춥니다. 승인·반려는 사유를 남긴 사람만 할 수 있습니다.
+    </p>
+  </div>
+  <form class="upload" action="/upload" method="post" enctype="multipart/form-data">
+    <label for="file">문서 업로드</label>
+    <input id="file" type="file" name="file" accept=".txt" required />
+    <button type="submit">업로드하고 검증</button>
+    <span class="hint">UTF-8 · .txt · 512 KiB 이하</span>
+  </form>
+</section>
+
+{% if error %}<p class="alert error">{{ error }}</p>{% endif %}
+
+<section class="filters">
+  <a class="chip {{ 'active' if not selected }}" href="/">전체 {{ total }}</a>
+  {% for status, label in status_labels.items() %}
+  <a class="chip {{ 'active' if selected == status }}" href="/?status={{ status }}">
+    {{ label }} {{ counts.get(status, 0) }}
+  </a>
+  {% endfor %}
+</section>
+
+<section class="panel">
+  <table class="documents">
+    <thead>
+      <tr>
+        <th>파일</th>
+        <th>거래처</th>
+        <th>문서번호</th>
+        <th class="num">총액</th>
+        <th>상태</th>
+        <th class="num">blocking</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+      <tr>
+        <td><a href="/documents/{{ item.id }}">{{ item.filename }}</a></td>
+        <td>{{ item.vendor or "—" }}</td>
+        <td class="mono">{{ item.doc_no or "—" }}</td>
+        <td class="num">{{ item.total or "—" }}</td>
+        <td><span class="badge status-{{ item.status }}">{{ status_labels[item.status] }}</span></td>
+        <td class="num">{{ item.blocking_count }}</td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="6" class="empty">
+          아직 문서가 없습니다. <code>fixtures/demo/DEMO-0001.txt</code>부터 업로드해 보세요.
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="note">
+  <h2>이 화면에서 확인할 것</h2>
+  <ol>
+    <li>정상 문서는 필드 6개와 품목, 각 필드의 원문 근거와 함께 <strong>검토 대기</strong>가 됩니다.</li>
+    <li>금액이 어긋난 문서는 <code>LINE_TOTAL_MISMATCH</code>와 함께 <strong>보류</strong>됩니다.</li>
+    <li>같은 문서번호를 다시 올리면 <code>DUPLICATE_DOCUMENT</code>로 보류됩니다.</li>
+    <li>사유 없이 승인하면 422, 보류 문서를 바로 승인하면 409입니다.</li>
+  </ol>
+</section>
+{% endblock %}
