@@ -38,7 +38,7 @@
         <th>문서번호</th>
         <th class="num">총액</th>
         <th>상태</th>
-        <th class="num">blocking</th>
+        <th class="num col-blocking">blocking</th>
       </tr>
     </thead>
     <tbody>
@@ -49,7 +49,7 @@
         <td class="mono">{{ item.doc_no or "—" }}</td>
         <td class="num">{{ item.total or "—" }}</td>
         <td><span class="badge status-{{ item.status }}">{{ status_labels[item.status] }}</span></td>
-        <td class="num">{{ item.blocking_count }}</td>
+        <td class="num col-blocking">{{ item.blocking_count }}</td>
       </tr>
       {% else %}
       <tr>

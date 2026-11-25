@@ -3,58 +3,49 @@
 > 합성 한국어 업무 문서를 **원문 근거 → 규칙 검증 → 사람 승인 → 감사 이력 → 공개 평가** 흐름으로
 > 안전하게 처리하는 포트폴리오 프로젝트입니다.
 
-이 프로젝트가 증명하려는 역량은 "AI가 답을 낸다"가 아니라,
+증명하려는 역량은 "AI가 답을 낸다"가 아니라,
 **AI 산출물을 실제 업무에 투입하기 전에 검증·보류·승인·추적하는 방법**입니다.
+
+**상태: Phase 0~5 완료** (계약 → 데이터 → 추출·검증 → 검토 UI/감사 → 평가 → Docker/CI).
+OCR·LLM 어댑터·인증은 의도적으로 보류했고, [보류 결정](docs/decisions/pending.md)에 근거를 남겼습니다.
+
+![문서 목록 화면](docs/images/documents.png)
 
 ## 핵심 계약 (바뀌지 않는 3가지)
 
 1. **근거 없는 값은 승인될 수 없다.** 모든 추출 필드는 `page / char_start / char_end / evidence_excerpt`를 가진다.
 2. **blocking 검증 오류가 1건이라도 있으면 `HOLD`다.** 자동 승인 경로는 존재하지 않는다.
-3. **승인·반려는 사람만, 사유와 검토자 별칭을 필수로 남긴다.** 모든 상태 변경은 append-only 감사 이력에 기록된다.
+3. **승인·반려는 사람만, 사유와 검토자 별칭을 필수로 남긴다.** 모든 상태 변경은 append-only 감사에 기록된다.
 
-## 60초 데모 시나리오 (Phase 3에서 화면으로 확인)
+## 60초 데모
 
-1. 정상 문서 업로드 → 필드 6개와 각 원문 span이 나란히 보인다. 상태 `PENDING_REVIEW`.
-2. 금액이 어긋난 문서 업로드 → `LINE_TOTAL_MISMATCH` 1건, 상태 `HOLD`. 승인 버튼이 비활성.
-3. 같은 문서 재업로드 → `DUPLICATE_DOCUMENT`로 `HOLD`.
-4. 정상 문서에 별칭+사유를 입력해 승인 → `APPROVED` + 감사 이벤트 3건.
-5. 사유 없이 승인 시도 → 422. `HOLD` 문서 직접 승인 시도 → 409.
+| # | 행동 | 확인할 결과 |
+|---|---|---|
+| 1 | `DEMO-0001.txt` 업로드 | 필드 6개 + 품목 2행, 각 값의 원문 span. 상태 `PENDING_REVIEW` |
+| 2 | `DEMO-0002.txt` 업로드 | `LINE_TOTAL_MISMATCH` 1건, 상태 `HOLD`. 승인 버튼 비활성 |
+| 3 | `DEMO-0003.txt` → `DEMO-0004.txt` | 둘째 문서가 `DUPLICATE_DOCUMENT`로 `HOLD`, `duplicate_of` 표시 |
+| 4 | 정상 문서에 별칭+사유 입력 후 승인 | 상태 `APPROVED`, 감사 이벤트 3건(접수·검증·판정) |
+| 5 | 사유 없이 승인 / `HOLD` 직접 승인 | 각각 422 / 409 |
 
-용어: **HOLD(보류)** = blocking 검증 오류가 있어 사람이 먼저 확인해야 하는 상태.
-`APPROVED`/`REJECTED`는 사람이 판정한 종료 상태다.
-
-## 아키텍처
-
-```text
-합성 .txt 문서 업로드
-  → Ingestion        파일 SHA-256, UTF-8 검증, 크기 제한
-  → Extraction       결정론적 파서 (기본) / LLM 어댑터 (선택, 미구현)
-  → Evidence Mapper  필드별 원문 span·발췌문 검증
-  → Validation       7개 명시 규칙 → blocking issue
-  → Review Queue     HOLD 또는 PENDING_REVIEW
-  → 사람 판정         승인 / 반려 + 별칭 + 사유
-  → Audit + Eval     append-only 이력, 고정 데이터셋 평가 리포트
+```bash
+python scripts/seed_demo.py     # 4건을 위 순서대로 접수 (서버 실행 중일 때)
 ```
 
-## 데이터·범위 정책
+### 원문 근거와 보류 사유
 
-- 실제 고객 문서, 주민번호·계좌·연락처 등 개인정보를 **사용하지 않는다.** 모든 문서·거래처·번호는 생성기가 만든 합성값이다.
-- 외부 LLM API 키 없이, 네트워크 없이 전체 테스트와 평가가 재현되어야 한다.
-- 외부 전송·결제·ERP 쓰기·자동 승인은 비목표다.
-- OCR은 MVP 범위가 아니다. [ADR 0001](docs/adr/0001-text-first.md)과 [보류 결정](docs/decisions/pending.md)을 참고한다.
+![HOLD 문서 상세](docs/images/detail-hold.png)
 
-## 현재 상태
+- 왼쪽: 업로드 원문. 검증된 span만 노란색으로 표시한다.
+- 오른쪽: 필드별 정규화 값·근거 상태(`원문 확인`/`파생값`/`근거 없음`)·span 좌표·발췌문.
+- 아래: blocking 이슈, 품목, 사람 판정 폼, append-only 감사 이력.
 
-| Phase | 내용 | 상태 |
-|---|---|---|
-| 0 | 계약 고정(상태·필드·규칙·평가 정의) | 완료 |
-| 1 | 합성 문서 36건 + 정답 manifest + SHA-256 | 완료 |
-| 2 | 추출·근거·규칙 검증 MVP | 완료 |
-| 3 | 검토 UI/API + 감사 이력 | 완료 |
-| 4 | 고정 평가 + 실패 사례 공개 | 완료 |
-| 5 | Docker·CI·README 마감 (OCR 제외) | 예정 |
+### 공개 평가
 
-### 측정된 기준선 (`synth-2026-11-26.2`, 36건)
+![평가 화면](docs/images/evaluation.png)
+
+## 측정된 기준선
+
+`fixtures/evaluation` 36건, `dataset_version=synth-2026-11-26.2` 기준입니다.
 
 | 지표 | 값 | 분모 |
 |---|---|---|
@@ -63,46 +54,132 @@
 | 오보류율 | 0 / 17 | 검토 대기 17건 |
 | 규칙 일치 | 36 / 36 | 36건 |
 | 근거 유효율 | 410 / 412 | 해석된 필드 412개 |
-| 규칙 회귀 | 0건 | - |
+| 규칙 회귀 | 0건 | — |
 
 - 필드 EM은 10개 필드 모두 1.000이다(품목 셀 포함 51/51).
-- 근거 유효율 2건 부족은 **의도된 파생 총액**이다. 값은 맞지만 원문 span이 없어 `HOLD`다.
-- p50/p95는 환경 의존이라 README 수치로 주장하지 않는다. `artifacts/evaluation_report.json`에만 기록한다.
-- 공개 사례 3건과 한계는 `/evaluation` 화면과 [docs/evaluation.md](docs/evaluation.md)에 있다.
+- 근거 유효율의 부족 2건은 **의도된 파생 총액**이다. 값은 맞지만 원문 span이 없어 `HOLD`다.
+- p50/p95는 환경 의존이므로 README의 성과 수치로 쓰지 않는다. `artifacts/evaluation_report.json`에만 남긴다.
+- 자동 승인되지 않은 대표 사례 3건과 한계 7개를 `/evaluation`과 [docs/evaluation.md](docs/evaluation.md)에 공개한다.
+
+## 아키텍처
+
+```text
+합성 .txt 문서 업로드
+  → Ingestion        파일 SHA-256, UTF-8 검증, 크기 제한
+  → Extraction       결정론적 파서 (LLM 어댑터는 같은 인터페이스 뒤, 미구현)
+  → Evidence Mapper  필드별 원문 span 검증 (verified / derived / missing)
+  → Validation       8개 명시 규칙 → blocking issue
+  → Review Queue     HOLD 또는 PENDING_REVIEW
+  → 사람 판정         승인 / 반려 + 별칭 + 사유
+  → Audit + Eval     SQLite append-only, 고정 데이터셋 리포트
+```
+
+| 구성 요소 | 책임 | 금지 사항 |
+|---|---|---|
+| `app/services/ingestion.py` | 해시·인코딩·크기 검증 | 원문 수정 |
+| `app/services/extraction/` | 스키마 후보 값과 span | 상태 변경 |
+| `app/services/validation.py` | 명시 규칙으로 HOLD 사유 생성 | 모델 판단을 규칙처럼 위장 |
+| `app/services/review.py` | 사람 판정·재검증·감사 기록 | 자동 승인 |
+| `app/evaluate.py` | 고정 데이터셋 지표 | 운영 데이터 혼합 |
 
 ## 실행
 
 ```bash
 python -m venv .venv
-.venv\Scripts\activate            # Windows
-# source .venv/bin/activate       # Linux/macOS
+.venv\Scripts\activate              # Windows
+# source .venv/bin/activate         # Linux/macOS
 pip install -e ".[dev]"
 
-pytest                            # 전체 테스트
-
-# DB 없이 문서 1건의 추출·검증 결과 보기
+python -m pytest -q                 # 130 passed (2026-11-26, Python 3.12.10)
+python tools/generate_dataset.py --check
 python -m app.inspect fixtures/evaluation/DOC-0001.txt
+
+uvicorn app.asgi:app --reload       # http://127.0.0.1:8000
+python scripts/seed_demo.py
+python -m app.evaluate --dataset fixtures/evaluation
 ```
 
-Phase 3 이후 추가되는 명령:
+### Docker
+
+Docker Desktop(또는 Docker Engine)이 실행 중이어야 합니다.
 
 ```bash
-uvicorn app.asgi:app --reload         # http://127.0.0.1:8000
-python scripts/seed_demo.py           # 데모 4건을 순서대로 접수
-python -m app.evaluate --dataset fixtures/evaluation
 docker compose up --build
+# http://127.0.0.1:8000  (health: healthy)
+docker compose exec -T gateway python -m app.evaluate --dataset fixtures/evaluation
 ```
+
+확인한 사실(2026-11-26): 이미지 207MB, 비루트 사용자(uid 10001), 헬스체크 `healthy`,
+데모 4건 처리, 컨테이너 내 평가에서 위 기준선과 동일한 지표. SQLite는 named volume에 유지된다.
+
+### CI
+
+`.github/workflows/ci.yml`이 다음을 실행하도록 정의되어 있습니다.
+
+1. `pip install -e ".[dev]"`
+2. `ruff format --check .`
+3. `ruff check .`
+4. `python tools/generate_dataset.py --check`
+5. `python -m pytest -q`
+6. `python -m app.evaluate …` 후 리포트 artifact 업로드
+
+**아직 원격 GitHub Actions에서 실행한 적이 없어 배지를 붙이지 않았습니다.** 첫 push 후
+`ci` 워크플로가 성공하면 그때 배지를 추가합니다.
+
+## API 요약
+
+| Method | Path | 설명 |
+|---|---|---|
+| GET | `/api/health` | 상태·버전 |
+| GET | `/api/meta` | 버전, 필드·규칙 카탈로그 |
+| POST | `/api/documents` | 업로드(`multipart/form-data`, `file`) → 201 |
+| GET | `/api/documents` | 목록(`status`, `limit`, `offset`) |
+| GET | `/api/documents/{id}` | 필드·이슈·판정·감사·원문 |
+| POST | `/api/documents/{id}/revalidate` | 규칙 재검증 |
+| POST | `/api/documents/{id}/decision` | `{decision, reviewer_alias, reason}` |
+| GET | `/api/documents/{id}/audit` | append-only 감사 이력 |
+| GET | `/api/evaluation/latest` | 최신 평가 리포트 |
+
+오류 본문은 항상 `{"error": {"code", "message", "details?"}}` 형식입니다.
+OpenAPI는 `/api/openapi.json`에서 확인할 수 있습니다.
+
+## 검증 규칙 (8개, 모두 blocking)
+
+`MISSING_REQUIRED`, `INVALID_DOC_NO`, `INVALID_DATE`, `INVALID_MONEY`,
+`LINE_TOTAL_MISMATCH`, `DUPLICATE_DOCUMENT`, `UNKNOWN_VENDOR`, `MISSING_EVIDENCE`
+
+- 상위 원인이 있으면 하위 검사를 건너뛴다(연쇄 억제). 예: `INVALID_MONEY`인 공급가액은
+  합계 검사에 쓰지 않는다.
+- 상태 전이: `INGESTED → PENDING_REVIEW | HOLD`, `HOLD → PENDING_REVIEW | REJECTED`,
+  `PENDING_REVIEW → APPROVED | REJECTED | HOLD`. **`HOLD → APPROVED`는 금지**다.
+- 상세 계약: [docs/rules.md](docs/rules.md), [docs/schema.md](docs/schema.md)
+
+## 데이터·범위 정책
+
+- 실제 고객 문서, 주민번호·계좌·연락처 등 개인정보를 **사용하지 않는다.** 모든 값은 생성기가 만든 합성값이다.
+- 외부 LLM API 키 없이, 네트워크 없이 테스트와 평가가 재현된다.
+- **비목표**: 실제 업무 실행(메일·결제·ERP), 자동 승인, 로그인·권한·멀티테넌시,
+  실제 OCR 정확도 주장, PDF 레이아웃 일반화.
+- OCR은 MVP 범위가 아니다. [ADR 0001](docs/adr/0001-text-first.md)과
+  [보류 결정 P-001](docs/decisions/pending.md)을 참고한다.
+
+## 알려진 한계
+
+- 합성 문서 36건·레이아웃 1종이다. 헤더 순서나 표 형태가 다르면 추측하지 않고 422로 끝낸다.
+- 중복 판정은 접수 순서에 의존한다. 반려 후 재검증으로 상태가 바뀔 수 있다.
+- `reviewer_alias`는 인증 수단이 아니다. 승인은 "누가"가 아니라 "어떤 별칭이 어떤 사유로"만 남긴다.
+- SQLite 단일 파일·단일 프로세스 전제다. 다중 인스턴스는 [ADR 0002](docs/adr/0002-stack.md)에서 제외했다.
 
 ## 문서
 
 | 문서 | 내용 |
 |---|---|
 | [docs/schema.md](docs/schema.md) | 입력 형식, 필드, 상태 전이, DB/API 계약 |
-| [docs/rules.md](docs/rules.md) | 7개 검증 규칙, 심각도, 연쇄 억제 정책 |
+| [docs/rules.md](docs/rules.md) | 8개 규칙, 심각도, 연쇄 억제 |
 | [docs/evaluation.md](docs/evaluation.md) | 데이터셋 분리, 지표 정의·분모, 리포트 스키마 |
-| [docs/security.md](docs/security.md) | 데이터 정책, 위협 모델, 제한 |
-| [docs/decisions/pending.md](docs/decisions/pending.md) | 의도적으로 보류한 결정 |
-| [docs/reviews/](docs/reviews/) | Phase별 전문가 A·B·C 교차 검증 기록 |
+| [docs/security.md](docs/security.md) | 데이터 정책, 위협 모델, 배포 검증 |
+| [docs/decisions/pending.md](docs/decisions/pending.md) | 의도적으로 보류한 결정 6건 |
+| [docs/reviews/](docs/reviews/) | Phase 0~5 전문가 A·B·C 교차 검증 기록 |
 | [docs/reference/](docs/reference/) | 인수인계 원본 계획·실행 로그·데모 원고 |
 
 ## 인수인계 원본

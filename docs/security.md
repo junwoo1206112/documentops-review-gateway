@@ -14,7 +14,7 @@
 |---|---|
 | 악성 파일 업로드 | `.txt`만 허용, UTF-8 디코딩 실패 시 415, 크기 제한(Content-Length + 스트림 카운트) |
 | 저장형 XSS | Jinja2 자동 이스케이프, 원문을 HTML로 렌더링하지 않음, CSP `script-src 'self'` |
-| 감사 이력 변조 | 애플리케이션에 UPDATE/DELETE 경로 없음 + SQLite 트리거가 UPDATE/DELETE 차단 |
+| 감사 이력 변조 | 애플리케이션에 UPDATE/DELETE 경로 없음 + SQLite 트리거가 UPDATE/DELETE를 차단(append-only) |
 | 자동 승인 오용 | 승인·반려 API가 사람 별칭·사유를 요구, 상태 전이표로 `HOLD → APPROVED` 차단 |
 | 요청 폭주 | `/api` 경로 분당 제한(기본 120), 초과 시 429 + `Retry-After` |
 | 비밀정보 노출 | 오류 응답에 스택·경로를 넣지 않음, 500은 일반 메시지만 |
@@ -31,3 +31,11 @@
 - 화면과 README에 **합성 데이터**임을 표시한다.
 - SQLite는 재시작 시 초기화될 수 있다고 명시한다.
 - 별칭 기반 판정은 인증된 승인이 아님을 명시한다.
+
+## 5. 배포·검증
+
+- 컨테이너는 `appuser`(uid 10001) 비루트 사용자로 실행하고, `/app/data`만 쓰기 가능하게 둔다.
+- `HEALTHCHECK`가 `/api/health`를 호출한다. 실패하면 `docker compose ps`에서 unhealthy로 보인다.
+- `.dockerignore`가 `.env`, `docs/`, `tests/`, 로컬 DB·아티팩트를 이미지에서 제외한다.
+- 외부 LLM API·비밀키·실제 문서는 이미지와 CI 어디에도 넣지 않는다.
+

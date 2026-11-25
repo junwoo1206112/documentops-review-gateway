@@ -24,7 +24,15 @@ dev = [
 ]
 
 [tool.setuptools]
-packages = ["app", "app.api", "app.domain", "app.services", "app.services.extraction"]
+packages = [
+  "app",
+  "app.api",
+  "app.domain",
+  "app.services",
+  "app.services.extraction",
+  "app.templates",
+  "app.static",
+]
 include-package-data = true
 
 [tool.setuptools.package-data]

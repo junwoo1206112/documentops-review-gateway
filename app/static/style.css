@@ -257,6 +257,16 @@ tr.sub td:first-child {
   font-weight: 400;
 }
 
+.documents {
+  min-width: 680px;
+}
+
+.documents td:first-child,
+.documents td:nth-child(2),
+.documents td:nth-child(3) {
+  white-space: nowrap;
+}
+
 .num {
   text-align: right;
   font-variant-numeric: tabular-nums;
@@ -348,6 +358,14 @@ tr.sub td:first-child {
   gap: 24px;
   align-items: start;
   margin-bottom: 18px;
+}
+
+.doc-head form {
+  flex: 0 0 auto;
+}
+
+.doc-head button {
+  white-space: nowrap;
 }
 
 .doc-head .meta {
@@ -595,6 +613,16 @@ textarea:focus {
   }
 
   .notice {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .documents {
+    min-width: 560px;
+  }
+
+  .col-blocking {
     display: none;
   }
 }

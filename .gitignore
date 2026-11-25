@@ -4,6 +4,9 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 artifacts/
+dist/
+build/
+*.egg-info/
 data/*.db
 data/*.db-journal
 data/*.db-wal
