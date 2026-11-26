@@ -69,7 +69,8 @@ python scripts/seed_demo.py     # 4건을 위 순서대로 접수 (서버 실행
 
 ## 측정된 기준선
 
-`fixtures/evaluation` 36건, `dataset_version=synth-2026-11-26.2` 기준입니다.
+기존 공백 표 `fixtures/evaluation` 36건과 파이프 표 `fixtures/evaluation_layout2` 36건을
+분리해 평가합니다(`dataset_version=synth-2026-11-26.3`). 두 레이아웃 모두 아래 기준선을 재현합니다.
 
 | 지표 | 값 | 분모 |
 |---|---|---|
@@ -117,13 +118,14 @@ python -m venv .venv
 # source .venv/bin/activate         # Linux/macOS
 pip install -e ".[dev]"
 
-python -m pytest -q                 # 157 passed (2026-11-26, Python 3.12.10)
+python -m pytest -q                 # 165 passed (2026-11-26, Python 3.12.10)
 python tools/generate_dataset.py --check
 python -m app.inspect fixtures/evaluation/DOC-0001.txt
 
 uvicorn app.asgi:app --reload       # http://127.0.0.1:8000
 python scripts/seed_demo.py
 python -m app.evaluate --dataset fixtures/evaluation
+python -m app.evaluate --dataset fixtures/evaluation_layout2
 ```
 
 ### Docker
@@ -215,7 +217,7 @@ OpenAPI는 `/api/openapi.json`에서 확인할 수 있습니다.
 
 ## 알려진 한계
 
-- 합성 문서 36건·레이아웃 1종이다. 헤더 순서나 표 형태가 다르면 추측하지 않고 422로 끝낸다.
+- 합성 문서 레이아웃은 공백 표와 파이프 표 2종뿐이다. 두 계약 밖의 헤더 순서나 표 형태는 추측하지 않고 422로 끝낸다.
 - 중복 판정은 접수 순서에 의존한다. 반려 후 재검증으로 상태가 바뀔 수 있다.
 - `reviewer_alias`는 인증 수단이 아니다. 승인은 "누가"가 아니라 "어떤 별칭이 어떤 사유로"만 남긴다.
 - SQLite 단일 파일·단일 프로세스 전제다. 다중 인스턴스는 [ADR 0002](docs/adr/0002-stack.md)에서 제외했다.

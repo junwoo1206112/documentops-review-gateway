@@ -2,7 +2,7 @@
 
 - 작성일: 2026-11-26
 - 대상: 다음 인수자(사람)와 다음 LLM 세션
-- 현재 브랜치 상태: `main`, Phase 0~14-I 완료; Render 공개 읽기 전용 데모와 Phase 13(스크린리더 실사용) 완료. Gate B/C 결정 대기
+- 현재 브랜치 상태: `main`, Phase 0~15 완료; Render 공개 읽기 전용 데모와 Phase 13(스크린리더 실사용) 완료. Gate B/C 결정 대기
 - 최신 커밋: `git log --oneline`으로 확인한다. 커밋 해시는 이동하므로 이 문서에 고정하지 않는다.
 
 이 문서 하나로 **무엇을 만들었고, 무엇이 검증됐고, 무엇이 남았고, 어떻게 이어서 하는지**를
@@ -18,8 +18,8 @@
 | 핵심 주장 | "AI가 답한다"가 아니라 **근거 없는 값은 승인 불가, blocking 오류는 HOLD, 판정은 사람만** |
 | 스택 | Python 3.12, FastAPI, SQLite, Jinja2 서버 렌더링, pytest, Docker, GitHub Actions |
 | 실행 | `uvicorn app.asgi:app` (주의: `app.main:app` 아님) |
-| 테스트 | **157 passed** (2026-11-26, Python 3.12.10, Windows 11) |
-| 평가 | 36건 기준 문서 EM 36/36, HOLD 재현 19/19, 오보류 0/17, 규칙 일치 36/36, 근거 410/412 |
+| 테스트 | **165 passed** (2026-11-26, Python 3.12.10, Windows 11) |
+| 평가 | 공백 표·파이프 표 독립 36건씩: 문서 EM 36/36, HOLD 재현 19/19, 오보류 0/17, 규칙 일치 36/36, 근거 410/412 |
 | Docker | `docker compose up --build` → `healthy`, 데모 4건 처리, 컨테이너 내 평가 동일 |
 | 원격 CI | `main`의 첫 `ci` 성공. README 배지는 실제 실행으로 연결됨 |
 | 공개 데모 | [Render 읽기 전용 데모](https://documentops-review-gateway-demo.onrender.com) — health `ok`, 합성 문서 4건, POST 403 확인(2026-11-26) |
@@ -79,7 +79,7 @@ python -m app.evaluate --dataset fixtures/evaluation
 
 ### 기준선 수치 (재현 가능)
 
-`dataset_version=synth-2026-11-26.2`, `ruleset=rules-1.0.0`, `extractor=deterministic-1.0.0`
+`dataset_version=synth-2026-11-26.3`, `ruleset=rules-1.0.0`, `extractor=deterministic-1.1.0`
 
 | 지표 | matched / total | 값 |
 |---|---|---|
@@ -127,7 +127,7 @@ pip install -e ".[dev]"
 python -m pytest -q
 ```
 
-기대 결과: `155 passed`.
+기대 결과: `165 passed`.
 
 > `uv`와 Node.js는 필요 없다. UI는 Jinja2 서버 렌더링이다(ADR 0002).
 > Python은 3.12 이상이어야 한다.
@@ -136,11 +136,14 @@ python -m pytest -q
 
 ```bash
 python tools/generate_dataset.py --check
-# 기대: "데이터셋 일치: dataset_version=synth-2026-11-26.2 … evaluation_docs=36 demo_docs=4"
+# 기대: "데이터셋 일치: dataset_version=synth-2026-11-26.3 … evaluation_docs=36 evaluation_layout2_docs=36 demo_docs=4"
 
 python -m app.evaluate --dataset fixtures/evaluation
 # 기대: document_em=1.0, hold_recall=1.0 (19/19), false_hold_rate=0.0 (0/17),
 #       rule_match=1.0, evidence_validity=0.995, exit code 0
+
+python -m app.evaluate --dataset fixtures/evaluation_layout2
+# 파이프 품목 표 36건도 위와 같은 기준선을 재현
 ```
 
 ### 3.3 화면·API 데모
@@ -311,11 +314,10 @@ POST /api/documents/{id}/revalidate
   키 없이 전체 테스트 통과.
 - 수용 기준: 어댑터 추가 후에도 `pytest`가 네트워크 없이 통과하고 기본 extractor 버전 불변.
 
-### R-006 — 두 번째 문서 레이아웃 (P2)
+### R-006 — 두 번째 문서 레이아웃 (완료, Phase 15)
 
-- 왜: 현재 레이아웃 1종. 실제 문서 변형에 취약하다(의도된 422).
-- 조건: 레이아웃별 파서 선택 규칙, 422와 HOLD 경계 유지, 데이터셋 버전 갱신.
-- 수용 기준: 두 레이아웃 모두에서 기준선 유지 또는 명시적 하락과 사유 기록.
+- 파이프 품목 표를 별도 레이아웃으로 지원한다. `작성일:`과 정확한 표 헤더가 표식이며,
+  혼합·누락·모호한 입력은 422다. 두 36건 평가셋을 분리해 각각 기준선을 확인한다.
 
 ### R-007 — 접근성·반응형 세부 점검 (완료)
 

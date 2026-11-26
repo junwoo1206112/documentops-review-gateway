@@ -1,0 +1,86 @@
+{
+  "dataset_version": "synth-2026-11-26.3",
+  "document_id": "DOC-0032",
+  "evidence": {
+    "doc_date": {
+      "char_end": 46,
+      "char_start": 36,
+      "excerpt": "2026-09-21",
+      "page": 1
+    },
+    "doc_no": {
+      "char_end": 30,
+      "char_start": 18,
+      "excerpt": "TX-2026-9001",
+      "page": 1
+    },
+    "items[0].amount": {
+      "char_end": 106,
+      "char_start": 99,
+      "excerpt": "810,000",
+      "page": 1
+    },
+    "items[0].name": {
+      "char_end": 82,
+      "char_start": 76,
+      "excerpt": "철제 브래킷",
+      "page": 1
+    },
+    "items[0].qty": {
+      "char_end": 87,
+      "char_start": 85,
+      "excerpt": "45",
+      "page": 1
+    },
+    "items[0].unit_price": {
+      "char_end": 96,
+      "char_start": 90,
+      "excerpt": "18,000",
+      "page": 1
+    },
+    "supply_amount": {
+      "char_end": 121,
+      "char_start": 114,
+      "excerpt": "810,000",
+      "page": 1
+    },
+    "total": {
+      "char_end": 145,
+      "char_start": 138,
+      "excerpt": "891,000",
+      "page": 1
+    },
+    "vat": {
+      "char_end": 133,
+      "char_start": 127,
+      "excerpt": "81,000",
+      "page": 1
+    },
+    "vendor": {
+      "char_end": 56,
+      "char_start": 52,
+      "excerpt": "한결기계",
+      "page": 1
+    }
+  },
+  "expected_rule_ids": [
+    "DUPLICATE_DOCUMENT"
+  ],
+  "expected_status": "HOLD",
+  "fields": {
+    "doc_date": "2026-09-21",
+    "doc_no": "TX-2026-9001",
+    "supply_amount": 810000,
+    "total": 891000,
+    "vat": 81000,
+    "vendor": "한결기계"
+  },
+  "items": [
+    {
+      "amount": 810000,
+      "name": "철제 브래킷",
+      "qty": 45,
+      "unit_price": 18000
+    }
+  ]
+}

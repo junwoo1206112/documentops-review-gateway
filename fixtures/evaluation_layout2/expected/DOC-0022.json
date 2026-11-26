@@ -1,0 +1,80 @@
+{
+  "dataset_version": "synth-2026-11-26.3",
+  "document_id": "DOC-0022",
+  "evidence": {
+    "doc_no": {
+      "char_end": 30,
+      "char_start": 18,
+      "excerpt": "TX-2026-3023",
+      "page": 1
+    },
+    "items[0].amount": {
+      "char_end": 108,
+      "char_start": 101,
+      "excerpt": "432,000",
+      "page": 1
+    },
+    "items[0].name": {
+      "char_end": 84,
+      "char_start": 76,
+      "excerpt": "스테인리스 와셔",
+      "page": 1
+    },
+    "items[0].qty": {
+      "char_end": 89,
+      "char_start": 87,
+      "excerpt": "24",
+      "page": 1
+    },
+    "items[0].unit_price": {
+      "char_end": 98,
+      "char_start": 92,
+      "excerpt": "18,000",
+      "page": 1
+    },
+    "supply_amount": {
+      "char_end": 123,
+      "char_start": 116,
+      "excerpt": "432,000",
+      "page": 1
+    },
+    "total": {
+      "char_end": 147,
+      "char_start": 140,
+      "excerpt": "475,200",
+      "page": 1
+    },
+    "vat": {
+      "char_end": 135,
+      "char_start": 129,
+      "excerpt": "43,200",
+      "page": 1
+    },
+    "vendor": {
+      "char_end": 56,
+      "char_start": 52,
+      "excerpt": "여울테크",
+      "page": 1
+    }
+  },
+  "expected_rule_ids": [
+    "INVALID_DATE"
+  ],
+  "expected_status": "HOLD",
+  "fields": {
+    "doc_date": null,
+    "doc_no": "TX-2026-3023",
+    "supply_amount": 432000,
+    "total": 475200,
+    "vat": 43200,
+    "vendor": "여울테크"
+  },
+  "items": [
+    {
+      "amount": 432000,
+      "name": "스테인리스 와셔",
+      "qty": 24,
+      "unit_price": 18000
+    }
+  ]
+}

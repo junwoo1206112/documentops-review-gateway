@@ -8,6 +8,7 @@
 | 디렉터리 | 용도 | 수정 규칙 |
 |---|---|---|
 | `fixtures/evaluation/` | Phase 4 지표 산출용 고정 36건 + 정답 | 테스트·평가 중 절대 수정하지 않는다(읽기 전용 관례). 변경은 새 `DATASET_VERSION`으로만 |
+| `fixtures/evaluation_layout2/` | 파이프 품목 표 레이아웃 전용 36건 + 정답 | 첫 평가셋과 독립 manifest·정답으로 같은 지표를 별도 산출 |
 | `fixtures/demo/` | 화면·영상 시연용 4건 | 평가 지표에 포함하지 않는다 |
 | `fixtures/vendors.json` | 거래처 레지스트리 | 버전 필드를 가진다 |
 
@@ -37,7 +38,7 @@
 ```json
 {
   "document_id": "DOC-0001",
-  "dataset_version": "synth-2026-11-26.1",
+  "dataset_version": "synth-2026-11-26.3",
   "expected_status": "PENDING_REVIEW",
   "expected_rule_ids": [],
   "fields": {
@@ -129,7 +130,7 @@
   "schema_version": "eval-report-1",
   "dataset_version": "synth-2026-11-26.1",
   "ruleset_version": "rules-1.0.0",
-  "extractor_version": "deterministic-1.0.0",
+  "extractor_version": "deterministic-1.1.0",
   "documents": 36,
   "metrics": {
     "field_exact_match": {"vendor": {"matched": 34, "total": 36, "value": 0.944}, "...": {}},

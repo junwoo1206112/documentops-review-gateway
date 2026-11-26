@@ -17,6 +17,7 @@ from app.services.vendors import VendorRegistry
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 EVAL_DIR = PROJECT_ROOT / "fixtures" / "evaluation"
+LAYOUT2_DIR = PROJECT_ROOT / "fixtures" / "evaluation_layout2"
 REGISTRY = VendorRegistry.load(PROJECT_ROOT / "fixtures" / "vendors.json")
 
 
@@ -54,9 +55,9 @@ def _single_doc_dataset(tmp_path: Path, version: str) -> Path:
 def test_report_schema_and_versions() -> None:
     data = report()
     assert data["schema_version"] == "eval-report-1"
-    assert data["dataset_version"] == "synth-2026-11-26.2"
+    assert data["dataset_version"] == "synth-2026-11-26.3"
     assert data["ruleset_version"] == "rules-1.0.0"
-    assert data["extractor_version"] == "deterministic-1.0.0"
+    assert data["extractor_version"] == "deterministic-1.1.0"
     assert data["documents"] == 36
     for key in (
         "field_exact_match",
@@ -99,6 +100,13 @@ def test_baseline_metrics_are_exact() -> None:
     assert evidence["total"] == 412
     assert evidence["matched"] == 410
     assert evidence["value"] == 0.995
+
+
+def test_pipe_layout_dataset_has_an_independent_perfect_baseline() -> None:
+    data = evaluate_dataset(LAYOUT2_DIR, REGISTRY)
+    assert data["documents"] == 36
+    assert data["metrics"]["document_exact_match"] == {"matched": 36, "total": 36, "value": 1.0}
+    assert data["metrics"]["rule_match"] == {"matched": 36, "total": 36, "value": 1.0}
 
 
 def test_no_regressions_and_three_published_cases() -> None:

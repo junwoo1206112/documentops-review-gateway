@@ -1,0 +1,86 @@
+{
+  "dataset_version": "synth-2026-11-26.3",
+  "document_id": "DOC-0026",
+  "evidence": {
+    "doc_date": {
+      "char_end": 46,
+      "char_start": 36,
+      "excerpt": "2026-08-10",
+      "page": 1
+    },
+    "doc_no": {
+      "char_end": 30,
+      "char_start": 18,
+      "excerpt": "TX-2026-3027",
+      "page": 1
+    },
+    "items[0].amount": {
+      "char_end": 105,
+      "char_start": 96,
+      "excerpt": "1,125,000",
+      "page": 1
+    },
+    "items[0].name": {
+      "char_end": 79,
+      "char_start": 76,
+      "excerpt": "방열판",
+      "page": 1
+    },
+    "items[0].qty": {
+      "char_end": 84,
+      "char_start": 82,
+      "excerpt": "45",
+      "page": 1
+    },
+    "items[0].unit_price": {
+      "char_end": 93,
+      "char_start": 87,
+      "excerpt": "25,000",
+      "page": 1
+    },
+    "supply_amount": {
+      "char_end": 122,
+      "char_start": 113,
+      "excerpt": "1,130,000",
+      "page": 1
+    },
+    "total": {
+      "char_end": 149,
+      "char_start": 140,
+      "excerpt": "1,243,000",
+      "page": 1
+    },
+    "vat": {
+      "char_end": 135,
+      "char_start": 128,
+      "excerpt": "113,000",
+      "page": 1
+    },
+    "vendor": {
+      "char_end": 56,
+      "char_start": 52,
+      "excerpt": "라온산업",
+      "page": 1
+    }
+  },
+  "expected_rule_ids": [
+    "LINE_TOTAL_MISMATCH"
+  ],
+  "expected_status": "HOLD",
+  "fields": {
+    "doc_date": "2026-08-10",
+    "doc_no": "TX-2026-3027",
+    "supply_amount": 1130000,
+    "total": 1243000,
+    "vat": 113000,
+    "vendor": "라온산업"
+  },
+  "items": [
+    {
+      "amount": 1125000,
+      "name": "방열판",
+      "qty": 45,
+      "unit_price": 25000
+    }
+  ]
+}

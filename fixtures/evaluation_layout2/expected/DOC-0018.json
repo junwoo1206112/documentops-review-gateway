@@ -1,0 +1,80 @@
+{
+  "dataset_version": "synth-2026-11-26.3",
+  "document_id": "DOC-0018",
+  "evidence": {
+    "doc_date": {
+      "char_end": 34,
+      "char_start": 24,
+      "excerpt": "2026-06-15",
+      "page": 1
+    },
+    "items[0].amount": {
+      "char_end": 93,
+      "char_start": 86,
+      "excerpt": "134,400",
+      "page": 1
+    },
+    "items[0].name": {
+      "char_end": 70,
+      "char_start": 64,
+      "excerpt": "모터 커플링",
+      "page": 1
+    },
+    "items[0].qty": {
+      "char_end": 75,
+      "char_start": 73,
+      "excerpt": "24",
+      "page": 1
+    },
+    "items[0].unit_price": {
+      "char_end": 83,
+      "char_start": 78,
+      "excerpt": "5,600",
+      "page": 1
+    },
+    "supply_amount": {
+      "char_end": 108,
+      "char_start": 101,
+      "excerpt": "134,400",
+      "page": 1
+    },
+    "total": {
+      "char_end": 132,
+      "char_start": 125,
+      "excerpt": "147,840",
+      "page": 1
+    },
+    "vat": {
+      "char_end": 120,
+      "char_start": 114,
+      "excerpt": "13,440",
+      "page": 1
+    },
+    "vendor": {
+      "char_end": 44,
+      "char_start": 40,
+      "excerpt": "온빛전자",
+      "page": 1
+    }
+  },
+  "expected_rule_ids": [
+    "MISSING_REQUIRED"
+  ],
+  "expected_status": "HOLD",
+  "fields": {
+    "doc_date": "2026-06-15",
+    "doc_no": null,
+    "supply_amount": 134400,
+    "total": 147840,
+    "vat": 13440,
+    "vendor": "온빛전자"
+  },
+  "items": [
+    {
+      "amount": 134400,
+      "name": "모터 커플링",
+      "qty": 24,
+      "unit_price": 5600
+    }
+  ]
+}

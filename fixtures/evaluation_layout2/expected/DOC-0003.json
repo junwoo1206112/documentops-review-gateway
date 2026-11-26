@@ -1,0 +1,144 @@
+{
+  "dataset_version": "synth-2026-11-26.3",
+  "document_id": "DOC-0003",
+  "evidence": {
+    "doc_date": {
+      "char_end": 46,
+      "char_start": 36,
+      "excerpt": "2026-02-08",
+      "page": 1
+    },
+    "doc_no": {
+      "char_end": 30,
+      "char_start": 18,
+      "excerpt": "TX-2026-1003",
+      "page": 1
+    },
+    "items[0].amount": {
+      "char_end": 104,
+      "char_start": 98,
+      "excerpt": "64,000",
+      "page": 1
+    },
+    "items[0].name": {
+      "char_end": 82,
+      "char_start": 76,
+      "excerpt": "케이블 타이",
+      "page": 1
+    },
+    "items[0].qty": {
+      "char_end": 87,
+      "char_start": 85,
+      "excerpt": "20",
+      "page": 1
+    },
+    "items[0].unit_price": {
+      "char_end": 95,
+      "char_start": 90,
+      "excerpt": "3,200",
+      "page": 1
+    },
+    "items[1].amount": {
+      "char_end": 139,
+      "char_start": 130,
+      "excerpt": "1,080,000",
+      "page": 1
+    },
+    "items[1].name": {
+      "char_end": 113,
+      "char_start": 105,
+      "excerpt": "스테인리스 와셔",
+      "page": 1
+    },
+    "items[1].qty": {
+      "char_end": 118,
+      "char_start": 116,
+      "excerpt": "60",
+      "page": 1
+    },
+    "items[1].unit_price": {
+      "char_end": 127,
+      "char_start": 121,
+      "excerpt": "18,000",
+      "page": 1
+    },
+    "items[2].amount": {
+      "char_end": 170,
+      "char_start": 163,
+      "excerpt": "564,000",
+      "page": 1
+    },
+    "items[2].name": {
+      "char_end": 146,
+      "char_start": 140,
+      "excerpt": "공압 실린더",
+      "page": 1
+    },
+    "items[2].qty": {
+      "char_end": 152,
+      "char_start": 149,
+      "excerpt": "120",
+      "page": 1
+    },
+    "items[2].unit_price": {
+      "char_end": 160,
+      "char_start": 155,
+      "excerpt": "4,700",
+      "page": 1
+    },
+    "supply_amount": {
+      "char_end": 187,
+      "char_start": 178,
+      "excerpt": "1,708,000",
+      "page": 1
+    },
+    "total": {
+      "char_end": 214,
+      "char_start": 205,
+      "excerpt": "1,878,800",
+      "page": 1
+    },
+    "vat": {
+      "char_end": 200,
+      "char_start": 193,
+      "excerpt": "170,800",
+      "page": 1
+    },
+    "vendor": {
+      "char_end": 56,
+      "char_start": 52,
+      "excerpt": "도담전자",
+      "page": 1
+    }
+  },
+  "expected_rule_ids": [],
+  "expected_status": "PENDING_REVIEW",
+  "fields": {
+    "doc_date": "2026-02-08",
+    "doc_no": "TX-2026-1003",
+    "supply_amount": 1708000,
+    "total": 1878800,
+    "vat": 170800,
+    "vendor": "도담전자"
+  },
+  "items": [
+    {
+      "amount": 64000,
+      "name": "케이블 타이",
+      "qty": 20,
+      "unit_price": 3200
+    },
+    {
+      "amount": 1080000,
+      "name": "스테인리스 와셔",
+      "qty": 60,
+      "unit_price": 18000
+    },
+    {
+      "amount": 564000,
+      "name": "공압 실린더",
+      "qty": 120,
+      "unit_price": 4700
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "dataset_version": "synth-2026-11-26.3",
+  "document_id": "DOC-0027",
+  "evidence": {
+    "doc_date": {
+      "char_end": 46,
+      "char_start": 36,
+      "excerpt": "2026-08-17",
+      "page": 1
+    },
+    "doc_no": {
+      "char_end": 30,
+      "char_start": 18,
+      "excerpt": "TX-2026-3028",
+      "page": 1
+    },
+    "items[0].amount": {
+      "char_end": 106,
+      "char_start": 99,
+      "excerpt": "102,000",
+      "page": 1
+    },
+    "items[0].name": {
+      "char_end": 83,
+      "char_start": 76,
+      "excerpt": "리니어 가이드",
+      "page": 1
+    },
+    "items[0].qty": {
+      "char_end": 88,
+      "char_start": 86,
+      "excerpt": "30",
+      "page": 1
+    },
+    "items[0].unit_price": {
+      "char_end": 96,
+      "char_start": 91,
+      "excerpt": "3,400",
+      "page": 1
+    },
+    "supply_amount": {
+      "char_end": 121,
+      "char_start": 114,
+      "excerpt": "102,000",
+      "page": 1
+    },
+    "total": {
+      "char_end": 145,
+      "char_start": 138,
+      "excerpt": "112,300",
+      "page": 1
+    },
+    "vat": {
+      "char_end": 133,
+      "char_start": 127,
+      "excerpt": "10,300",
+      "page": 1
+    },
+    "vendor": {
+      "char_end": 56,
+      "char_start": 52,
+      "excerpt": "마루테크",
+      "page": 1
+    }
+  },
+  "expected_rule_ids": [
+    "LINE_TOTAL_MISMATCH"
+  ],
+  "expected_status": "HOLD",
+  "fields": {
+    "doc_date": "2026-08-17",
+    "doc_no": "TX-2026-3028",
+    "supply_amount": 102000,
+    "total": 112300,
+    "vat": 10300,
+    "vendor": "마루테크"
+  },
+  "items": [
+    {
+      "amount": 102000,
+      "name": "리니어 가이드",
+      "qty": 30,
+      "unit_price": 3400
+    }
+  ]
+}

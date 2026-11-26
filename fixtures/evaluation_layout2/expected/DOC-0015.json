@@ -1,0 +1,144 @@
+{
+  "dataset_version": "synth-2026-11-26.3",
+  "document_id": "DOC-0015",
+  "evidence": {
+    "doc_date": {
+      "char_end": 46,
+      "char_start": 36,
+      "excerpt": "2026-08-31",
+      "page": 1
+    },
+    "doc_no": {
+      "char_end": 30,
+      "char_start": 18,
+      "excerpt": "TX-2026-1015",
+      "page": 1
+    },
+    "items[0].amount": {
+      "char_end": 105,
+      "char_start": 99,
+      "excerpt": "56,400",
+      "page": 1
+    },
+    "items[0].name": {
+      "char_end": 83,
+      "char_start": 76,
+      "excerpt": "제어반 스위치",
+      "page": 1
+    },
+    "items[0].qty": {
+      "char_end": 88,
+      "char_start": 86,
+      "excerpt": "12",
+      "page": 1
+    },
+    "items[0].unit_price": {
+      "char_end": 96,
+      "char_start": 91,
+      "excerpt": "4,700",
+      "page": 1
+    },
+    "items[1].amount": {
+      "char_end": 130,
+      "char_start": 124,
+      "excerpt": "62,300",
+      "page": 1
+    },
+    "items[1].name": {
+      "char_end": 109,
+      "char_start": 106,
+      "excerpt": "방열판",
+      "page": 1
+    },
+    "items[1].qty": {
+      "char_end": 113,
+      "char_start": 112,
+      "excerpt": "7",
+      "page": 1
+    },
+    "items[1].unit_price": {
+      "char_end": 121,
+      "char_start": 116,
+      "excerpt": "8,900",
+      "page": 1
+    },
+    "items[2].amount": {
+      "char_end": 160,
+      "char_start": 154,
+      "excerpt": "72,000",
+      "page": 1
+    },
+    "items[2].name": {
+      "char_end": 138,
+      "char_start": 131,
+      "excerpt": "리니어 가이드",
+      "page": 1
+    },
+    "items[2].qty": {
+      "char_end": 143,
+      "char_start": 141,
+      "excerpt": "60",
+      "page": 1
+    },
+    "items[2].unit_price": {
+      "char_end": 151,
+      "char_start": 146,
+      "excerpt": "1,200",
+      "page": 1
+    },
+    "supply_amount": {
+      "char_end": 175,
+      "char_start": 168,
+      "excerpt": "190,700",
+      "page": 1
+    },
+    "total": {
+      "char_end": 199,
+      "char_start": 192,
+      "excerpt": "209,770",
+      "page": 1
+    },
+    "vat": {
+      "char_end": 187,
+      "char_start": 181,
+      "excerpt": "19,070",
+      "page": 1
+    },
+    "vendor": {
+      "char_end": 56,
+      "char_start": 52,
+      "excerpt": "도담전자",
+      "page": 1
+    }
+  },
+  "expected_rule_ids": [],
+  "expected_status": "PENDING_REVIEW",
+  "fields": {
+    "doc_date": "2026-08-31",
+    "doc_no": "TX-2026-1015",
+    "supply_amount": 190700,
+    "total": 209770,
+    "vat": 19070,
+    "vendor": "도담전자"
+  },
+  "items": [
+    {
+      "amount": 56400,
+      "name": "제어반 스위치",
+      "qty": 12,
+      "unit_price": 4700
+    },
+    {
+      "amount": 62300,
+      "name": "방열판",
+      "qty": 7,
+      "unit_price": 8900
+    },
+    {
+      "amount": 72000,
+      "name": "리니어 가이드",
+      "qty": 60,
+      "unit_price": 1200
+    }
+  ]
+}

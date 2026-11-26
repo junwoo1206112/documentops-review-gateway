@@ -1,0 +1,84 @@
+{
+  "dataset_version": "synth-2026-11-26.3",
+  "document_id": "DOC-0010",
+  "evidence": {
+    "doc_date": {
+      "char_end": 46,
+      "char_start": 36,
+      "excerpt": "2026-06-07",
+      "page": 1
+    },
+    "doc_no": {
+      "char_end": 30,
+      "char_start": 18,
+      "excerpt": "TX-2026-1010",
+      "page": 1
+    },
+    "items[0].amount": {
+      "char_end": 100,
+      "char_start": 94,
+      "excerpt": "50,400",
+      "page": 1
+    },
+    "items[0].name": {
+      "char_end": 79,
+      "char_start": 76,
+      "excerpt": "방열판",
+      "page": 1
+    },
+    "items[0].qty": {
+      "char_end": 83,
+      "char_start": 82,
+      "excerpt": "9",
+      "page": 1
+    },
+    "items[0].unit_price": {
+      "char_end": 91,
+      "char_start": 86,
+      "excerpt": "5,600",
+      "page": 1
+    },
+    "supply_amount": {
+      "char_end": 114,
+      "char_start": 108,
+      "excerpt": "50,400",
+      "page": 1
+    },
+    "total": {
+      "char_end": 136,
+      "char_start": 130,
+      "excerpt": "55,440",
+      "page": 1
+    },
+    "vat": {
+      "char_end": 125,
+      "char_start": 120,
+      "excerpt": "5,040",
+      "page": 1
+    },
+    "vendor": {
+      "char_end": 56,
+      "char_start": 52,
+      "excerpt": "한결기계",
+      "page": 1
+    }
+  },
+  "expected_rule_ids": [],
+  "expected_status": "PENDING_REVIEW",
+  "fields": {
+    "doc_date": "2026-06-07",
+    "doc_no": "TX-2026-1010",
+    "supply_amount": 50400,
+    "total": 55440,
+    "vat": 5040,
+    "vendor": "한결기계"
+  },
+  "items": [
+    {
+      "amount": 50400,
+      "name": "방열판",
+      "qty": 9,
+      "unit_price": 5600
+    }
+  ]
+}

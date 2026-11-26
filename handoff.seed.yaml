@@ -1,7 +1,7 @@
 ﻿schema: handoff-seed-1
 as_of: "2026-11-26"
 project: documentops-review-gateway
-status: phase-14i-complete-public-demo-live
+status: phase-15-complete-public-demo-live
 language: ko
 
 goal: >
@@ -34,15 +34,15 @@ invariants:
 
 versions:
   app: "0.1.0"
-  extractor: deterministic-1.0.0
+  extractor: deterministic-1.1.0
   ruleset: rules-1.0.0
-  dataset: synth-2026-11-26.2
+  dataset: synth-2026-11-26.3
   vendor_registry: vendors-2026-11-26.1
 
 verified:
   date: "2026-11-26"
   platform: "Windows 11, Python 3.12.10"
-  tests_passed: 157
+  tests_passed: 165
   tests_collected_after_phase_6: 133
   dataset_check: pass
   evaluation_exit_code: 0
@@ -189,12 +189,15 @@ remaining:
   - id: R-006
     title: 두 번째 문서 레이아웃 지원
     priority: P2
-    state: optional
+    state: complete
     depends_on: []
     acceptance:
       - "레이아웃 선택 규칙과 422 경계가 문서화됨"
       - "데이터셋 버전 갱신과 기준선 유지 또는 명시적 하락 기록"
-    notes: "현재는 레이아웃 1종이며 해석 불가는 422로 끝낸다."
+    done:
+      - "작성일 + 파이프 품목 표 레이아웃과 상호 배타적 detector 구현"
+      - "독립 36건 fixture·정답·manifest와 레이아웃별 평가 통과"
+    notes: "혼합·누락·모호한 레이아웃은 422로 끝낸다."
 
   - id: R-007
     title: 접근성과 반응형 세부 점검

@@ -1,0 +1,144 @@
+{
+  "dataset_version": "synth-2026-11-26.3",
+  "document_id": "DOC-0012",
+  "evidence": {
+    "doc_date": {
+      "char_end": 46,
+      "char_start": 36,
+      "excerpt": "2026-07-11",
+      "page": 1
+    },
+    "doc_no": {
+      "char_end": 30,
+      "char_start": 18,
+      "excerpt": "TX-2026-1012",
+      "page": 1
+    },
+    "items[0].amount": {
+      "char_end": 105,
+      "char_start": 98,
+      "excerpt": "125,000",
+      "page": 1
+    },
+    "items[0].name": {
+      "char_end": 82,
+      "char_start": 76,
+      "excerpt": "철제 브래킷",
+      "page": 1
+    },
+    "items[0].qty": {
+      "char_end": 87,
+      "char_start": 85,
+      "excerpt": "20",
+      "page": 1
+    },
+    "items[0].unit_price": {
+      "char_end": 95,
+      "char_start": 90,
+      "excerpt": "6,250",
+      "page": 1
+    },
+    "items[1].amount": {
+      "char_end": 139,
+      "char_start": 132,
+      "excerpt": "384,000",
+      "page": 1
+    },
+    "items[1].name": {
+      "char_end": 115,
+      "char_start": 106,
+      "excerpt": "알루미늄 프로파일",
+      "page": 1
+    },
+    "items[1].qty": {
+      "char_end": 121,
+      "char_start": 118,
+      "excerpt": "120",
+      "page": 1
+    },
+    "items[1].unit_price": {
+      "char_end": 129,
+      "char_start": 124,
+      "excerpt": "3,200",
+      "page": 1
+    },
+    "items[2].amount": {
+      "char_end": 169,
+      "char_start": 162,
+      "excerpt": "126,000",
+      "page": 1
+    },
+    "items[2].name": {
+      "char_end": 146,
+      "char_start": 140,
+      "excerpt": "모터 커플링",
+      "page": 1
+    },
+    "items[2].qty": {
+      "char_end": 150,
+      "char_start": 149,
+      "excerpt": "7",
+      "page": 1
+    },
+    "items[2].unit_price": {
+      "char_end": 159,
+      "char_start": 153,
+      "excerpt": "18,000",
+      "page": 1
+    },
+    "supply_amount": {
+      "char_end": 184,
+      "char_start": 177,
+      "excerpt": "635,000",
+      "page": 1
+    },
+    "total": {
+      "char_end": 208,
+      "char_start": 201,
+      "excerpt": "698,500",
+      "page": 1
+    },
+    "vat": {
+      "char_end": 196,
+      "char_start": 190,
+      "excerpt": "63,500",
+      "page": 1
+    },
+    "vendor": {
+      "char_end": 56,
+      "char_start": 52,
+      "excerpt": "여울테크",
+      "page": 1
+    }
+  },
+  "expected_rule_ids": [],
+  "expected_status": "PENDING_REVIEW",
+  "fields": {
+    "doc_date": "2026-07-11",
+    "doc_no": "TX-2026-1012",
+    "supply_amount": 635000,
+    "total": 698500,
+    "vat": 63500,
+    "vendor": "여울테크"
+  },
+  "items": [
+    {
+      "amount": 125000,
+      "name": "철제 브래킷",
+      "qty": 20,
+      "unit_price": 6250
+    },
+    {
+      "amount": 384000,
+      "name": "알루미늄 프로파일",
+      "qty": 120,
+      "unit_price": 3200
+    },
+    {
+      "amount": 126000,
+      "name": "모터 커플링",
+      "qty": 7,
+      "unit_price": 18000
+    }
+  ]
+}

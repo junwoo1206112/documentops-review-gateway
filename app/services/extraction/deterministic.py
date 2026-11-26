@@ -25,21 +25,26 @@ from app.services.textnorm import (
     parse_money,
 )
 
-EXTRACTOR_VERSION = "deterministic-1.0.0"
+EXTRACTOR_VERSION = "deterministic-1.1.0"
 
 HEADER_LABELS: dict[str, str] = {
     "거래처": "vendor",
     "문서번호": "doc_no",
     "작성일자": "doc_date",
+    "작성일": "doc_date",
     "공급가액": "supply_amount",
     "부가세": "vat",
     "총액": "total",
 }
 
-HEADER_RE = re.compile(r"^(거래처|문서번호|작성일자|공급가액|부가세|총액):[ \t]*(.*)$")
+HEADER_RE = re.compile(r"^(거래처|문서번호|작성일자|작성일|공급가액|부가세|총액):[ \t]*(.*)$")
 ITEM_HEADER_PREFIX = "품목명"
+PIPE_ITEM_HEADER = "품목 | 수량 | 단가 | 금액"
 ITEM_ROW_RE = re.compile(
     r"^(?P<name>.+?)\s{2,}(?P<qty>\S+)\s{2,}(?P<unit>\S+)\s{2,}(?P<amount>\S+)$"
+)
+PIPE_ITEM_ROW_RE = re.compile(
+    r"^(?P<name>[^|]+)\|(?P<qty>[^|]+)\|(?P<unit>[^|]+)\|(?P<amount>[^|]+)$"
 )
 DERIVED_TOTAL_NOTE = "※ 총액은"
 ITEM_PATH_RE = re.compile(r"^items\[(?P<ordinal>\d+)\]\.(?P<key>[a-z_]+)$")
@@ -84,7 +89,23 @@ def _make_header_field(path: str, text: str, start: int, end: int) -> ExtractedF
     )
 
 
-def _parse_items(text: str) -> tuple[list[Item], dict[str, ExtractedField]]:
+def _make_item_field(
+    path: str, raw: str, value: str | int | None, start: int, end: int
+) -> ExtractedField:
+    return ExtractedField(
+        path=path,
+        label=FIELD_LABELS[path.rsplit(".", 1)[1]],
+        value_text=raw,
+        value=value,
+        page=1,
+        char_start=start,
+        char_end=end,
+        evidence_excerpt=raw,
+        evidence_status=EVIDENCE_VERIFIED,
+    )
+
+
+def _parse_legacy_items(text: str) -> tuple[list[Item], dict[str, ExtractedField]]:
     lines = list(_iter_lines(text))
     header_index = next(
         (index for index, (_, line) in enumerate(lines) if line.startswith(ITEM_HEADER_PREFIX)),
@@ -124,24 +145,73 @@ def _parse_items(text: str) -> tuple[list[Item], dict[str, ExtractedField]]:
         )
         for key, raw, value, start, end in cells:
             path = f"items[{ordinal}].{key}"
-            fields[path] = ExtractedField(
-                path=path,
-                label=FIELD_LABELS[key],
-                value_text=raw,
-                value=value,
-                page=1,
-                char_start=start,
-                char_end=end,
-                evidence_excerpt=raw,
-                evidence_status=EVIDENCE_VERIFIED,
-            )
+            fields[path] = _make_item_field(path, raw, value, start, end)
     return items, fields
+
+
+def _trimmed_group(match: re.Match[str], name: str, offset: int) -> tuple[str, int, int]:
+    raw = match.group(name)
+    stripped = raw.strip()
+    if not stripped:
+        raise DocumentFormatError("파이프 품목 셀은 비어 있을 수 없습니다.")
+    leading = len(raw) - len(raw.lstrip())
+    start = offset + match.start(name) + leading
+    return stripped, start, start + len(stripped)
+
+
+def _parse_pipe_items(text: str) -> tuple[list[Item], dict[str, ExtractedField]]:
+    lines = list(_iter_lines(text))
+    header_indexes = [index for index, (_, line) in enumerate(lines) if line == PIPE_ITEM_HEADER]
+    if len(header_indexes) != 1:
+        raise DocumentFormatError("파이프 양식의 품목 표 헤더가 하나여야 합니다.")
+
+    items: list[Item] = []
+    fields: dict[str, ExtractedField] = {}
+    for ordinal, (offset, line) in enumerate(lines[header_indexes[0] + 1 :]):
+        if not line.strip():
+            break
+        match = PIPE_ITEM_ROW_RE.fullmatch(line)
+        if match is None:
+            raise DocumentFormatError(f"파이프 품목 행을 해석할 수 없습니다: {line!r}")
+        name, name_start, name_end = _trimmed_group(match, "name", offset)
+        qty_text, qty_start, qty_end = _trimmed_group(match, "qty", offset)
+        unit_text, unit_start, unit_end = _trimmed_group(match, "unit", offset)
+        amount_text, amount_start, amount_end = _trimmed_group(match, "amount", offset)
+        qty, unit, amount = parse_money(qty_text), parse_money(unit_text), parse_money(amount_text)
+        items.append(Item(ordinal=ordinal, name=name, qty=qty, unit_price=unit, amount=amount))
+        for key, raw, value, start, end in (
+            ("name", name, name, name_start, name_end),
+            ("qty", qty_text, qty, qty_start, qty_end),
+            ("unit_price", unit_text, unit, unit_start, unit_end),
+            ("amount", amount_text, amount, amount_start, amount_end),
+        ):
+            path = f"items[{ordinal}].{key}"
+            fields[path] = _make_item_field(path, raw, value, start, end)
+    return items, fields
+
+
+def _detect_layout(text: str) -> str:
+    lines = [line for _, line in _iter_lines(text)]
+    has_legacy_table = any(line.startswith(ITEM_HEADER_PREFIX) for line in lines)
+    has_pipe_table = any(line == PIPE_ITEM_HEADER for line in lines)
+    has_legacy_date = any(line.startswith("작성일자:") for line in lines)
+    has_pipe_date = any(line.startswith("작성일:") for line in lines)
+    if has_legacy_table and (has_pipe_table or has_pipe_date):
+        raise DocumentFormatError("서로 다른 문서 레이아웃을 섞을 수 없습니다.")
+    if has_pipe_table or has_pipe_date:
+        if not (has_pipe_table and has_pipe_date):
+            raise DocumentFormatError("파이프 양식은 작성일과 정확한 품목 표 헤더가 모두 필요합니다.")
+        if has_legacy_date:
+            raise DocumentFormatError("파이프 양식에는 작성일자 라벨을 사용할 수 없습니다.")
+        return "pipe"
+    return "legacy"
 
 
 def parse_document(text: str) -> ExtractionResult:
     if not text.strip():
         raise DocumentFormatError("문서가 비어 있습니다.")
 
+    layout = _detect_layout(text)
     fields: dict[str, ExtractedField] = {}
     has_derived_note = False
 
@@ -152,15 +222,19 @@ def parse_document(text: str) -> ExtractionResult:
         if match is None:
             continue
         label, raw_group = match.group(1), match.group(2)
+        if layout == "pipe" and label == "작성일자":
+            raise DocumentFormatError("파이프 양식은 작성일 라벨을 사용해야 합니다.")
+        if layout == "legacy" and label == "작성일":
+            raise DocumentFormatError("기존 양식은 작성일자 라벨을 사용해야 합니다.")
         path = HEADER_LABELS[label]
         if path in fields:
-            continue
+            raise DocumentFormatError(f"헤더가 중복되었습니다: {label}")
         stripped = raw_group.strip()
         leading = len(raw_group) - len(raw_group.lstrip())
         start = offset + match.start(2) + leading
         fields[path] = _make_header_field(path, stripped, start, start + len(stripped))
 
-    items, item_fields = _parse_items(text)
+    items, item_fields = _parse_pipe_items(text) if layout == "pipe" else _parse_legacy_items(text)
     fields.update(item_fields)
 
     if "total" not in fields and has_derived_note:

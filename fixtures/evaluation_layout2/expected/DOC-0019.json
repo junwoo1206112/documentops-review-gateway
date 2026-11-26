@@ -1,0 +1,80 @@
+{
+  "dataset_version": "synth-2026-11-26.3",
+  "document_id": "DOC-0019",
+  "evidence": {
+    "doc_no": {
+      "char_end": 30,
+      "char_start": 18,
+      "excerpt": "TX-2026-3020",
+      "page": 1
+    },
+    "items[0].amount": {
+      "char_end": 96,
+      "char_start": 90,
+      "excerpt": "67,500",
+      "page": 1
+    },
+    "items[0].name": {
+      "char_end": 74,
+      "char_start": 66,
+      "excerpt": "베어링 6204",
+      "page": 1
+    },
+    "items[0].qty": {
+      "char_end": 79,
+      "char_start": 77,
+      "excerpt": "45",
+      "page": 1
+    },
+    "items[0].unit_price": {
+      "char_end": 87,
+      "char_start": 82,
+      "excerpt": "1,500",
+      "page": 1
+    },
+    "supply_amount": {
+      "char_end": 110,
+      "char_start": 104,
+      "excerpt": "67,500",
+      "page": 1
+    },
+    "total": {
+      "char_end": 132,
+      "char_start": 126,
+      "excerpt": "74,250",
+      "page": 1
+    },
+    "vat": {
+      "char_end": 121,
+      "char_start": 116,
+      "excerpt": "6,750",
+      "page": 1
+    },
+    "vendor": {
+      "char_end": 46,
+      "char_start": 42,
+      "excerpt": "하람산업",
+      "page": 1
+    }
+  },
+  "expected_rule_ids": [
+    "MISSING_REQUIRED"
+  ],
+  "expected_status": "HOLD",
+  "fields": {
+    "doc_date": null,
+    "doc_no": "TX-2026-3020",
+    "supply_amount": 67500,
+    "total": 74250,
+    "vat": 6750,
+    "vendor": "하람산업"
+  },
+  "items": [
+    {
+      "amount": 67500,
+      "name": "베어링 6204",
+      "qty": 45,
+      "unit_price": 1500
+    }
+  ]
+}

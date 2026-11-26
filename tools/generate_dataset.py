@@ -17,7 +17,7 @@ import hashlib
 import json
 import random
 import sys
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -28,6 +28,7 @@ from app.services.textnorm import is_valid_doc_no, normalize_doc_no  # noqa: E40
 from app.version import DATASET_VERSION, VENDOR_REGISTRY_VERSION  # noqa: E402
 
 EVAL_DIR = ROOT / "fixtures" / "evaluation"
+EVAL_LAYOUT2_DIR = ROOT / "fixtures" / "evaluation_layout2"
 DEMO_DIR = ROOT / "fixtures" / "demo"
 VENDOR_PATH = ROOT / "fixtures" / "vendors.json"
 
@@ -148,6 +149,7 @@ class Spec:
     total_raw: str | None
     derive_total: bool = False
     expected_rules: tuple[str, ...] = field(default=())
+    layout: str = "legacy"
 
     @property
     def expected_status(self) -> str:
@@ -175,23 +177,28 @@ def parse_date(raw: str | None) -> str | None:
 
 def build_spec(spec: Spec) -> tuple[str, dict[str, object]]:
     builder = TextBuilder()
-    builder.line("[거래명세서]")
-    if spec.vendor is not None:
-        builder.line("거래처: ", ("vendor", spec.vendor))
-    if spec.doc_no is not None:
-        builder.line("문서번호: ", ("doc_no", spec.doc_no))
-    if spec.date_raw is not None:
-        builder.line("작성일자: ", ("doc_date", spec.date_raw))
+    if spec.layout == "legacy":
+        builder.line("[거래명세서]")
+        headers = (("거래처", "vendor", spec.vendor), ("문서번호", "doc_no", spec.doc_no), ("작성일자", "doc_date", spec.date_raw))
+    elif spec.layout == "pipe":
+        builder.line("[파이프 거래명세서]")
+        headers = (("문서번호", "doc_no", spec.doc_no), ("작성일", "doc_date", spec.date_raw), ("거래처", "vendor", spec.vendor))
+    else:
+        raise ValueError(f"unknown layout: {spec.layout}")
+    for label, path, value in headers:
+        if value is not None:
+            builder.line(f"{label}: ", (path, value))
+        elif spec.layout == "pipe":
+            # v2의 고정 표식은 값 누락 사례에서도 남겨야 validation이 422가 아닌 HOLD를 만든다.
+            builder.line(f"{label}: ")
     builder.blank()
-    builder.line(ITEM_HEADER)
+    builder.line(ITEM_HEADER if spec.layout == "legacy" else "품목 | 수량 | 단가 | 금액")
     for index, item in enumerate(spec.items):
+        separator = "  " if spec.layout == "legacy" else " | "
         builder.line(
-            (f"items[{index}].name", item.name),
-            "  ",
-            (f"items[{index}].qty", str(item.qty)),
-            "  ",
-            (f"items[{index}].unit_price", money(item.unit_price)),
-            "  ",
+            (f"items[{index}].name", item.name), separator,
+            (f"items[{index}].qty", str(item.qty)), separator,
+            (f"items[{index}].unit_price", money(item.unit_price)), separator,
             (f"items[{index}].amount", money(item.amount)),
         )
     builder.blank()
@@ -506,15 +513,15 @@ def build_documents() -> tuple[list[Spec], list[Spec]]:
     return evaluation, demo
 
 
-def render_set(specs: list[Spec]) -> dict[Path, bytes]:
+def render_set(specs: list[Spec], directory: Path = EVAL_DIR) -> dict[Path, bytes]:
     files: dict[Path, bytes] = {}
     manifest_lines: list[str] = []
     for sequence, spec in enumerate(specs, start=1):
         text, spans = build_spec(spec)
         payload = expected_payload(spec, spans)
         data = text.encode("utf-8")
-        files[EVAL_DIR / f"{spec.doc_id}.txt"] = data
-        files[EVAL_DIR / "expected" / f"{spec.doc_id}.json"] = (
+        files[directory / f"{spec.doc_id}.txt"] = data
+        files[directory / "expected" / f"{spec.doc_id}.json"] = (
             json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
         ).encode("utf-8")
         manifest_lines.append(
@@ -534,7 +541,7 @@ def render_set(specs: list[Spec]) -> dict[Path, bytes]:
                 sort_keys=True,
             )
         )
-    files[EVAL_DIR / "manifest.jsonl"] = ("\n".join(manifest_lines) + "\n").encode("utf-8")
+    files[directory / "manifest.jsonl"] = ("\n".join(manifest_lines) + "\n").encode("utf-8")
     return files
 
 
@@ -562,6 +569,7 @@ def render_registry() -> dict[Path, bytes]:
 def all_files() -> dict[Path, bytes]:
     evaluation, demo = build_documents()
     files = render_set(evaluation)
+    files.update(render_set([replace(spec, layout="pipe") for spec in evaluation], EVAL_LAYOUT2_DIR))
     files.update(render_demo(demo))
     files.update(render_registry())
     return files
@@ -590,7 +598,7 @@ def summarize(files: dict[Path, bytes]) -> str:
         counts[spec.category] = counts.get(spec.category, 0) + 1
     lines = [
         f"dataset_version={DATASET_VERSION}",
-        f"evaluation_docs={len(evaluation)} demo_docs={len(demo)}",
+        f"evaluation_docs={len(evaluation)} evaluation_layout2_docs={len(evaluation)} demo_docs={len(demo)}",
         "categories=" + ", ".join(f"{key}:{value}" for key, value in sorted(counts.items())),
         f"files={len(files)}",
     ]

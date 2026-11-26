@@ -1,0 +1,114 @@
+{
+  "dataset_version": "synth-2026-11-26.3",
+  "document_id": "DOC-0014",
+  "evidence": {
+    "doc_date": {
+      "char_end": 46,
+      "char_start": 36,
+      "excerpt": "2026-08-14",
+      "page": 1
+    },
+    "doc_no": {
+      "char_end": 30,
+      "char_start": 18,
+      "excerpt": "TX-2026-1014",
+      "page": 1
+    },
+    "items[0].amount": {
+      "char_end": 111,
+      "char_start": 102,
+      "excerpt": "2,160,000",
+      "page": 1
+    },
+    "items[0].name": {
+      "char_end": 84,
+      "char_start": 76,
+      "excerpt": "스테인리스 와셔",
+      "page": 1
+    },
+    "items[0].qty": {
+      "char_end": 90,
+      "char_start": 87,
+      "excerpt": "120",
+      "page": 1
+    },
+    "items[0].unit_price": {
+      "char_end": 99,
+      "char_start": 93,
+      "excerpt": "18,000",
+      "page": 1
+    },
+    "items[1].amount": {
+      "char_end": 141,
+      "char_start": 134,
+      "excerpt": "282,000",
+      "page": 1
+    },
+    "items[1].name": {
+      "char_end": 118,
+      "char_start": 112,
+      "excerpt": "공압 실린더",
+      "page": 1
+    },
+    "items[1].qty": {
+      "char_end": 123,
+      "char_start": 121,
+      "excerpt": "60",
+      "page": 1
+    },
+    "items[1].unit_price": {
+      "char_end": 131,
+      "char_start": 126,
+      "excerpt": "4,700",
+      "page": 1
+    },
+    "supply_amount": {
+      "char_end": 158,
+      "char_start": 149,
+      "excerpt": "2,442,000",
+      "page": 1
+    },
+    "total": {
+      "char_end": 185,
+      "char_start": 176,
+      "excerpt": "2,686,200",
+      "page": 1
+    },
+    "vat": {
+      "char_end": 171,
+      "char_start": 164,
+      "excerpt": "244,200",
+      "page": 1
+    },
+    "vendor": {
+      "char_end": 56,
+      "char_start": 52,
+      "excerpt": "누리기계",
+      "page": 1
+    }
+  },
+  "expected_rule_ids": [],
+  "expected_status": "PENDING_REVIEW",
+  "fields": {
+    "doc_date": "2026-08-14",
+    "doc_no": "TX-2026-1014",
+    "supply_amount": 2442000,
+    "total": 2686200,
+    "vat": 244200,
+    "vendor": "누리기계"
+  },
+  "items": [
+    {
+      "amount": 2160000,
+      "name": "스테인리스 와셔",
+      "qty": 120,
+      "unit_price": 18000
+    },
+    {
+      "amount": 282000,
+      "name": "공압 실린더",
+      "qty": 60,
+      "unit_price": 4700
+    }
+  ]
+}

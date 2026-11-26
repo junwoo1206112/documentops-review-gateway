@@ -10,6 +10,7 @@ from app.services.extraction.deterministic import DocumentFormatError, parse_doc
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 EVAL_DIR = PROJECT_ROOT / "fixtures" / "evaluation"
+LAYOUT2_DIR = PROJECT_ROOT / "fixtures" / "evaluation_layout2"
 
 
 def load_manifest() -> list[dict]:
@@ -100,6 +101,41 @@ def test_crlf_document_keeps_offsets_consistent() -> None:
     for field in result.fields:
         assert field.char_start is not None and field.char_end is not None
         assert text[field.char_start : field.char_end] == field.evidence_excerpt
+
+
+def test_parses_pipe_layout_with_exact_cell_spans() -> None:
+    text = (LAYOUT2_DIR / "DOC-0001.txt").read_text(encoding="utf-8")
+    result = parse_document(text)
+    fields = result.by_path()
+    assert fields["vendor"].value == "가온상사"
+    assert fields["doc_date"].value == "2026-01-05"
+    assert result.items[0].name == "산업용 볼트 M8"
+    assert result.items[0].qty == 9
+    for field in result.fields:
+        if field.char_start is not None:
+            assert text[field.char_start : field.char_end] == field.evidence_excerpt
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        lambda text: text.replace("품목 | 수량 | 단가 | 금액", "품목 | 수량 | 단가", 1),
+        lambda text: text.replace("산업용 볼트 M8 | 9 | 1,500 | 13,500", "산업용 볼트 M8 | 9 | | 13,500", 1),
+        lambda text: text.replace("작성일: ", "작성일자: ", 1),
+    ],
+)
+def test_pipe_layout_rejects_incomplete_or_ambiguous_structure(mutation) -> None:
+    text = (LAYOUT2_DIR / "DOC-0001.txt").read_text(encoding="utf-8")
+    with pytest.raises(DocumentFormatError):
+        parse_document(mutation(text))
+
+
+def test_mixed_layout_is_rejected_not_guessed() -> None:
+    text = document_text("DOC-0001").replace(
+        "품목명                수량        단가          금액", "품목 | 수량 | 단가 | 금액", 1
+    )
+    with pytest.raises(DocumentFormatError):
+        parse_document(text)
 
 
 def test_malformed_item_row_is_rejected_not_guessed() -> None:

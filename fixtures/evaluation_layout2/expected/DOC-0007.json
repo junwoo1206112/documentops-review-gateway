@@ -1,0 +1,84 @@
+{
+  "dataset_version": "synth-2026-11-26.3",
+  "document_id": "DOC-0007",
+  "evidence": {
+    "doc_date": {
+      "char_end": 46,
+      "char_start": 36,
+      "excerpt": "2026-04-17",
+      "page": 1
+    },
+    "doc_no": {
+      "char_end": 30,
+      "char_start": 18,
+      "excerpt": "TX-2026-1007",
+      "page": 1
+    },
+    "items[0].amount": {
+      "char_end": 107,
+      "char_start": 101,
+      "excerpt": "42,000",
+      "page": 1
+    },
+    "items[0].name": {
+      "char_end": 85,
+      "char_start": 76,
+      "excerpt": "알루미늄 프로파일",
+      "page": 1
+    },
+    "items[0].qty": {
+      "char_end": 90,
+      "char_start": 88,
+      "excerpt": "35",
+      "page": 1
+    },
+    "items[0].unit_price": {
+      "char_end": 98,
+      "char_start": 93,
+      "excerpt": "1,200",
+      "page": 1
+    },
+    "supply_amount": {
+      "char_end": 121,
+      "char_start": 115,
+      "excerpt": "42,000",
+      "page": 1
+    },
+    "total": {
+      "char_end": 143,
+      "char_start": 137,
+      "excerpt": "46,200",
+      "page": 1
+    },
+    "vat": {
+      "char_end": 132,
+      "char_start": 127,
+      "excerpt": "4,200",
+      "page": 1
+    },
+    "vendor": {
+      "char_end": 56,
+      "char_start": 52,
+      "excerpt": "새솔유통",
+      "page": 1
+    }
+  },
+  "expected_rule_ids": [],
+  "expected_status": "PENDING_REVIEW",
+  "fields": {
+    "doc_date": "2026-04-17",
+    "doc_no": "TX-2026-1007",
+    "supply_amount": 42000,
+    "total": 46200,
+    "vat": 4200,
+    "vendor": "새솔유통"
+  },
+  "items": [
+    {
+      "amount": 42000,
+      "name": "알루미늄 프로파일",
+      "qty": 35,
+      "unit_price": 1200
+    }
+  ]
+}

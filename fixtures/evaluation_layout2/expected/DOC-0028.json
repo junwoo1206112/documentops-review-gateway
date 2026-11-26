@@ -1,0 +1,86 @@
+{
+  "dataset_version": "synth-2026-11-26.3",
+  "document_id": "DOC-0028",
+  "evidence": {
+    "doc_date": {
+      "char_end": 46,
+      "char_start": 36,
+      "excerpt": "2026-08-24",
+      "page": 1
+    },
+    "doc_no": {
+      "char_end": 30,
+      "char_start": 18,
+      "excerpt": "TX-2026-3029",
+      "page": 1
+    },
+    "items[0].amount": {
+      "char_end": 104,
+      "char_start": 97,
+      "excerpt": "252,000",
+      "page": 1
+    },
+    "items[0].name": {
+      "char_end": 81,
+      "char_start": 76,
+      "excerpt": "포장 박스",
+      "page": 1
+    },
+    "items[0].qty": {
+      "char_end": 86,
+      "char_start": 84,
+      "excerpt": "45",
+      "page": 1
+    },
+    "items[0].unit_price": {
+      "char_end": 94,
+      "char_start": 89,
+      "excerpt": "5,600",
+      "page": 1
+    },
+    "supply_amount": {
+      "char_end": 119,
+      "char_start": 112,
+      "excerpt": "252,000",
+      "page": 1
+    },
+    "total": {
+      "char_end": 143,
+      "char_start": 136,
+      "excerpt": "277,201",
+      "page": 1
+    },
+    "vat": {
+      "char_end": 131,
+      "char_start": 125,
+      "excerpt": "25,200",
+      "page": 1
+    },
+    "vendor": {
+      "char_end": 56,
+      "char_start": 52,
+      "excerpt": "바른정밀",
+      "page": 1
+    }
+  },
+  "expected_rule_ids": [
+    "LINE_TOTAL_MISMATCH"
+  ],
+  "expected_status": "HOLD",
+  "fields": {
+    "doc_date": "2026-08-24",
+    "doc_no": "TX-2026-3029",
+    "supply_amount": 252000,
+    "total": 277201,
+    "vat": 25200,
+    "vendor": "바른정밀"
+  },
+  "items": [
+    {
+      "amount": 252000,
+      "name": "포장 박스",
+      "qty": 45,
+      "unit_price": 5600
+    }
+  ]
+}

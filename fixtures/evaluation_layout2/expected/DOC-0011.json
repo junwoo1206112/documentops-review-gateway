@@ -1,0 +1,114 @@
+{
+  "dataset_version": "synth-2026-11-26.3",
+  "document_id": "DOC-0011",
+  "evidence": {
+    "doc_date": {
+      "char_end": 46,
+      "char_start": 36,
+      "excerpt": "2026-06-24",
+      "page": 1
+    },
+    "doc_no": {
+      "char_end": 30,
+      "char_start": 18,
+      "excerpt": "TX-2026-1011",
+      "page": 1
+    },
+    "items[0].amount": {
+      "char_end": 102,
+      "char_start": 96,
+      "excerpt": "30,000",
+      "page": 1
+    },
+    "items[0].name": {
+      "char_end": 80,
+      "char_start": 76,
+      "excerpt": "라벨 롤",
+      "page": 1
+    },
+    "items[0].qty": {
+      "char_end": 85,
+      "char_start": 83,
+      "excerpt": "20",
+      "page": 1
+    },
+    "items[0].unit_price": {
+      "char_end": 93,
+      "char_start": 88,
+      "excerpt": "1,500",
+      "page": 1
+    },
+    "items[1].amount": {
+      "char_end": 131,
+      "char_start": 124,
+      "excerpt": "250,000",
+      "page": 1
+    },
+    "items[1].name": {
+      "char_end": 108,
+      "char_start": 103,
+      "excerpt": "에어 필터",
+      "page": 1
+    },
+    "items[1].qty": {
+      "char_end": 113,
+      "char_start": 111,
+      "excerpt": "40",
+      "page": 1
+    },
+    "items[1].unit_price": {
+      "char_end": 121,
+      "char_start": 116,
+      "excerpt": "6,250",
+      "page": 1
+    },
+    "supply_amount": {
+      "char_end": 146,
+      "char_start": 139,
+      "excerpt": "280,000",
+      "page": 1
+    },
+    "total": {
+      "char_end": 170,
+      "char_start": 163,
+      "excerpt": "308,000",
+      "page": 1
+    },
+    "vat": {
+      "char_end": 158,
+      "char_start": 152,
+      "excerpt": "28,000",
+      "page": 1
+    },
+    "vendor": {
+      "char_end": 56,
+      "char_start": 52,
+      "excerpt": "다움상사",
+      "page": 1
+    }
+  },
+  "expected_rule_ids": [],
+  "expected_status": "PENDING_REVIEW",
+  "fields": {
+    "doc_date": "2026-06-24",
+    "doc_no": "TX-2026-1011",
+    "supply_amount": 280000,
+    "total": 308000,
+    "vat": 28000,
+    "vendor": "다움상사"
+  },
+  "items": [
+    {
+      "amount": 30000,
+      "name": "라벨 롤",
+      "qty": 20,
+      "unit_price": 1500
+    },
+    {
+      "amount": 250000,
+      "name": "에어 필터",
+      "qty": 40,
+      "unit_price": 6250
+    }
+  ]
+}

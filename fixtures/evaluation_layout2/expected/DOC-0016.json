@@ -1,0 +1,84 @@
+{
+  "dataset_version": "synth-2026-11-26.3",
+  "document_id": "DOC-0016",
+  "evidence": {
+    "doc_date": {
+      "char_end": 46,
+      "char_start": 36,
+      "excerpt": "2026-09-18",
+      "page": 1
+    },
+    "doc_no": {
+      "char_end": 30,
+      "char_start": 18,
+      "excerpt": "TX-2026-1017",
+      "page": 1
+    },
+    "items[0].amount": {
+      "char_end": 102,
+      "char_start": 97,
+      "excerpt": "3,702",
+      "page": 1
+    },
+    "items[0].name": {
+      "char_end": 82,
+      "char_start": 76,
+      "excerpt": "정밀 샤프트",
+      "page": 1
+    },
+    "items[0].qty": {
+      "char_end": 86,
+      "char_start": 85,
+      "excerpt": "3",
+      "page": 1
+    },
+    "items[0].unit_price": {
+      "char_end": 94,
+      "char_start": 89,
+      "excerpt": "1,234",
+      "page": 1
+    },
+    "supply_amount": {
+      "char_end": 115,
+      "char_start": 110,
+      "excerpt": "3,702",
+      "page": 1
+    },
+    "total": {
+      "char_end": 134,
+      "char_start": 129,
+      "excerpt": "4,072",
+      "page": 1
+    },
+    "vat": {
+      "char_end": 124,
+      "char_start": 121,
+      "excerpt": "370",
+      "page": 1
+    },
+    "vendor": {
+      "char_end": 56,
+      "char_start": 52,
+      "excerpt": "라온산업",
+      "page": 1
+    }
+  },
+  "expected_rule_ids": [],
+  "expected_status": "PENDING_REVIEW",
+  "fields": {
+    "doc_date": "2026-09-18",
+    "doc_no": "TX-2026-1017",
+    "supply_amount": 3702,
+    "total": 4072,
+    "vat": 370,
+    "vendor": "라온산업"
+  },
+  "items": [
+    {
+      "amount": 3702,
+      "name": "정밀 샤프트",
+      "qty": 3,
+      "unit_price": 1234
+    }
+  ]
+}
