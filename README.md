@@ -120,7 +120,7 @@ python -m venv .venv
 # source .venv/bin/activate         # Linux/macOS
 pip install -e ".[dev]"
 
-python -m pytest -q                 # 174 passed (2026-11-27, Python 3.12.10)
+python -m pytest -q                 # 175 passed (2026-11-27, Python 3.12.10)
 python tools/generate_dataset.py --check
 python -m app.inspect fixtures/evaluation/DOC-0001.txt
 
@@ -156,8 +156,9 @@ Blueprint로 연결하면 `PUBLIC_DEMO_READ_ONLY=true`가 적용되어 외부 �
 숨긴다. 공개 방문자는 합성 데이터 고지, 검증·감사 화면, Release 데모 영상을 볼 수 있다.
 
 - 2026-11-26: 공개 URL에서 health `ok`, 문서 4건, 쓰기 차단 403을 확인했다.
-- 2026-11-27: 재확인 시 `/api/health`가 **503**이었다. 재배포 후 health·목록 4건·POST 403·`/evaluation`
-  두 리포트를 다시 확인하기 전까지 "live"로 주장하지 않는다. 무료 인스턴스는 비활성 후 재기동 시 첫 응답이 늦을 수 있다.
+- 2026-11-27: health `200`, 문서 4건, POST `403`까지 재확인했다. 다만 새 `/api/evaluation/reports`는
+  아직 `404`라 이전 이미지가 남아 있다. Render 대시보드에서 수동 재배포한 뒤 `/evaluation`의 두 리포트를
+  확인하기 전까지 "두 리포트 공개"를 주장하지 않는다. 무료 인스턴스는 비활성 후 재기동 시 첫 응답이 늦을 수 있다.
 
 ### CI
 
@@ -171,7 +172,8 @@ Blueprint로 연결하면 `PUBLIC_DEMO_READ_ONLY=true`가 적용되어 외부 �
 6. 두 레이아웃 `python -m app.evaluate …` 후 `artifacts/evaluation_report*.json` artifact 업로드
 
 [`ci` 워크플로 첫 실행](https://github.com/junwoo1206112/documentops-review-gateway/actions/runs/45697512065)이
-`main`에서 성공했습니다. 두 번째 레이아웃 평가 단계는 Phase 17-I에서 추가했으며, 다음 push에서 실행을 확인한다.
+`main`에서 성공했습니다. [Phase 17-I CI 실행](https://github.com/junwoo1206112/documentops-review-gateway/actions/runs/45897296626)에서
+두 레이아웃 평가와 두 리포트 artifact 업로드까지 실제로 성공했습니다.
 
 ## 데모 영상 촬영
 

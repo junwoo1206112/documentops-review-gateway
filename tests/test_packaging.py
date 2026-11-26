@@ -204,7 +204,7 @@ def test_handoff_seed_is_valid_and_tracks_state() -> None:
     assert data["verified"]["tests_collected_after_phase_6"] == 133
     assert data["verified"]["evaluation_exit_code"] == 0
     assert data["verified"]["ci_remote"]["status"] == "success"
-    assert data["verified"]["ci_remote"]["run_url"].endswith("/45702069278")
+    assert data["verified"]["ci_remote"]["run_url"].endswith("/45897296626")
 
     task_ids = {task["id"] for task in data["remaining"]}
     assert {"R-001", "R-002", "R-003", "R-004", "R-005", "R-008"} <= task_ids

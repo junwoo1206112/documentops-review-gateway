@@ -18,11 +18,11 @@
 | 핵심 주장 | "AI가 답한다"가 아니라 **근거 없는 값은 승인 불가, blocking 오류는 HOLD, 판정은 사람만** |
 | 스택 | Python 3.12, FastAPI, SQLite, Jinja2 서버 렌더링, pytest, Docker, GitHub Actions |
 | 실행 | `uvicorn app.asgi:app` (주의: `app.main:app` 아님) |
-| 테스트 | **174 passed** (2026-11-27, Python 3.12.10, Windows 11) |
+| 테스트 | **175 passed** (2026-11-27, Python 3.12.10, Windows 11) |
 | 평가 | 공백 표·파이프 표 독립 36건씩: 문서 EM 36/36, HOLD 재현 19/19, 오보류 0/17, 규칙 일치 36/36, 근거 410/412 |
 | Docker | `docker compose up --build` → `healthy`, 데모 4건 처리, 컨테이너 내 평가 동일 |
 | 원격 CI | `main`의 첫 `ci` 성공. README 배지는 실제 실행으로 연결됨 |
-| 공개 데모 | [Render 읽기 전용 데모](https://documentops-review-gateway-demo.onrender.com) — 2026-11-26 health `ok`/문서 4건/POST 403 확인. **2026-11-27 재확인 시 `/api/health` 503, 재배포 후 재검증 필요** |
+| 공개 데모 | [Render 읽기 전용 데모](https://documentops-review-gateway-demo.onrender.com) — 2026-11-27 health `200`·문서 4건·POST `403` 재확인. 다만 새 `/api/evaluation/reports`는 아직 `404`라 수동 재배포 후 두 리포트 확인이 남음 |
 | 남은 일 | OCR·실제 LLM·운영화 Gate 중 하나 선택 → [페이즈 로드맵](docs/ROADMAP_PHASES.md#인수자용-현재-상태와-실행-순서) |
 
 3개 명령으로 상태를 확인할 수 있다.
@@ -79,7 +79,7 @@ python -m app.evaluate --dataset fixtures/evaluation
 | 14-I | Gate D 결정, 품목 셀 재인용·행 anchor·effective items·재검증 | `feat(phase14i): …` | 156 passed |
 | 15 | 두 번째 파이프 텍스트 양식, 독립 36건 평가, 혼합 양식 422 | `feat(phase15): …` | 두 레이아웃 36/36 |
 | 17 | opt-in 오프라인 LLM provider 계약, evidence HOLD, 명시적 provider 실패 | `feat(phase17): …` | 170 passed, 외부 API 없음 |
-| 17-I | 레이아웃별 리포트 분리, CI·Docker 두 레이아웃 평가, 공개 시드 부분 복구 | `feat(phase17i): …` | 174 passed, `/evaluation` 두 리포트 |
+| 17-I | 레이아웃별 리포트 분리, CI·Docker 두 레이아웃 평가, 공개 시드 부분 복구 | `feat(phase17i): …` | 175 passed, [CI run 45897296626](https://github.com/junwoo1206112/documentops-review-gateway/actions/runs/45897296626) 두 평가 성공 |
 
 ### 기준선 수치 (재현 가능)
 
@@ -132,7 +132,7 @@ pip install -e ".[dev]"
 python -m pytest -q
 ```
 
-기대 결과: `174 passed`.
+기대 결과: `175 passed`.
 
 > `uv`와 Node.js는 필요 없다. UI는 Jinja2 서버 렌더링이다(ADR 0002).
 > Python은 3.12 이상이어야 한다.

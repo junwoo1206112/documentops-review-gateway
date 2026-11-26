@@ -42,7 +42,7 @@ versions:
 verified:
   date: "2026-11-27"
   platform: "Windows 11, Python 3.12.10"
-  tests_passed: 174
+  tests_passed: 175
   tests_collected_after_phase_6: 133
   dataset_check: pass
   evaluation_exit_code: 0
@@ -67,8 +67,8 @@ verified:
     baked_reports: ["evaluation", "evaluation_layout2"]
   ci_remote:
     status: success
-    run_url: "https://github.com/junwoo1206112/documentops-review-gateway/actions/runs/45702069278"
-    note: "최신 성공 실행. 두 레이아웃 평가 job은 Phase 17-I에서 추가했으며 다음 push에서 확인한다."
+    run_url: "https://github.com/junwoo1206112/documentops-review-gateway/actions/runs/45897296626"
+    note: "Phase 17-I의 layout1·layout2 평가와 evaluation-reports artifact 업로드까지 성공했다."
   evaluation_reports:
     default_dataset: evaluation
     files:
@@ -80,7 +80,7 @@ verified:
     status: deployed_unverified
     url: "https://documentops-review-gateway-demo.onrender.com"
     last_verified: "2026-11-26"
-    observed: "2026-11-27 GET /api/health = 503; redeploy 후 재검증 필요"
+    observed: "2026-11-27 health=200, documents=4, POST=403; 새 /api/evaluation/reports=404로 이전 이미지가 남아 수동 재배포 후 두 리포트 재확인 필요"
     checks_expected: ["GET /api/health = 200", "GET /api/documents total = 4", "POST /api/documents = E_PUBLIC_DEMO_READ_ONLY 403", "GET /evaluation 두 리포트"]
 
 commands:
