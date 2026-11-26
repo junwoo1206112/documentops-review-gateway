@@ -312,6 +312,8 @@ POST /api/documents/{id}/revalidate
 ### R-004 — OCR 확장 (P2, 결정 필요: P-001)
 
 - 왜: 이미지 문서는 현재 415/422로 끝난다.
+- 시작 입력: [P-001 OCR Gate 결정 패킷](docs/decisions/p001-ocr-gate.md)의 모든 `미결정`을
+  오너 선택값으로 확정한다. 이 전에는 scan 스키마·가짜 OCR 경로·이미지/PDF 업로드를 추가하지 않는다.
 - 조건: `source_kind=scan` 전용 데이터셋(별도 36건), 별도 지표표, 낮은 신뢰도·span 미확보 시
   자동 HOLD, 텍스트 평가와 혼합 금지.
 - 수용 기준: 텍스트 기준선이 변하지 않고, OCR 표가 분리 보고되며, CI에 외부 바이너리 의존을

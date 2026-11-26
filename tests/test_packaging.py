@@ -85,6 +85,20 @@ def test_decision_log_lists_deferred_scope() -> None:
     assert "OCR" in pending
 
 
+def test_p001_ocr_gate_packet_keeps_required_decisions_explicit() -> None:
+    packet = read("docs/decisions/p001-ocr-gate.md")
+    for token in (
+        "허용 입력 형식",
+        "OCR 엔진·라이선스",
+        "실행 위치·전송",
+        "최소 품질 임계값",
+        "원본 보존·삭제",
+        "미결정",
+        "자동 `HOLD`",
+    ):
+        assert token in packet
+
+
 def test_readme_documents_runbook_and_limits() -> None:
     readme = read("README.md")
     for command in (
