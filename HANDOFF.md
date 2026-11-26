@@ -2,7 +2,7 @@
 
 - 작성일: 2026-11-26
 - 대상: 다음 인수자(사람)와 다음 LLM 세션
-- 현재 브랜치 상태: `main`, Phase 0~12·14 완료; Phase 13(스크린리더 실사용)과 품목 수정 후속 대기
+- 현재 브랜치 상태: `main`, Phase 0~12·14·14-I 완료; Phase 13(스크린리더 실사용)과 Gate B/C 결정 대기
 - 최신 커밋: `git log --oneline`으로 확인한다. 커밋 해시는 이동하므로 이 문서에 고정하지 않는다.
 
 이 문서 하나로 **무엇을 만들었고, 무엇이 검증됐고, 무엇이 남았고, 어떻게 이어서 하는지**를
@@ -18,11 +18,11 @@
 | 핵심 주장 | "AI가 답한다"가 아니라 **근거 없는 값은 승인 불가, blocking 오류는 HOLD, 판정은 사람만** |
 | 스택 | Python 3.12, FastAPI, SQLite, Jinja2 서버 렌더링, pytest, Docker, GitHub Actions |
 | 실행 | `uvicorn app.asgi:app` (주의: `app.main:app` 아님) |
-| 테스트 | **155 passed** (2026-11-26, Python 3.12.10, Windows 11) |
+| 테스트 | **156 passed** (2026-11-26, Python 3.12.10, Windows 11) |
 | 평가 | 36건 기준 문서 EM 36/36, HOLD 재현 19/19, 오보류 0/17, 규칙 일치 36/36, 근거 410/412 |
 | Docker | `docker compose up --build` → `healthy`, 데모 4건 처리, 컨테이너 내 평가 동일 |
 | 원격 CI | `main`의 첫 `ci` 성공. README 배지는 실제 실행으로 연결됨 |
-| 남은 일 | Phase 13 스크린리더 실사용 검토, 품목 수정 후속, Gate B/C 결정 → 6절 |
+| 남은 일 | Phase 13 스크린리더 실사용 검토, Gate B/C 결정 → 6절 |
 
 3개 명령으로 상태를 확인할 수 있다.
 
@@ -74,6 +74,7 @@ python -m app.evaluate --dataset fixtures/evaluation
 | 11 | 자동 대비 감사, 768/1024px 실제 화면 캡처 | `feat(phase11): …` | `artifacts/accessibility_audit.json` |
 | 12 | GitHub Release 공개, 데모 영상 asset 확인, README·인수 상태 갱신 | `docs(phase12): …` | [v0.1.0-demo](https://github.com/junwoo1206112/documentops-review-gateway/releases/tag/v0.1.0-demo) |
 | 14 | Gate A 결정, 원문 재인용 필드 수정·재검증·append-only 감사·UI | `feat(phase14): …` | 155 passed, `test_corrections.py` 15개 |
+| 14-I | Gate D 결정, 품목 셀 재인용·행 anchor·effective items·재검증 | `feat(phase14i): …` | 156 passed |
 
 ### 기준선 수치 (재현 가능)
 

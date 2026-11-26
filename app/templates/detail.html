@@ -108,10 +108,10 @@
       {% for item in items %}
       <tr>
         <td>{{ item.ordinal + 1 }}</td>
-        <td>{{ item.name }}</td>
-        <td class="num">{{ item.qty }}</td>
-        <td class="num">{{ item.unit_price|money }}</td>
-        <td class="num">{{ item.amount|money }}</td>
+        <td>{{ item.name }}{% if "name" in item.corrected_fields %} <span class="badge corrected">사람 수정</span>{% endif %}</td>
+        <td class="num">{{ item.qty }}{% if "qty" in item.corrected_fields %} <span class="badge corrected">사람 수정</span>{% endif %}</td>
+        <td class="num">{{ item.unit_price|money }}{% if "unit_price" in item.corrected_fields %} <span class="badge corrected">사람 수정</span>{% endif %}</td>
+        <td class="num">{{ item.amount|money }}{% if "amount" in item.corrected_fields %} <span class="badge corrected">사람 수정</span>{% endif %}</td>
       </tr>
       {% endfor %}
     </tbody>
@@ -142,6 +142,9 @@
     </label>
     <label>원문 재인용
       <input type="text" name="excerpt" required placeholder="원문에서 그대로 복사한 문구" />
+    </label>
+    <label>품목 행 anchor <span class="hint">품목 수정 시 원문 행 전체를 그대로 입력</span>
+      <input type="text" name="row_anchor" placeholder="예: 테스트 볼트 10 1,000 10,000" />
     </label>
     <label>검토자 별칭
       <input type="text" name="reviewer_alias" maxlength="40" required placeholder="reviewer-a" />

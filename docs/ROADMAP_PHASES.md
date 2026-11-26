@@ -66,8 +66,7 @@
 
 ## Gate D — 품목(`items[]`) 수정 정책 결정
 
-**상태: 의사결정 대기.** 품목은 금액·수량·행 순서·합계 규칙과 연결되므로 스칼라 필드 수정의
-API를 그대로 확장하면 안 된다. 다음 값을 확정한 뒤에만 구현한다.
+**상태: 닫힘 (2026-11-26).** 이번 구현은 아래 권장 기본안을 Gate D 결정으로 채택한다.
 
 1. **행 식별자:** 원본 `ordinal`만 쓸지, `ordinal`과 원본 행 인용을 함께 고정할지.
 2. **허용 편집:** `name`·`qty`·`unit_price`·`amount`의 셀 수정만 허용할지, 행 추가·삭제·순서 변경도
@@ -77,21 +76,20 @@ API를 그대로 확장하면 안 된다. 다음 값을 확정한 뒤에만 구�
    파생값을 자동으로 다시 계산할지.
 5. **감사 표시:** 행 번호가 바뀌지 않도록 원본 ordinal·수정 전/후 셀값·span을 어떻게 보존할지.
 
-권장 기본안: **원본 ordinal + 행 anchor를 고정하고, 기존 행의 단일 셀만 원문 재인용으로 수정한다.**
+결정: **원본 ordinal + 행 anchor를 고정하고, 기존 행의 단일 셀만 원문 재인용으로 수정한다.**
 행 추가·삭제·재정렬과 원문에 없는 품목은 재업로드로 제한한다. 수정 뒤에는 현재 Phase 14와 같이
 전체 규칙·중복·산술을 재실행하며, 불일치는 자동 보정하지 않고 HOLD로 남긴다.
 
-## Phase 14-I — 품목 수정 (조건부: Gate D 결정 후)
+## Phase 14-I — 품목 수정 (완료)
 
 이 표기는 기존 Phase 15~20의 번호와 순서를 바꾸지 않는 Phase 14의 확장이다.
 
-- 범위: `items[{ordinal}].name|qty|unit_price|amount`의 quote-backed correction, 행 anchor,
+- 구현: `items[{ordinal}].name|qty|unit_price|amount`의 quote-backed correction, 행 anchor,
   append-only 이력, `effective_items` 분리, 재검증 UI/API.
 - 비범위: 행 추가·삭제·정렬 변경, 원문에 없는 신규 품목, 자동 금액 보정, 자유 입력.
 - 검증: 잘못된 ordinal/anchor 차단, 셀 인용 불일치 차단, 산술·중복 재검증, 과거 수정 이력 불변,
   기존 스칼라 correction과 36건 기준선 불변.
-- 완료 기준: Gate D 수용 기준을 ADR로 고정하고, scalar/item 교차 수정과 종료 상태 409을 포함한
-  계약·서비스·UI 회귀 테스트를 추가한다.
+- 검증: 행 anchor 없는 수정·모호한 셀 인용을 차단하고, 유효 수정은 `effective_items`에만 반영한다.
 
 ## Phase 15 — 두 번째 텍스트 레이아웃 (R-006)
 

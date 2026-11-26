@@ -7,8 +7,9 @@ Phase 14의 사람 수정은 추출 결과를 덮어쓰지 않고, 검증 직전
 
 from __future__ import annotations
 
+import re
 from collections.abc import Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from time import perf_counter
 
 from app.domain.fields import FIELD_KEYS, FIELD_LABELS, ITEM_FIELD_KEYS
@@ -47,11 +48,18 @@ class ProcessedDocument:
 def apply_corrections(
     extraction: ExtractionResult, corrections: Sequence[FieldCorrection]
 ) -> ExtractionResult:
-    """검증된 사람 수정값을 필드 집합에 주입한다. 품목은 MVP 범위 밖이다."""
+    """검증된 사람 수정값을 필드·품목 집합에 주입한다."""
     if not corrections:
         return extraction
     fields = extraction.by_path()
+    items = list(extraction.items)
     for correction in corrections:
+        item_match = re.fullmatch(r"items\[(\d+)]\.(name|qty|unit_price|amount)", correction.path)
+        if item_match:
+            ordinal, key = int(item_match.group(1)), item_match.group(2)
+            if ordinal >= len(items):
+                raise UnprocessableError("수정 대상 품목 행이 존재하지 않습니다.")
+            items[ordinal] = replace(items[ordinal], **{key: correction.value})
         fields[correction.path] = ExtractedField(
             path=correction.path,
             label=FIELD_LABELS.get(correction.path, correction.path),
@@ -66,11 +74,9 @@ def apply_corrections(
         )
     ordered = [fields[key] for key in FIELD_KEYS if key in fields]
     ordered.extend(
-        fields[f"items[{item.ordinal}].{key}"]
-        for item in extraction.items
-        for key in ITEM_FIELD_KEYS
+        fields[f"items[{item.ordinal}].{key}"] for item in items for key in ITEM_FIELD_KEYS
     )
-    return ExtractionResult(fields=tuple(ordered), items=extraction.items)
+    return ExtractionResult(fields=tuple(ordered), items=tuple(items))
 
 
 def process_document(

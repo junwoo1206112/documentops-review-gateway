@@ -265,9 +265,46 @@ def test_unsupported_correction_path_is_rejected(client: TestClient) -> None:
     created = upload_text(
         client, BASE.format(vendor="가온상사(주)", date="2026-06-01", total="11,000")
     )
-    response = correct(client, created["document"]["id"], path="items[0].qty")
+    response = correct(client, created["document"]["id"], path="items[0].unknown")
     assert response.status_code == 422
     assert "수정할 수 없는 필드" in response.json()["error"]["message"]
+
+
+def test_item_correction_requires_row_anchor_and_preserves_original(client: TestClient) -> None:
+    text = BASE.format(vendor="가온상사", date="2026-06-01", total="11,000")
+    created = upload_text(client, text)
+    document_id = created["document"]["id"]
+    anchor = "테스트 볼트            10        1,000       10,000"
+    char_start = text.index(anchor) + anchor.index("10")
+    response = correct(
+        client,
+        document_id,
+        path="items[0].qty",
+        value=10,
+        excerpt="10",
+        char_start=char_start,
+        char_end=char_start + 2,
+    )
+    assert response.status_code == 422
+    assert "row_anchor" in response.json()["error"]["message"]
+
+    response = correct(
+        client,
+        document_id,
+        path="items[0].qty",
+        value=10,
+        excerpt="10",
+        row_anchor=anchor,
+        char_start=char_start,
+        char_end=char_start + 2,
+    )
+    assert response.status_code == 201, response.text
+    body = response.json()
+    assert body["items"][0]["qty"] == 10
+    assert body["effective_items"][0]["qty"] == 10
+    assert body["effective_items"][0]["original"]["qty"] == 10
+    assert body["effective_items"][0]["corrected_fields"] == ["qty"]
+    assert body["corrections"][-1]["row_anchor"] == anchor
 
 
 def test_correction_requires_alias_and_reason(client: TestClient) -> None:

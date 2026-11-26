@@ -94,6 +94,7 @@ def correct_field(request: Request, document_id: str, payload: CorrectionRequest
         excerpt=payload.excerpt,
         char_start=payload.char_start,
         char_end=payload.char_end,
+        row_anchor=payload.row_anchor,
         reviewer_alias=payload.reviewer_alias,
         reason=payload.reason,
     )

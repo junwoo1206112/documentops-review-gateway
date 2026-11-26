@@ -116,6 +116,7 @@ CREATE TABLE IF NOT EXISTS field_corrections (
     page INTEGER NOT NULL,
     char_start INTEGER NOT NULL,
     char_end INTEGER NOT NULL,
+    row_anchor TEXT,
     reviewer_alias TEXT NOT NULL,
     reason TEXT NOT NULL,
     created_at TEXT NOT NULL
@@ -151,6 +152,11 @@ class Database:
         self.path.parent.mkdir(parents=True, exist_ok=True)
         with self.transaction() as connection:
             connection.executescript(SCHEMA)
+            columns = {
+                row["name"] for row in connection.execute("PRAGMA table_info(field_corrections)")
+            }
+            if "row_anchor" not in columns:
+                connection.execute("ALTER TABLE field_corrections ADD COLUMN row_anchor TEXT")
 
     @contextmanager
     def transaction(self) -> Iterator[sqlite3.Connection]:

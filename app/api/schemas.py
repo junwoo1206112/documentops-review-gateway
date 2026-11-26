@@ -26,6 +26,7 @@ class CorrectionRequest(BaseModel):
     excerpt: str | None = None
     char_start: int | None = Field(default=None, ge=0)
     char_end: int | None = Field(default=None, ge=0)
+    row_anchor: str | None = Field(default=None, min_length=1)
     reviewer_alias: str = Field(min_length=1, max_length=40)
     reason: str = Field(min_length=1, max_length=500)
 

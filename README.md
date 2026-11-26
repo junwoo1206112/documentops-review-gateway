@@ -8,9 +8,9 @@
 증명하려는 역량은 "AI가 답을 낸다"가 아니라,
 **AI 산출물을 실제 업무에 투입하기 전에 검증·보류·승인·추적하는 방법**입니다.
 
-**상태: Phase 0~12·14 완료** (계약 → 데이터 → 추출·검증 → 검토 UI/감사 → 평가 → Docker/CI → 운영·접근성 → 데모 공개 → 사람 수정).
+**상태: Phase 0~12·14·14-I 완료** (계약 → 데이터 → 추출·검증 → 검토 UI/감사 → 평가 → Docker/CI → 운영·접근성 → 데모 공개 → 사람·품목 수정).
 원격 CI·배지와 56.8초 데모 영상 공개를 완료했고, Gate A 결정에 따라 **원문 재인용 필드 수정**을 추가했습니다.
-남은 것은 Phase 13 스크린리더 실사용(사람), 품목 수정, Gate B/C 결정입니다. OCR·LLM 어댑터·인증은 의도적으로 보류했고,
+남은 것은 Phase 13 스크린리더 실사용(사람), Gate B/C 결정입니다. OCR·LLM 어댑터·인증은 의도적으로 보류했고,
 [보류 결정](docs/decisions/pending.md)에 근거를 남겼습니다.
 
 ![문서 목록 화면](docs/images/documents.jpg)
@@ -113,7 +113,7 @@ python -m venv .venv
 # source .venv/bin/activate         # Linux/macOS
 pip install -e ".[dev]"
 
-python -m pytest -q                 # 155 passed (2026-11-26, Python 3.12.10)
+python -m pytest -q                 # 156 passed (2026-11-26, Python 3.12.10)
 python tools/generate_dataset.py --check
 python -m app.inspect fixtures/evaluation/DOC-0001.txt
 

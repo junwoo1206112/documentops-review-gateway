@@ -9,6 +9,7 @@
 from __future__ import annotations
 
 import json
+import re
 import uuid
 from collections.abc import Sequence
 from datetime import UTC, datetime
@@ -47,6 +48,7 @@ EVENT_CORRECTION = "CORRECTION_RECORDED"
 
 DECISION_TARGETS = {"APPROVE": "APPROVED", "REJECT": "REJECTED"}
 CORRECTABLE_FIELDS = frozenset(FIELD_KEYS)
+ITEM_CORRECTION_PATH = re.compile(r"items\[(\d+)]\.(name|qty|unit_price|amount)$")
 ALIAS_MAX = 40
 REASON_MAX = 500
 
@@ -189,10 +191,12 @@ class ReviewService:
         excerpt: str | None = None,
         char_start: int | None = None,
         char_end: int | None = None,
+        row_anchor: str | None = None,
     ) -> dict[str, Any]:
         """원문 재인용으로 검증되는 필드 수정. 수정 후 항상 재검증하며 승인하지 않는다."""
         alias, cleaned_reason = self._validate_actor(reviewer_alias, reason)
-        if path not in CORRECTABLE_FIELDS:
+        item_match = ITEM_CORRECTION_PATH.fullmatch(path)
+        if path not in CORRECTABLE_FIELDS and item_match is None:
             raise UnprocessableError(
                 f"수정할 수 없는 필드입니다: {path}. 허용: {', '.join(sorted(CORRECTABLE_FIELDS))}"
             )
@@ -211,6 +215,23 @@ class ReviewService:
             raise UnprocessableError(
                 "재인용 문구가 수정값과 일치하지 않습니다. 원문에 있는 값을 그대로 인용하세요."
             )
+
+        anchor_text: str | None = None
+        if item_match is not None:
+            ordinal = int(item_match.group(1))
+            if ordinal >= len(
+                self._process(document, self._effective_corrections(document_id)).items
+            ):
+                raise UnprocessableError("수정 대상 품목 행이 존재하지 않습니다.")
+            if not row_anchor:
+                raise UnprocessableError(
+                    "품목 수정에는 원본 행 전체를 재인용한 row_anchor가 필요합니다."
+                )
+            anchor_start, anchor_end, anchor_text = self._resolve_excerpt(
+                raw_text, excerpt=row_anchor, char_start=None, char_end=None
+            )
+            if not (anchor_start <= span_start and span_end <= anchor_end):
+                raise UnprocessableError("품목 근거 span은 row_anchor 범위 안에 있어야 합니다.")
 
         corrections = self._effective_corrections(document_id)
         before = self._process(document, corrections)
@@ -248,8 +269,8 @@ class ReviewService:
                 """
                 INSERT INTO field_corrections (
                     document_id, path, from_value_json, to_value_json, evidence_excerpt,
-                    page, char_start, char_end, reviewer_alias, reason, created_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    page, char_start, char_end, row_anchor, reviewer_alias, reason, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     document_id,
@@ -260,6 +281,7 @@ class ReviewService:
                     1,
                     span_start,
                     span_end,
+                    anchor_text,
                     alias,
                     cleaned_reason,
                     now,
@@ -286,6 +308,7 @@ class ReviewService:
                     "char_start": span_start,
                     "char_end": span_end,
                     "reason": cleaned_reason,
+                    "row_anchor": anchor_text,
                 },
                 now,
             )
@@ -442,6 +465,7 @@ class ReviewService:
                 }
                 for row in item_rows
             ],
+            "effective_items": self._effective_item_payload(item_rows, correction_rows),
             "issues": [
                 {
                     "rule_id": row["rule_id"],
@@ -486,6 +510,7 @@ class ReviewService:
                     "page": row["page"],
                     "char_start": row["char_start"],
                     "char_end": row["char_end"],
+                    "row_anchor": row["row_anchor"],
                     "reviewer_alias": row["reviewer_alias"],
                     "reason": row["reason"],
                     "created_at": row["created_at"],
@@ -556,6 +581,36 @@ class ReviewService:
         order = [key for key in FIELD_KEYS if key in base]
         order.extend(path for path in base if path.startswith("items["))
         return [base[path] for path in order]
+
+    @staticmethod
+    def _effective_item_payload(
+        item_rows: Sequence[Any], correction_rows: Sequence[Any]
+    ) -> list[dict[str, Any]]:
+        items = [
+            {
+                "ordinal": row["ordinal"],
+                "name": row["name"],
+                "qty": row["qty"],
+                "unit_price": row["unit_price"],
+                "amount": row["amount"],
+                "corrected_fields": [],
+                "original": {},
+            }
+            for row in item_rows
+        ]
+        for row in correction_rows:
+            match = ITEM_CORRECTION_PATH.fullmatch(row["path"])
+            if match is None:
+                continue
+            ordinal, key = int(match.group(1)), match.group(2)
+            if ordinal >= len(items):
+                continue
+            item = items[ordinal]
+            item["original"].setdefault(key, item[key])
+            item[key] = json.loads(row["to_value_json"])
+            if key not in item["corrected_fields"]:
+                item["corrected_fields"].append(key)
+        return items
 
     def audit(self, document_id: str) -> list[dict[str, Any]]:
         self._require_document(document_id)
@@ -658,6 +713,26 @@ class ReviewService:
         return first, first + len(text), text
 
     def _normalize_corrected_value(self, path: str, value: str | int) -> str | int:
+        item_match = ITEM_CORRECTION_PATH.fullmatch(path)
+        if item_match is not None:
+            key = item_match.group(2)
+            if key == "name":
+                normalized = value.strip() if isinstance(value, str) else ""
+                if not normalized:
+                    raise UnprocessableError("품목명은 비어 있을 수 없습니다.")
+                return normalized
+            number = (
+                parse_money(value)
+                if isinstance(value, str)
+                else value
+                if isinstance(value, int) and not isinstance(value, bool)
+                else None
+            )
+            if number is None or number < 0 or (key == "qty" and number < 1):
+                raise UnprocessableError(
+                    "품목 수량은 1 이상, 단가·금액은 0 이상의 정수여야 합니다."
+                )
+            return number
         if path in MONEY_FIELDS:
             number: int | None
             if isinstance(value, bool):

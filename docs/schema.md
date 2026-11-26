@@ -109,7 +109,7 @@
 |---|---|---|
 | `documents` | `id`, `sha256`, `filename`, `raw_text`, `size_bytes`, `source_kind`, `status`, `extractor_version`, `ruleset_version`, `duplicate_of`, `received_at` | `raw_text`는 수정하지 않는다 |
 | `extracted_fields` | `document_id`, `path`, `value_text`, `value_json`, `page`, `char_start`, `char_end`, `evidence_excerpt`, `evidence_status`, `confidence` | `path`는 `vendor`, `items[0].qty` 형식. 정규화 값은 JSON으로 타입 보존. **수정으로 덮어쓰지 않는다** |
-| `field_corrections` | `document_id`, `path`, `from_value_json`, `to_value_json`, `evidence_excerpt`, `page`, `char_start`, `char_end`, `reviewer_alias`, `reason`, `created_at` | **append-only**. 원문 재인용으로 검증된 사람 수정 이력 |
+| `field_corrections` | `document_id`, `path`, `from_value_json`, `to_value_json`, `evidence_excerpt`, `page`, `char_start`, `char_end`, `row_anchor`, `reviewer_alias`, `reason`, `created_at` | **append-only**. 품목 수정은 `row_anchor`로 원본 행을 함께 고정 |
 | `validation_issues` | `document_id`, `rule_id`, `severity`, `path`, `message`, `status`, `created_at` | `status`는 `open`/`resolved` |
 | `review_decisions` | `document_id`, `decision`, `reviewer_alias`, `reason`, `from_status`, `to_status`, `created_at` | 수정·삭제 API 없음 |
 | `audit_events` | `event_id`, `document_id`, `event_type`, `from_status`, `to_status`, `actor`, `metadata_json`, `created_at` | **append-only**. UPDATE/DELETE는 DB 트리거가 차단 |
@@ -222,8 +222,9 @@
 }
 ```
 
-- `path`는 스칼라 필드 6개(`vendor`, `doc_no`, `doc_date`, `supply_amount`, `vat`, `total`)만 허용한다.
-  품목 수정은 Phase 14 범위 밖이다.
+- `path`는 스칼라 필드 6개와 기존 행의 `items[{ordinal}].name|qty|unit_price|amount`를 허용한다.
+  품목 수정에는 셀 재인용 span과 그 span을 포함하는 유일한 `row_anchor`가 모두 필요하다.
+- 행 추가·삭제·재정렬, 원문에 없는 품목, 자동 금액 보정은 허용하지 않는다.
 - `excerpt`는 원문에 **실제로 존재**해야 한다. 여러 번 나타나면 `char_start`/`char_end`를 함께 보내야 한다.
 - `excerpt`를 필드 규칙으로 정규화한 값이 `value`와 같아야 한다. 즉 **원문에 있는 값만** 수정할 수 있다.
   원문에 없는 `MISSING_REQUIRED` 값은 만들 수 없고, 원문을 고쳐 새 문서로 업로드해야 한다.

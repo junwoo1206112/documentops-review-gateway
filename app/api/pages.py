@@ -87,7 +87,7 @@ def _detail_context(request: Request, detail: dict, *, form_error: str | None = 
         "detail": detail,
         "document": detail["document"],
         "fields": labeled_fields,
-        "items": detail["items"],
+        "items": detail.get("effective_items", detail["items"]),
         "issues": detail["issues"],
         "decisions": detail["decisions"],
         "corrections": detail.get("corrections", []),
@@ -98,6 +98,15 @@ def _detail_context(request: Request, detail: dict, *, form_error: str | None = 
                 "current": display_by_path.get(key),
             }
             for key in FIELD_KEYS
+        ]
+        + [
+            {
+                "path": f"items[{item['ordinal']}].{key}",
+                "label": f"품목 {item['ordinal'] + 1} {FIELD_LABELS[key]}",
+                "current": item[key],
+            }
+            for item in detail.get("effective_items", detail["items"])
+            for key in ("name", "qty", "unit_price", "amount")
         ],
         "can_correct": detail["document"]["status"] in {"HOLD", "PENDING_REVIEW"},
         "raw_highlighted": highlight_evidence(detail["raw_text"], fields),
@@ -216,6 +225,7 @@ def submit_correction(
     path: str = Form(...),
     value: str = Form(""),
     excerpt: str = Form(""),
+    row_anchor: str = Form(""),
     reviewer_alias: str = Form(""),
     reason: str = Form(""),
 ) -> HTMLResponse:
@@ -225,6 +235,7 @@ def submit_correction(
             path=path,
             value=value,
             excerpt=excerpt or None,
+            row_anchor=row_anchor or None,
             reviewer_alias=reviewer_alias,
             reason=reason,
         )
