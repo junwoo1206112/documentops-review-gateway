@@ -129,7 +129,7 @@ python -m app.evaluate --dataset fixtures/evaluation
 
 ### 공개 읽기 전용 데모(Render)
 
-루트의 `render.yaml`은 Docker 웹 서비스와 `/api/health` 헬스체크를 정의한다. Render에서 이 저장소를
+루트의 `render.yaml`은 무료(`free`) Docker 웹 서비스와 `/api/health` 헬스체크를 정의한다. Render에서 이 저장소를
 Blueprint로 연결하면 `PUBLIC_DEMO_READ_ONLY=true`가 적용되어 외부 사용자의 업로드·수정·재검증·판정 요청은
 403으로 차단된다. 공개 방문자는 합성 데이터 고지, 화면, Release 데모 영상을 볼 수 있다.
 

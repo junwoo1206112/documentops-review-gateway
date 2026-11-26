@@ -2,6 +2,7 @@ services:
   - type: web
     runtime: docker
     name: documentops-review-gateway-demo
+    plan: free
     healthCheckPath: /api/health
     autoDeployTrigger: checksPass
     envVars:
