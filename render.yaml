@@ -1,0 +1,13 @@
+services:
+  - type: web
+    runtime: docker
+    name: documentops-review-gateway-demo
+    healthCheckPath: /api/health
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: PUBLIC_DEMO_READ_ONLY
+        value: "true"
+      - key: RATE_LIMIT_PER_MINUTE
+        value: "60"
+      - key: TRUST_PROXY_HEADERS
+        value: "true"

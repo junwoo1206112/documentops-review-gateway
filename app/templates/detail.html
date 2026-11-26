@@ -28,6 +28,7 @@
 </section>
 
 {% if form_error %}<p class="alert error" role="alert">{{ form_error }}</p>{% endif %}
+{% if public_demo_read_only %}<p class="alert warn">공개 데모는 읽기 전용입니다. 업로드·수정·판정은 데모 영상에서 확인하세요.</p>{% endif %}
 
 <section class="panel">
   <h2>검증 이슈 <span class="count">{{ issues|length }}</span></h2>

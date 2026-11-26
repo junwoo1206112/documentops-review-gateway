@@ -17,7 +17,7 @@
 | 감사 이력 변조 | 애플리케이션에 UPDATE/DELETE 경로 없음 + SQLite 트리거가 UPDATE/DELETE를 차단(append-only) |
 | 자동 승인 오용 | 승인·반려 API가 사람 별칭·사유를 요구, 상태 전이표로 `HOLD → APPROVED` 차단 |
 | 요청 폭주 | `/api` 경로 분당 제한(기본 120), 초과 시 429 + `Retry-After` |
-| 인증 없는 폼·API의 무단 호출/CSRF | 인증이 없으므로 CSRF 토큰을 신뢰 경계로 쓰지 않는다. **공개 배포 전** 리버스 프록시 인증 또는 세션+CSRF 토큰을 먼저 도입한다. 현재 구성은 로컬/데모 전용이다 |
+| 인증 없는 폼·API의 무단 호출/CSRF | `PUBLIC_DEMO_READ_ONLY=true` 공개 모드는 모든 상태 변경 HTTP 메서드를 403으로 차단한다. 상호작용형 공개 배포는 세션+CSRF/권한(P-006) 후에만 허용한다 |
 | 비밀정보 노출 | 오류 응답에 스택·경로를 넣지 않음, 500은 일반 메시지만 |
 
 ## 3. 명시적 비목표
@@ -39,4 +39,5 @@
 - `HEALTHCHECK`가 `/api/health`를 호출한다. 실패하면 `docker compose ps`에서 unhealthy로 보인다.
 - `.dockerignore`가 `.env`, `docs/`, `tests/`, 로컬 DB·아티팩트를 이미지에서 제외한다.
 - 외부 LLM API·비밀키·실제 문서는 이미지와 CI 어디에도 넣지 않는다.
+- Render Blueprint는 `render.yaml`에 고정한다. SQLite 지속성이 필요하면 유료 persistent disk 또는 Postgres 전환을 별도 결정한다. 읽기 전용 공개 데모는 DB 초기화돼도 보안 계약이 유지된다.
 

@@ -186,6 +186,27 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         return response
 
 
+class PublicDemoReadOnlyMiddleware(BaseHTTPMiddleware):
+    """공개 데모에서 공유 SQLite를 바꾸는 모든 요청을 차단한다."""
+
+    async def dispatch(self, request: Request, call_next):
+        if request.app.state.settings.public_demo_read_only and request.method not in {
+            "GET",
+            "HEAD",
+            "OPTIONS",
+        }:
+            return JSONResponse(
+                status_code=403,
+                content={
+                    "error": {
+                        "code": "E_PUBLIC_DEMO_READ_ONLY",
+                        "message": "공개 데모는 읽기 전용입니다. 영상과 화면으로 흐름을 확인하세요.",
+                    }
+                },
+            )
+        return await call_next(request)
+
+
 def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or Settings.from_env()
     settings.ensure_dirs()
@@ -211,6 +232,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.templates = templates
 
     app.add_middleware(SecurityHeadersMiddleware)
+    app.add_middleware(PublicDemoReadOnlyMiddleware)
     app.add_middleware(BodySizeLimitMiddleware, max_bytes=settings.max_upload_bytes)
     app.add_middleware(
         RateLimitMiddleware,

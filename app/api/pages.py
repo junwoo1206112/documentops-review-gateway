@@ -109,6 +109,7 @@ def _detail_context(request: Request, detail: dict, *, form_error: str | None = 
             for key in ("name", "qty", "unit_price", "amount")
         ],
         "can_correct": detail["document"]["status"] in {"HOLD", "PENDING_REVIEW"},
+        "public_demo_read_only": request.app.state.settings.public_demo_read_only,
         "raw_highlighted": highlight_evidence(detail["raw_text"], fields),
         "status_labels": STATUS_LABELS,
         "evidence_labels": EVIDENCE_LABELS,
