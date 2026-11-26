@@ -95,6 +95,13 @@ def test_readme_documents_runbook_and_limits() -> None:
     assert "자동 승인" in readme
 
 
+def test_phase13_runner_uses_an_isolated_database() -> None:
+    runner = read("scripts/run_phase13_screenreader.cmd")
+    assert "DOCUMENTS_DB_PATH" in runner
+    assert "phase13-" in runner
+    assert "--port 8001" in runner
+
+
 def test_artifacts_and_db_are_not_tracked_candidates() -> None:
     gitignore = read(".gitignore")
     assert "artifacts/" in gitignore
