@@ -121,6 +121,7 @@ def test_phase_reviews_exist_for_every_phase() -> None:
         "phase-10.md",
         "phase-11.md",
         "phase-12.md",
+        "phase-14.md",
     ]
 
 
@@ -162,9 +163,10 @@ def test_handoff_seed_is_valid_and_tracks_state() -> None:
 
     data = yaml.safe_load(read("handoff.seed.yaml"))
     assert data["schema"] == "handoff-seed-1"
-    assert data["status"] == "phase-12-release-published-manual-accessibility-check-pending"
+    assert data["status"] == "phase-14-complete"
     assert data["versions"]["dataset"] == "synth-2026-11-26.2"
-    assert data["verified"]["tests_passed"] >= 140
+    assert data["verified"]["tests_passed"] >= 155
+    assert data["verified"]["corrections"]["model"] == "original_quote_only"
     assert data["verified"]["tests_collected_after_phase_6"] == 133
     assert data["verified"]["evaluation_exit_code"] == 0
     assert data["verified"]["ci_remote"]["status"] == "success"

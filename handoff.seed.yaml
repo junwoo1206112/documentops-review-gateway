@@ -1,7 +1,7 @@
 ﻿schema: handoff-seed-1
 as_of: "2026-11-26"
 project: documentops-review-gateway
-status: phase-12-release-published-manual-accessibility-check-pending
+status: phase-14-complete
 language: ko
 
 goal: >
@@ -42,7 +42,7 @@ versions:
 verified:
   date: "2026-11-26"
   platform: "Windows 11, Python 3.12.10"
-  tests_passed: 140
+  tests_passed: 155
   tests_collected_after_phase_6: 133
   dataset_check: pass
   evaluation_exit_code: 0
@@ -53,6 +53,11 @@ verified:
     rule_match: {matched: 36, total: 36, value: 1.0}
     evidence_validity: {matched: 410, total: 412, value: 0.995}
     regressions: 0
+  corrections:
+    model: original_quote_only
+    fields: 6
+    revalidate: always
+    audit: append_only
   docker:
     image_size: 207MB
     user: "appuser uid 10001"
@@ -127,13 +132,18 @@ remaining:
   - id: R-003
     title: 필드 단위 사람 수정과 보류 해소 계약
     priority: P2
-    state: blocked_on_decision
+    state: complete
     depends_on: [P-003]
     acceptance:
       - "사람 수정 값의 근거 모델과 감사 이벤트 형식이 docs에 고정됨"
       - "API/DB/UI/테스트가 함께 갱신됨"
       - "근거 없는 값은 여전히 승인 불가"
-    notes: "결정 없이 구현하지 않는다. 현재 우회는 원문 수정 후 새 업로드 또는 revalidate."
+    done:
+      - "Gate A: 원문 재인용만, 항상 재검증, 영구 감사, reviewer_alias 유지"
+      - "field_corrections append-only + CORRECTION_RECORDED/REVALIDATED 감사"
+      - "fields(추출 원본) / effective_fields(수정 반영) 분리"
+      - "test_corrections.py 15개, 전체 155 passed"
+    notes: "스칼라 6필드만 지원한다. 원문에 없는 MISSING_REQUIRED는 재업로드가 유일한 경로다. 품목 수정은 후속 Gate."
 
   - id: R-004
     title: OCR 확장

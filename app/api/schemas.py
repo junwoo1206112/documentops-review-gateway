@@ -18,3 +18,20 @@ class DecisionRequest(BaseModel):
         if not value.strip():
             raise ValueError("공백만으로는 입력할 수 없습니다.")
         return value
+
+
+class CorrectionRequest(BaseModel):
+    path: str = Field(min_length=1)
+    value: str | int
+    excerpt: str | None = None
+    char_start: int | None = Field(default=None, ge=0)
+    char_end: int | None = Field(default=None, ge=0)
+    reviewer_alias: str = Field(min_length=1, max_length=40)
+    reason: str = Field(min_length=1, max_length=500)
+
+    @field_validator("reviewer_alias", "reason")
+    @classmethod
+    def not_blank(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError("공백만으로는 입력할 수 없습니다.")
+        return value

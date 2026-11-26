@@ -69,7 +69,14 @@
       <tbody>
         {% for field in fields %}
         <tr>
-          <td>{{ field.label }}<span class="path mono">{{ field.path }}</span></td>
+          <td>
+            {{ field.label }}
+            {% if field.corrected %}<span class="badge corrected">사람 수정</span>{% endif %}
+            <span class="path mono">{{ field.path }}</span>
+            {% if field.corrected and field.original_value is not none %}
+            <span class="path">원본 {{ field.original_value }}</span>
+            {% endif %}
+          </td>
           <td>{{ field.display if field.display is not none else "—" }}</td>
           <td>
             <span class="evidence evidence-{{ field.evidence_status }}">
@@ -109,6 +116,73 @@
       {% endfor %}
     </tbody>
   </table>
+</section>
+{% endif %}
+
+{% if can_correct %}
+<section class="panel">
+  <h2>필드 수정 <span class="hint">원문 재인용 필수 · 수정 후 자동 승인 없음</span></h2>
+  <p class="hint">
+    원문에 실제로 존재하는 문구만 근거로 쓸 수 있습니다. 수정하면 즉시 재검증되지만
+    승인은 별도로 사람이 해야 합니다. 원문에 없는 값(누락 필드)은 수정할 수 없으며,
+    원문을 고쳐 새 문서로 업로드해야 합니다.
+  </p>
+  <form class="decision" action="/documents/{{ document.id }}/corrections" method="post">
+    <label>필드
+      <select name="path" required>
+        {% for field in correctable_fields %}
+        <option value="{{ field.path }}">
+          {{ field.label }} ({{ field.path }}){% if field.current is not none %} — 현재 {{ field.current }}{% endif %}
+        </option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>수정값
+      <input type="text" name="value" required placeholder="예: 가온상사 / 2026-03-04 / 1,500" />
+    </label>
+    <label>원문 재인용
+      <input type="text" name="excerpt" required placeholder="원문에서 그대로 복사한 문구" />
+    </label>
+    <label>검토자 별칭
+      <input type="text" name="reviewer_alias" maxlength="40" required placeholder="reviewer-a" />
+    </label>
+    <label>사유
+      <textarea name="reason" maxlength="500" rows="2" required
+        placeholder="원문 3행의 표기와 대조해 수정"></textarea>
+    </label>
+    <div class="actions">
+      <button type="submit">수정하고 재검증</button>
+    </div>
+  </form>
+
+  {% if corrections %}
+  <table class="corrections">
+    <caption class="sr-only">필드 수정 이력</caption>
+    <thead>
+      <tr>
+        <th scope="col">필드</th>
+        <th scope="col">변경</th>
+        <th scope="col">근거</th>
+        <th scope="col">검토자</th>
+        <th scope="col">시각</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for correction in corrections %}
+      <tr>
+        <td class="mono">{{ correction.path }}</td>
+        <td class="mono">{{ correction.from_value }} → {{ correction.to_value }}</td>
+        <td>
+          <code class="excerpt">{{ correction.evidence_excerpt }}</code>
+          <span class="mono span">{{ correction.page }}:{{ correction.char_start }}-{{ correction.char_end }}</span>
+        </td>
+        <td>{{ correction.reviewer_alias }}<span class="path">{{ correction.reason }}</span></td>
+        <td class="muted">{{ correction.created_at }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
 </section>
 {% endif %}
 

@@ -7,7 +7,7 @@ from pathlib import Path
 
 from fastapi import APIRouter, File, Query, Request, UploadFile
 
-from app.api.schemas import DecisionRequest
+from app.api.schemas import CorrectionRequest, DecisionRequest
 from app.domain.fields import FIELD_LABELS
 from app.domain.rules import RULES
 from app.domain.statuses import STATUSES
@@ -83,6 +83,20 @@ def get_audit(request: Request, document_id: str) -> dict:
 @router.post("/documents/{document_id}/revalidate")
 def revalidate(request: Request, document_id: str) -> dict:
     return request.app.state.service.revalidate(document_id)
+
+
+@router.post("/documents/{document_id}/corrections", status_code=201)
+def correct_field(request: Request, document_id: str, payload: CorrectionRequest) -> dict:
+    return request.app.state.service.record_correction(
+        document_id,
+        path=payload.path,
+        value=payload.value,
+        excerpt=payload.excerpt,
+        char_start=payload.char_start,
+        char_end=payload.char_end,
+        reviewer_alias=payload.reviewer_alias,
+        reason=payload.reason,
+    )
 
 
 @router.post("/documents/{document_id}/decision")

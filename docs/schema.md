@@ -108,14 +108,15 @@
 | 테이블 | 핵심 컬럼 | 규칙 |
 |---|---|---|
 | `documents` | `id`, `sha256`, `filename`, `raw_text`, `size_bytes`, `source_kind`, `status`, `extractor_version`, `ruleset_version`, `duplicate_of`, `received_at` | `raw_text`는 수정하지 않는다 |
-| `extracted_fields` | `document_id`, `path`, `value_text`, `value_json`, `page`, `char_start`, `char_end`, `evidence_excerpt`, `evidence_status`, `confidence` | `path`는 `vendor`, `items[0].qty` 형식. 정규화 값은 JSON으로 타입 보존 |
+| `extracted_fields` | `document_id`, `path`, `value_text`, `value_json`, `page`, `char_start`, `char_end`, `evidence_excerpt`, `evidence_status`, `confidence` | `path`는 `vendor`, `items[0].qty` 형식. 정규화 값은 JSON으로 타입 보존. **수정으로 덮어쓰지 않는다** |
+| `field_corrections` | `document_id`, `path`, `from_value_json`, `to_value_json`, `evidence_excerpt`, `page`, `char_start`, `char_end`, `reviewer_alias`, `reason`, `created_at` | **append-only**. 원문 재인용으로 검증된 사람 수정 이력 |
 | `validation_issues` | `document_id`, `rule_id`, `severity`, `path`, `message`, `status`, `created_at` | `status`는 `open`/`resolved` |
 | `review_decisions` | `document_id`, `decision`, `reviewer_alias`, `reason`, `from_status`, `to_status`, `created_at` | 수정·삭제 API 없음 |
 | `audit_events` | `event_id`, `document_id`, `event_type`, `from_status`, `to_status`, `actor`, `metadata_json`, `created_at` | **append-only**. UPDATE/DELETE는 DB 트리거가 차단 |
 
-- `audit_events.event_type`: `DOCUMENT_INGESTED`, `VALIDATION_COMPLETED`, `REVALIDATED`, `DECISION_RECORDED`.
+- `audit_events.event_type`: `DOCUMENT_INGESTED`, `VALIDATION_COMPLETED`, `REVALIDATED`, `DECISION_RECORDED`, `CORRECTION_RECORDED`.
 - 감사 이벤트는 시간순(`event_id` 오름차순)으로만 노출한다.
-- 인덱스: `documents(status)`, `documents(sha256)`, `documents(doc_no)`, `extracted_fields(document_id)`, `validation_issues(document_id, status)`, `audit_events(document_id, event_id)`.
+- 인덱스: `documents(status)`, `documents(sha256)`, `documents(doc_no)`, `extracted_fields(document_id)`, `field_corrections(document_id, id)`, `validation_issues(document_id, status)`, `audit_events(document_id, event_id)`.
 
 ## 5. API 계약
 
@@ -133,6 +134,7 @@
 | GET | `/api/documents` | 200 `{items, total}` (`status`, `limit`, `offset` 쿼리) | 422 잘못된 쿼리 |
 | GET | `/api/documents/{id}` | 200 문서 상세 | 404 |
 | POST | `/api/documents/{id}/revalidate` | 200 문서 상세 | 404, 409 종료 상태 |
+| POST | `/api/documents/{id}/corrections` | 201 문서 상세 | 404, 409 종료 상태, 422 필드·근거·값 위반 |
 | POST | `/api/documents/{id}/decision` | 200 문서 상세 | 404, 409 허용되지 않은 전이, 422 사유·별칭 누락 |
 | GET | `/api/documents/{id}/audit` | 200 `{items}` | 404 |
 | GET | `/api/evaluation/latest` | 200 최신 평가 리포트 | 404 리포트 없음 |
@@ -146,6 +148,7 @@
 | GET | `/documents/{id}` | 원문·필드·이슈·판정·감사 이력 |
 | POST | `/documents/{id}/decision` | 폼 판정(별칭·사유), 성공 시 303, 위반 시 해당 코드와 함께 상세 재렌더 |
 | POST | `/documents/{id}/revalidate` | 재검증, 성공 시 303 |
+| POST | `/documents/{id}/corrections` | 원문 재인용 필드 수정, 성공 시 303, 위반 시 상세 재렌더 |
 | GET | `/evaluation` | 최신 평가 리포트 또는 실행 안내 |
 
 ### 문서 상세 응답
@@ -161,7 +164,14 @@
   "fields": [
     {"path": "vendor", "label": "거래처", "value": "가온상사", "value_text": "가온상사",
      "page": 1, "char_start": 12, "char_end": 16,
-     "evidence_excerpt": "가온상사", "evidence_status": "verified", "confidence": 1.0}
+     "evidence_excerpt": "가온상사", "evidence_status": "verified", "confidence": 1.0,
+     "corrected": false}
+  ],
+  "effective_fields": [
+    {"path": "vendor", "label": "거래처", "value": "가온상사", "value_text": "가온상사",
+     "page": 1, "char_start": 12, "char_end": 16,
+     "evidence_excerpt": "가온상사", "evidence_status": "verified", "confidence": 1.0,
+     "corrected": true, "original_value": "가온상사(주)"}
   ],
   "items": [
     {"ordinal": 0, "name": "산업용 볼트 M8", "qty": 120, "unit_price": 1500, "amount": 180000}
@@ -178,10 +188,18 @@
     {"event_id": 1, "event_type": "DOCUMENT_INGESTED", "from_status": null,
      "to_status": "HOLD", "actor": "system", "created_at": "…"}
   ],
+  "corrections": [
+    {"path": "vendor", "from_value": "가온상사(주)", "to_value": "가온상사",
+     "evidence_excerpt": "가온상사", "page": 1, "char_start": 12, "char_end": 16,
+     "reviewer_alias": "reviewer-a", "reason": "원문 표기 대조", "created_at": "…"}
+  ],
   "raw_text": "…"
 }
 ```
 
+- `fields`는 **추출기가 낸 원본**이다. 사람 수정으로 덮어쓰지 않는다.
+- `effective_fields`는 수정을 반영한 유효 값이다. `corrected=true`면 `original_value`에 추출 원본이 있다.
+  화면·검증·상태는 `effective_fields`를 따른다.
 - `fields`는 `docs/schema.md`의 필드 순서, `items[]`는 `ordinal` 순서로 고정한다.
 - `issues`는 `(rule_id, path)` 오름차순으로 고정한다.
 - `raw_text`는 상세 응답에만 포함한다.
@@ -189,6 +207,30 @@
 ### 업로드 요청
 
 `multipart/form-data`, 파트 이름 `file`. Content-Type은 검사하지 않고 확장자·UTF-8 디코딩으로 판단한다.
+
+### 수정 요청
+
+```json
+{
+  "path": "vendor",
+  "value": "가온상사",
+  "excerpt": "가온상사",
+  "reviewer_alias": "reviewer-a",
+  "reason": "원문 2행 표기와 대조",
+  "char_start": null,
+  "char_end": null
+}
+```
+
+- `path`는 스칼라 필드 6개(`vendor`, `doc_no`, `doc_date`, `supply_amount`, `vat`, `total`)만 허용한다.
+  품목 수정은 Phase 14 범위 밖이다.
+- `excerpt`는 원문에 **실제로 존재**해야 한다. 여러 번 나타나면 `char_start`/`char_end`를 함께 보내야 한다.
+- `excerpt`를 필드 규칙으로 정규화한 값이 `value`와 같아야 한다. 즉 **원문에 있는 값만** 수정할 수 있다.
+  원문에 없는 `MISSING_REQUIRED` 값은 만들 수 없고, 원문을 고쳐 새 문서로 업로드해야 한다.
+- 수정 가능 상태는 `HOLD`와 `PENDING_REVIEW`다. 종료 상태는 409다.
+- 수정 후 즉시 재검증한다. `HOLD → APPROVED` 직접 전이는 여전히 금지이며, 승인은 별도 판정 요청으로만 가능하다.
+- 저장은 `field_corrections`(append-only)와 감사 이벤트 2건(`CORRECTION_RECORDED`, `REVALIDATED`)으로 남는다.
+- 기존 이슈는 `resolved`로 닫고 새 이슈를 추가한다. 과거 이슈를 삭제하지 않는다.
 
 ### 판정 요청
 

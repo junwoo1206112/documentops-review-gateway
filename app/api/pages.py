@@ -8,6 +8,7 @@ from fastapi import APIRouter, File, Form, Request, UploadFile
 from fastapi.responses import HTMLResponse, RedirectResponse
 from markupsafe import Markup, escape
 
+from app.domain.fields import FIELD_KEYS, FIELD_LABELS
 from app.domain.statuses import STATUS_LABELS
 from app.errors import AppError
 
@@ -18,6 +19,7 @@ EVENT_LABELS = {
     "VALIDATION_COMPLETED": "검증 완료",
     "REVALIDATED": "재검증",
     "DECISION_RECORDED": "사람 판정",
+    "CORRECTION_RECORDED": "필드 수정",
 }
 
 EVIDENCE_LABELS = {
@@ -68,7 +70,7 @@ def highlight_evidence(raw_text: str, fields: list[dict]) -> Markup:
 
 
 def _detail_context(request: Request, detail: dict, *, form_error: str | None = None) -> dict:
-    fields = detail["fields"]
+    fields = detail.get("effective_fields", detail["fields"])
     labeled_fields = [
         {
             **field,
@@ -80,6 +82,7 @@ def _detail_context(request: Request, detail: dict, *, form_error: str | None = 
         }
         for field in fields
     ]
+    display_by_path = {field["path"]: field["display"] for field in labeled_fields}
     return {
         "detail": detail,
         "document": detail["document"],
@@ -87,6 +90,16 @@ def _detail_context(request: Request, detail: dict, *, form_error: str | None = 
         "items": detail["items"],
         "issues": detail["issues"],
         "decisions": detail["decisions"],
+        "corrections": detail.get("corrections", []),
+        "correctable_fields": [
+            {
+                "path": key,
+                "label": FIELD_LABELS[key],
+                "current": display_by_path.get(key),
+            }
+            for key in FIELD_KEYS
+        ],
+        "can_correct": detail["document"]["status"] in {"HOLD", "PENDING_REVIEW"},
         "raw_highlighted": highlight_evidence(detail["raw_text"], fields),
         "status_labels": STATUS_LABELS,
         "evidence_labels": EVIDENCE_LABELS,
@@ -185,6 +198,36 @@ def submit_decision(
 def submit_revalidate(request: Request, document_id: str) -> HTMLResponse:
     try:
         request.app.state.service.revalidate(document_id)
+    except AppError as exc:
+        detail = request.app.state.service.get(document_id)
+        return _templates(request).TemplateResponse(
+            request,
+            "detail.html",
+            _detail_context(request, detail, form_error=str(exc)),
+            status_code=exc.status_code,
+        )
+    return RedirectResponse(f"/documents/{document_id}", status_code=303)
+
+
+@router.post("/documents/{document_id}/corrections", response_class=HTMLResponse)
+def submit_correction(
+    request: Request,
+    document_id: str,
+    path: str = Form(...),
+    value: str = Form(""),
+    excerpt: str = Form(""),
+    reviewer_alias: str = Form(""),
+    reason: str = Form(""),
+) -> HTMLResponse:
+    try:
+        request.app.state.service.record_correction(
+            document_id,
+            path=path,
+            value=value,
+            excerpt=excerpt or None,
+            reviewer_alias=reviewer_alias,
+            reason=reason,
+        )
     except AppError as exc:
         detail = request.app.state.service.get(document_id)
         return _templates(request).TemplateResponse(

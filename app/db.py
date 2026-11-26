@@ -105,6 +105,34 @@ BEFORE DELETE ON audit_events
 BEGIN
     SELECT RAISE(ABORT, 'audit_events is append-only');
 END;
+
+CREATE TABLE IF NOT EXISTS field_corrections (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    document_id TEXT NOT NULL REFERENCES documents(id),
+    path TEXT NOT NULL,
+    from_value_json TEXT,
+    to_value_json TEXT NOT NULL,
+    evidence_excerpt TEXT NOT NULL,
+    page INTEGER NOT NULL,
+    char_start INTEGER NOT NULL,
+    char_end INTEGER NOT NULL,
+    reviewer_alias TEXT NOT NULL,
+    reason TEXT NOT NULL,
+    created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_corrections_document ON field_corrections(document_id, id);
+
+CREATE TRIGGER IF NOT EXISTS field_corrections_no_update
+BEFORE UPDATE ON field_corrections
+BEGIN
+    SELECT RAISE(ABORT, 'field_corrections is append-only');
+END;
+
+CREATE TRIGGER IF NOT EXISTS field_corrections_no_delete
+BEFORE DELETE ON field_corrections
+BEGIN
+    SELECT RAISE(ABORT, 'field_corrections is append-only');
+END;
 """
 
 

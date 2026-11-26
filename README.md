@@ -8,11 +8,12 @@
 증명하려는 역량은 "AI가 답을 낸다"가 아니라,
 **AI 산출물을 실제 업무에 투입하기 전에 검증·보류·승인·추적하는 방법**입니다.
 
-**상태: Phase 0~12 완료** (계약 → 데이터 → 추출·검증 → 검토 UI/감사 → 평가 → Docker/CI → 운영·접근성 보강 → 데모 녹화·공개).
-원격 CI·배지와 56.8초 데모 영상 공개를 완료했습니다. OCR·LLM 어댑터·인증은 운영 정책 결정을 기다립니다.
-OCR·LLM 어댑터·인증은 의도적으로 보류했고, [보류 결정](docs/decisions/pending.md)에 근거를 남겼습니다.
+**상태: Phase 0~12·14 완료** (계약 → 데이터 → 추출·검증 → 검토 UI/감사 → 평가 → Docker/CI → 운영·접근성 → 데모 공개 → 사람 수정).
+원격 CI·배지와 56.8초 데모 영상 공개를 완료했고, Gate A 결정에 따라 **원문 재인용 필드 수정**을 추가했습니다.
+남은 것은 Phase 13 스크린리더 실사용(사람), 품목 수정, Gate B/C 결정입니다. OCR·LLM 어댑터·인증은 의도적으로 보류했고,
+[보류 결정](docs/decisions/pending.md)에 근거를 남겼습니다.
 
-![문서 목록 화면](docs/images/documents.png)
+![문서 목록 화면](docs/images/documents.jpg)
 
 ## 핵심 계약 (바뀌지 않는 3가지)
 
@@ -43,9 +44,19 @@ python scripts/seed_demo.py     # 4건을 위 순서대로 접수 (서버 실행
 - 자동 점검 완료: 주요 6개 색 조합은 WCAG AA 일반 텍스트 기준을 통과했고, 768px·1024px
   캡처에서 레이아웃을 확인했다. 남은 점검은 스크린리더로 업로드→판정 흐름 1회 리뷰다(HANDOFF R-007).
 
+### 필드 수정 (Phase 14)
+
+- `HOLD` 문서에서 **원문에 실제로 있는 문구를 재인용**해야만 값을 고칠 수 있다. 원문에 없는 값은
+  만들 수 없고, 누락 필드는 원문을 고쳐 새로 업로드해야 한다.
+- 수정하면 즉시 재검증되지만 자동 승인은 없다. 승인은 별도 사람 판정이다.
+- 수정 전/후 값·근거 span·검토자·사유는 append-only로 남고, 추출 원본(`fields`)과
+  수정 반영 값(`effective_fields`)을 분리해 보존한다.
+- 범위: 스칼라 필드 6개. 품목 수정은 후속 과제다.
+- 결정 근거: [ADR 0003](docs/adr/0003-human-correction.md)
+
 ### 원문 근거와 보류 사유
 
-![HOLD 문서 상세](docs/images/detail-hold.png)
+![HOLD 문서 상세](docs/images/detail-hold.jpg)
 
 - 왼쪽: 업로드 원문. 검증된 span만 노란색으로 표시한다.
 - 오른쪽: 필드별 정규화 값·근거 상태(`원문 확인`/`파생값`/`근거 없음`)·span 좌표·발췌문.
@@ -53,7 +64,7 @@ python scripts/seed_demo.py     # 4건을 위 순서대로 접수 (서버 실행
 
 ### 공개 평가
 
-![평가 화면](docs/images/evaluation.png)
+![평가 화면](docs/images/evaluation.jpg)
 
 ## 측정된 기준선
 
@@ -102,7 +113,7 @@ python -m venv .venv
 # source .venv/bin/activate         # Linux/macOS
 pip install -e ".[dev]"
 
-python -m pytest -q                 # 141 passed (2026-11-26, Python 3.12.10)
+python -m pytest -q                 # 155 passed (2026-11-26, Python 3.12.10)
 python tools/generate_dataset.py --check
 python -m app.inspect fixtures/evaluation/DOC-0001.txt
 
@@ -199,9 +210,9 @@ OpenAPI는 `/api/openapi.json`에서 확인할 수 있습니다.
 | [docs/rules.md](docs/rules.md) | 8개 규칙, 심각도, 연쇄 억제 |
 | [docs/evaluation.md](docs/evaluation.md) | 데이터셋 분리, 지표 정의·분모, 리포트 스키마 |
 | [docs/security.md](docs/security.md) | 데이터 정책, 위협 모델, 배포 검증 |
-| [docs/decisions/pending.md](docs/decisions/pending.md) | 의도적으로 보류한 결정 6건 |
+| [docs/decisions/pending.md](docs/decisions/pending.md) | 보류 결정 5건 + P-003 결정 완료 기록 |
 | [docs/ROADMAP_PHASES.md](docs/ROADMAP_PHASES.md) | 인수자·LLM 공용: Gate·수용 기준·권장 구현 순서 |
-| [docs/reviews/](docs/reviews/) | Phase 0~12 전문가 A·B·C 교차 검증 기록 |
+| [docs/reviews/](docs/reviews/) | Phase 0~12·14 전문가 A·B·C 교차 검증 기록 |
 | [docs/reference/](docs/reference/) | 인수인계 원본 계획·실행 로그·데모 원고 |
 | [HANDOFF.md](HANDOFF.md) | 인수자용: 현재 상태·검증 증거·남은 작업·재개 절차 |
 | [handoff.seed.yaml](handoff.seed.yaml) | 기계 판독용 인수인계 상태(작업 ID·수용 기준) |
@@ -211,4 +222,5 @@ OpenAPI는 `/api/openapi.json`에서 확인할 수 있습니다.
 - [마스터 구현 계획](docs/reference/PORTFOLIO_IMPROVEMENT_MASTER_PLAN.md)
 - [포트폴리오 실행 로그](docs/reference/PORTFOLIO_PHASE_LOG_20261125.md)
 - [데모·사이트 원고](docs/reference/PORTFOLIO_DEMO_AND_SITE_COPY.md)
+
 

@@ -2,7 +2,7 @@
 
 - 작성일: 2026-11-26
 - 대상: 다음 인수자(사람)와 다음 LLM 세션
-- 현재 브랜치 상태: `main`, Phase 0~12 완료; 스크린리더 실사용 검토와 P2 정책 결정 대기
+- 현재 브랜치 상태: `main`, Phase 0~12·14 완료; Phase 13(스크린리더 실사용)과 품목 수정 후속 대기
 - 최신 커밋: `git log --oneline`으로 확인한다. 커밋 해시는 이동하므로 이 문서에 고정하지 않는다.
 
 이 문서 하나로 **무엇을 만들었고, 무엇이 검증됐고, 무엇이 남았고, 어떻게 이어서 하는지**를
@@ -18,11 +18,11 @@
 | 핵심 주장 | "AI가 답한다"가 아니라 **근거 없는 값은 승인 불가, blocking 오류는 HOLD, 판정은 사람만** |
 | 스택 | Python 3.12, FastAPI, SQLite, Jinja2 서버 렌더링, pytest, Docker, GitHub Actions |
 | 실행 | `uvicorn app.asgi:app` (주의: `app.main:app` 아님) |
-| 테스트 | **141 passed** (2026-11-26, Python 3.12.10, Windows 11) |
+| 테스트 | **155 passed** (2026-11-26, Python 3.12.10, Windows 11) |
 | 평가 | 36건 기준 문서 EM 36/36, HOLD 재현 19/19, 오보류 0/17, 규칙 일치 36/36, 근거 410/412 |
 | Docker | `docker compose up --build` → `healthy`, 데모 4건 처리, 컨테이너 내 평가 동일 |
 | 원격 CI | `main`의 첫 `ci` 성공. README 배지는 실제 실행으로 연결됨 |
-| 남은 일 | R-007 스크린리더 실사용 검토, 이후 결정 대기 항목 → 6절 |
+| 남은 일 | Phase 13 스크린리더 실사용 검토, 품목 수정 후속, Gate B/C 결정 → 6절 |
 
 3개 명령으로 상태를 확인할 수 있다.
 
@@ -73,6 +73,7 @@ python -m app.evaluate --dataset fixtures/evaluation
 | 10 | 실제 UI 자동 녹화, 56.8초 영상·핵심 장면 검수 | `feat(phase10): …` | `artifacts/documentops-demo.webm` (git 미추적) |
 | 11 | 자동 대비 감사, 768/1024px 실제 화면 캡처 | `feat(phase11): …` | `artifacts/accessibility_audit.json` |
 | 12 | GitHub Release 공개, 데모 영상 asset 확인, README·인수 상태 갱신 | `docs(phase12): …` | [v0.1.0-demo](https://github.com/junwoo1206112/documentops-review-gateway/releases/tag/v0.1.0-demo) |
+| 14 | Gate A 결정, 원문 재인용 필드 수정·재검증·append-only 감사·UI | `feat(phase14): …` | 155 passed, `test_corrections.py` 15개 |
 
 ### 기준선 수치 (재현 가능)
 
@@ -124,7 +125,7 @@ pip install -e ".[dev]"
 python -m pytest -q
 ```
 
-기대 결과: `141 passed`.
+기대 결과: `155 passed`.
 
 > `uv`와 Node.js는 필요 없다. UI는 Jinja2 서버 렌더링이다(ADR 0002).
 > Python은 3.12 이상이어야 한다.
@@ -203,7 +204,7 @@ app/
 │  └─ pages.py               HTML 6경로, 원문 하이라이트(escape 후 mark)
 ├─ templates/                base/index/detail/evaluation.html
 ├─ static/style.css          다크 테마, 상태 배지, 반응형
-tests/                       12개 파일, 141 tests
+tests/                       14개 파일, 155 tests
 tools/generate_dataset.py    합성 데이터·정답·manifest·vendors 생성기 (--check)
 scripts/seed_demo.py         데모 4건 HTTP 업로드
 fixtures/                    vendors.json, demo 4건, evaluation 36건+정답+manifest
@@ -249,6 +250,7 @@ POST /api/documents/{id}/revalidate
 | 필드 추가 | `docs/schema.md`, 정답 JSON, EM 분모, API 응답, UI 표 |
 | 레이아웃 변경 | 파서, 생성기, span 정답, 모든 fixture 해시 |
 | 상태/전이 변경 | `statuses.py`, `docs/schema.md` 전이표, `test_contracts`, 리뷰 UI 버튼 |
+| 수정 모델 변경 | `field_corrections`, `effective_fields`, 감사 이벤트, ADR 0003, 수정 UI |
 
 ---
 
@@ -277,12 +279,13 @@ POST /api/documents/{id}/revalidate
 - 주의: `docs/reference/PORTFOLIO_DEMO_AND_SITE_COPY.md`는 **다른 두 프로젝트** 원고이며,
   이 프로젝트 촬영에는 사용하지 않는다.
 
-### R-003 — 보류 해소용 필드 단위 사람 수정 (P2, 결정 필요: P-003)
+### R-003 — 보류 해소용 필드 단위 사람 수정 (완료, 2026-11-26)
 
-- 왜: `MISSING_REQUIRED` HOLD는 현재 "원문 수정 후 새 업로드"만 가능하다.
-- 결정할 것: 사람이 고친 값의 근거 모델(원문 재인용? 수정 사유만?), 감사 이벤트 형식,
-  승인 가능 여부. "근거 없는 값은 승인 불가" 원칙과 충돌하지 않아야 한다.
-- 수용 기준: `docs/decisions/pending.md`의 P-003이 닫히고, API/D B/UI/테스트/감사가 함께 갱신됨.
+- 결정: Gate A에서 **원문 재인용만**, **항상 재검증**, **영구 감사**, **alias 유지**로 확정.
+- 구현: `POST /api/documents/{id}/corrections`, `field_corrections`(append-only),
+  상세 화면 수정 폼·이력, `fields`(추출 원본)와 `effective_fields`(수정 반영) 분리.
+- 제약: 원문에 없는 `MISSING_REQUIRED` 값은 만들 수 없다(재업로드). 품목 수정은 범위 밖.
+- 근거: [ADR 0003](docs/adr/0003-human-correction.md), [Phase 14 리뷰](docs/reviews/phase-14.md).
 
 ### R-004 — OCR 확장 (P2, 결정 필요: P-001)
 
@@ -335,6 +338,8 @@ POST /api/documents/{id}/revalidate
 | rate limit | 반복 데모에서 429 | `RATE_LIMIT_PER_MINUTE=0`으로 재기동 |
 | 평가 수치 비교 | p50/p95가 실행마다 다름 | 시간은 비교하지 않는다. `metrics`/`failures`만 결정론 |
 | `app.evaluate` 종료 코드 | 1이면 회귀, 2면 데이터셋 없음 | 리포트의 `regressions` 확인 |
+| 수정 인용문이 여러 번 등장 | 422 "여러 번 나타납니다" | API에서 `char_start`/`char_end`로 위치 지정 |
+| 수정 후에도 원본 값이 보임 | `fields`는 추출 원본, `effective_fields`가 수정 반영 | 화면·검증은 `effective_fields` 사용 |
 
 ---
 
@@ -356,7 +361,7 @@ POST /api/documents/{id}/revalidate
 - [ ] `app.evaluate` exit 0, 기준선 수치 재현
 - [ ] `uvicorn app.asgi:app` + `scripts/seed_demo.py`로 5장면 재현
 - [ ] `docker compose up --build` 후 healthy
-- [ ] `docs/reviews/phase-0..12.md` 존재
+- [ ] `docs/reviews/phase-0..12.md`와 `phase-14.md` 존재(phase-13은 사람 검증 후 작성)
 - [ ] 실제 개인정보·실제 문서가 저장소에 없음
 - [ ] README의 주장이 테스트/실행 증거보다 강하지 않음
 
@@ -379,7 +384,9 @@ POST /api/documents/{id}/revalidate
 | `feat(phase10)` | 실제 UI 자동 녹화와 영상 검수 |
 | `feat(phase11)` | 자동 대비 감사와 태블릿 폭 화면 검수 |
 | `docs(phase12)` | GitHub Release 공개와 README·인수 상태 갱신 |
+| `feat(phase14)` | Gate A 결정, 원문 재인용 수정·재검증·append-only 감사·UI |
 | `docs(handoff)` | 인수인계 문서와 `handoff.seed.yaml` |
 
-각 페이즈의 발견·수정 이유는 `docs/reviews/phase-0.md` ~ `phase-12.md`에 있다.
+각 페이즈의 발견·수정 이유는 `docs/reviews/phase-0.md` ~ `phase-12.md`, `phase-14.md`에 있다.
+`phase-13.md`는 스크린리더 실사용 검증을 **사람이 수행한 뒤** 작성한다.
 
