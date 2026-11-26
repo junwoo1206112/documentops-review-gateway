@@ -199,16 +199,17 @@ remaining:
   - id: R-007
     title: 접근성과 반응형 세부 점검
     priority: P2
-    state: automated_checks_complete
+    state: complete
     depends_on: []
     done:
       - "랜드마크, skip link, 표 scope/caption, aria-current, role=alert, focus-visible"
       - "키보드 첫 Tab으로 본문 건너뛰기 확인"
       - "주요 6개 색 조합 WCAG AA 일반 텍스트 대비 통과"
       - "768px·1024px 실제 화면 캡처 확인"
+      - "Windows Narrator로 HOLD→정상 승인→감사 이력의 키보드 전용 흐름을 사람이 완주"
     acceptance:
       - "스크린리더로 업로드→판정 1회 점검"
-    notes: "Phase 11에서 tools/audit_accessibility.py로 대비·중간 폭 캡처를 완료했다. 스크린리더 실사용만 남았다."
+    notes: "Phase 13의 사람 청취 기록은 docs/reviews/phase-13.md에 있다."
 
 do_not:
   - 실제 고객 문서나 개인정보를 추가하지 않는다.
@@ -220,7 +221,7 @@ do_not:
 resume:
   read_first: [HANDOFF.md, README.md, docs/ROADMAP_PHASES.md, docs/schema.md, docs/rules.md, docs/evaluation.md]
   gate: "python -m pytest -q && python tools/generate_dataset.py --check && python -m app.evaluate --dataset fixtures/evaluation"
-  next: [R-007]
+  next: [P-001, P-002, P-004, P-005, P-006]
   phase_plan: docs/ROADMAP_PHASES.md
   review_log: docs/reviews/phase-{0..12}.md
 

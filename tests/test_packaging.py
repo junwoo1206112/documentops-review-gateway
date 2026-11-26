@@ -102,6 +102,12 @@ def test_phase13_runner_uses_an_isolated_database() -> None:
     assert "--port 8001" in runner
 
 
+def test_phase13_human_review_is_recorded_as_complete() -> None:
+    review = read("docs/reviews/phase-13.md")
+    assert "상태: **완료" in review
+    assert "사용자 보고 — “전부 들렸고 문제 없음”" in review
+
+
 def test_artifacts_and_db_are_not_tracked_candidates() -> None:
     gitignore = read(".gitignore")
     assert "artifacts/" in gitignore

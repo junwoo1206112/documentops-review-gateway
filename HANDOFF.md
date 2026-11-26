@@ -2,7 +2,7 @@
 
 - 작성일: 2026-11-26
 - 대상: 다음 인수자(사람)와 다음 LLM 세션
-- 현재 브랜치 상태: `main`, Phase 0~12·14·14-I 완료; Render 공개 읽기 전용 데모 배포 완료. Phase 13(스크린리더 실사용)과 Gate B/C 결정 대기
+- 현재 브랜치 상태: `main`, Phase 0~14-I 완료; Render 공개 읽기 전용 데모와 Phase 13(스크린리더 실사용) 완료. Gate B/C 결정 대기
 - 최신 커밋: `git log --oneline`으로 확인한다. 커밋 해시는 이동하므로 이 문서에 고정하지 않는다.
 
 이 문서 하나로 **무엇을 만들었고, 무엇이 검증됐고, 무엇이 남았고, 어떻게 이어서 하는지**를
@@ -23,7 +23,7 @@
 | Docker | `docker compose up --build` → `healthy`, 데모 4건 처리, 컨테이너 내 평가 동일 |
 | 원격 CI | `main`의 첫 `ci` 성공. README 배지는 실제 실행으로 연결됨 |
 | 공개 데모 | [Render 읽기 전용 데모](https://documentops-review-gateway-demo.onrender.com) — health `ok`, 합성 문서 4건, POST 403 확인(2026-11-26) |
-| 남은 일 | Phase 13 스크린리더 실사용 검토(기록 양식 준비됨), Gate B/C 결정 → 6절 |
+| 남은 일 | Gate B/C 결정 → 6절 |
 
 3개 명령으로 상태를 확인할 수 있다.
 
@@ -321,14 +321,14 @@ POST /api/documents/{id}/revalidate
 - 조건: 레이아웃별 파서 선택 규칙, 422와 HOLD 경계 유지, 데이터셋 버전 갱신.
 - 수용 기준: 두 레이아웃 모두에서 기준선 유지 또는 명시적 하락과 사유 기록.
 
-### R-007 — 접근성·반응형 세부 점검 (자동 검증 완료, 실사용 검토 대기)
+### R-007 — 접근성·반응형 세부 점검 (완료)
 
 - 완료: skip link, 랜드마크, 표 `scope`/`caption`, 필터 `aria-current`, 오류 `role="alert"`,
   `:focus-visible`. 키보드 첫 Tab으로 본문 건너뛰기를 확인했고 테스트로 고정했다.
 - 완료: 주요 6개 색 조합이 WCAG AA 일반 텍스트 대비를 통과했고, 실제 768px·1024px
   화면 캡처에서 반응형 레이아웃을 확인했다(`artifacts/accessibility_audit.json`).
-- 남음: 스크린리더로 업로드→판정 1회 점검.
-- 수용 기준(전체 완료): 스크린리더 점검 기록.
+- 완료: Windows Narrator로 독립 DB에서 HOLD→정상 승인→감사 이력까지 키보드 전용 흐름을 사람이 청취했다.
+- 증거: [Phase 13 기록](docs/reviews/phase-13.md).
 
 ### 명시적 비목표 (요구가 생기기 전에는 시작하지 않는다)
 
@@ -362,7 +362,7 @@ POST /api/documents/{id}/revalidate
 2. 3절의 검증 블록을 그대로 실행한다. **하나라도 실패하면 기능 추가를 시작하지 않는다.**
 3. `git status`가 깨끗한지 확인한다. 사용자 변경이 있으면 덮어쓰지 않는다.
 4. `docs/decisions/pending.md`를 읽고, 요청이 보류 결정을 건드리는지 확인한다.
-5. [Phase 로드맵](docs/ROADMAP_PHASES.md)의 Gate를 확인한다. R-007 스크린리더 실사용 검토를 끝낸다. P2 항목은 사용자 결정 없이 시작하지 않는다.
+5. [Phase 로드맵](docs/ROADMAP_PHASES.md)의 Gate를 확인한다. P2 항목은 사용자 결정 없이 시작하지 않는다.
 6. 계약을 바꾸면 5절 절차를 지키고, `docs/reviews/phase-N.md`에 A·B·C 검토를 남긴다. Phase 6의 운영 개선과 환경 제한은 `docs/reviews/phase-6.md`에 있다.
 7. 완료 시 `HANDOFF.md` 6절 상태, README 상태/수치, 이 문서의 "최신 커밋" 설명을 갱신한다.
 8. 커밋 단위는 페이즈/의미 단위로 유지한다: `feat(phaseN): …`, `docs(handoff): …`.
@@ -401,5 +401,5 @@ POST /api/documents/{id}/revalidate
 | `docs(handoff)` | 인수인계 문서와 `handoff.seed.yaml` |
 
 각 페이즈의 발견·수정 이유는 `docs/reviews/phase-0.md` ~ `phase-12.md`, `phase-14.md`에 있다.
-`phase-13.md`는 스크린리더 실사용 검증을 **사람이 수행한 뒤** 작성한다.
+`phase-13.md`는 사람 청취로 완료됐으며, `phase-14.md`는 원문 근거 수정의 A/B/C 검토 기록이다.
 
