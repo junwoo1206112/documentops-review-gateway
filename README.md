@@ -107,6 +107,9 @@ python scripts/seed_demo.py     # 4건을 위 순서대로 접수 (서버 실행
 
 ## 실행
 
+Windows에서는 [scripts/run_local.cmd](scripts/run_local.cmd)를 더블클릭하면 독립 창에서 서버를 유지할 수 있습니다.
+사이트를 사용하는 동안 그 창을 닫지 마세요.
+
 ```bash
 python -m venv .venv
 .venv\Scripts\activate              # Windows
