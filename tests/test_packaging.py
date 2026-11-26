@@ -126,6 +126,23 @@ def test_readme_documents_runbook_and_limits() -> None:
         assert command in readme
     assert "합성" in readme
     assert "자동 승인" in readme
+    assert "DOCUMENTOPS_PORTFOLIO_CASE_STUDY.md" in readme
+
+
+def test_portfolio_case_study_links_only_to_supported_evidence() -> None:
+    study = read("docs/reference/DOCUMENTOPS_PORTFOLIO_CASE_STUDY.md")
+    for token in (
+        "원문 근거",
+        "append-only",
+        "36/36",
+        "HOLD 재현 19/19",
+        "합성 데이터",
+        "OCR·이미지/PDF 입력은 현재 릴리스에서 채택하지 않았다",
+        "실제 LLM 호출",
+        "https://documentops-review-gateway-demo.onrender.com",
+        "documentops-demo.webm",
+    ):
+        assert token in study
 
 
 def test_phase13_runner_uses_an_isolated_database() -> None:
@@ -170,6 +187,7 @@ def test_documented_test_counts_match_collected_suite() -> None:
     assert f"# {count} passed" in read("README.md")
     assert f"{count} tests" in read("docs/ROADMAP_PHASES.md")
     assert f"`{count} passed`" in read("docs/NEXT_PHASES_HANDOFF.md")
+    assert f"{count}개 테스트" in read("docs/reference/DOCUMENTOPS_PORTFOLIO_CASE_STUDY.md")
 
 
 def test_layout2_report_filename_is_consistent() -> None:

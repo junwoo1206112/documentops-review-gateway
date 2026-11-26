@@ -42,7 +42,7 @@ versions:
 verified:
   date: "2026-11-27"
   platform: "Windows 11, Python 3.12.10"
-  tests_passed: 180
+  tests_passed: 181
   tests_collected_after_phase_6: 133
   dataset_check: pass
   evaluation_exit_code: 0

@@ -2,7 +2,7 @@
 
 최신화: 2026-11-27  
 기준: `main` (2026-11-27, Phase 17-J)  
-현재 검증: 로컬 `180 passed`, dataset integrity 통과, 원격 CI 성공.
+현재 검증: 로컬 `181 passed`, dataset integrity 통과, 원격 CI 성공.
 
 ## 한눈에 보는 상태
 

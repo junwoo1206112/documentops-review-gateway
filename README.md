@@ -121,7 +121,7 @@ python -m venv .venv
 # source .venv/bin/activate         # Linux/macOS
 pip install -e ".[dev]"
 
-python -m pytest -q                 # 180 passed (2026-11-27, Python 3.12.10)
+python -m pytest -q                 # 181 passed (2026-11-27, Python 3.12.10)
 python tools/generate_dataset.py --check
 python -m app.inspect fixtures/evaluation/DOC-0001.txt
 
@@ -241,6 +241,7 @@ OpenAPI는 `/api/openapi.json`에서 확인할 수 있습니다.
 | [docs/decisions/pending.md](docs/decisions/pending.md) | 보류 결정 5건 + P-003 결정 완료 기록 |
 | [docs/ROADMAP_PHASES.md](docs/ROADMAP_PHASES.md) | 인수자·LLM 공용: Gate·수용 기준·권장 구현 순서 |
 | [docs/NEXT_PHASES_HANDOFF.md](docs/NEXT_PHASES_HANDOFF.md) | 인수자·LLM 공용: 남은 페이즈별 재개 조건·구현·검증 순서 |
+| [DocumentOps 포트폴리오 사례 요약](docs/reference/DOCUMENTOPS_PORTFOLIO_CASE_STUDY.md) | 채용·포트폴리오용: 문제·설계·검증 근거·한계·60초 설명 |
 | [docs/reviews/](docs/reviews/) | Phase 0~12·14 전문가 A·B·C 교차 검증 기록 |
 | [docs/reference/](docs/reference/) | 인수인계 원본 계획·실행 로그·데모 원고 |
 | [HANDOFF.md](HANDOFF.md) | 인수자용: 현재 상태·검증 증거·남은 작업·재개 절차 |
