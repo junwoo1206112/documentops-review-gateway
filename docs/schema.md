@@ -159,7 +159,8 @@
 | POST | `/api/documents/{id}/corrections` | 201 문서 상세 | 404, 409 종료 상태, 422 필드·근거·값 위반 |
 | POST | `/api/documents/{id}/decision` | 200 문서 상세 | 404, 409 허용되지 않은 전이, 422 사유·별칭 누락 |
 | GET | `/api/documents/{id}/audit` | 200 `{items}` | 404 |
-| GET | `/api/evaluation/latest` | 200 최신 평가 리포트 | 404 리포트 없음 |
+| GET | `/api/evaluation/latest` | 200 기본 데이터셋(`evaluation`) 리포트 | 404 리포트 없음 |
+| GET | `/api/evaluation/reports` | 200 `{items, total}` 레이아웃별 리포트 목록 | - |
 
 ### 화면 경로
 
@@ -171,7 +172,7 @@
 | POST | `/documents/{id}/decision` | 폼 판정(별칭·사유), 성공 시 303, 위반 시 해당 코드와 함께 상세 재렌더 |
 | POST | `/documents/{id}/revalidate` | 재검증, 성공 시 303 |
 | POST | `/documents/{id}/corrections` | 원문 재인용 필드 수정, 성공 시 303, 위반 시 상세 재렌더 |
-| GET | `/evaluation` | 최신 평가 리포트 또는 실행 안내 |
+| GET | `/evaluation` | 레이아웃별 평가 리포트(없으면 실행 안내) |
 
 ### 문서 상세 응답
 

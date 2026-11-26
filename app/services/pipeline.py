@@ -18,8 +18,8 @@ from app.errors import UnprocessableError
 from app.services.evidence import apply_evidence
 from app.services.extraction.base import (
     EVIDENCE_VERIFIED,
-    ExtractionProvider,
     ExtractedField,
+    ExtractionProvider,
     ExtractionResult,
     Item,
 )

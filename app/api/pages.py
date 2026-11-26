@@ -11,6 +11,7 @@ from markupsafe import Markup, escape
 from app.domain.fields import FIELD_KEYS, FIELD_LABELS
 from app.domain.statuses import STATUS_LABELS
 from app.errors import AppError
+from app.services.reports import load_reports
 
 router = APIRouter()
 
@@ -263,18 +264,14 @@ def submit_correction(
 
 @router.get("/evaluation", response_class=HTMLResponse)
 def evaluation(request: Request) -> HTMLResponse:
-    path = request.app.state.settings.artifacts_dir / "evaluation_report.json"
-    report = None
-    error = None
-    if path.exists():
-        try:
-            import json
-
-            report = json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, ValueError) as exc:  # pragma: no cover - 손상된 파일
-            error = f"평가 리포트를 읽을 수 없습니다: {exc}"
+    settings = request.app.state.settings
+    reports = load_reports(settings.artifacts_dir)
     return _templates(request).TemplateResponse(
         request,
         "evaluation.html",
-        {"report": report, "error": error, "path": str(path)},
+        {
+            "reports": reports,
+            "artifacts_dir": str(settings.artifacts_dir),
+            "default_dataset": settings.evaluation_dir.name,
+        },
     )

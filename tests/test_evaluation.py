@@ -55,6 +55,7 @@ def _single_doc_dataset(tmp_path: Path, version: str) -> Path:
 def test_report_schema_and_versions() -> None:
     data = report()
     assert data["schema_version"] == "eval-report-1"
+    assert data["dataset_name"] == "evaluation"
     assert data["dataset_version"] == "synth-2026-11-26.3"
     assert data["ruleset_version"] == "rules-1.0.0"
     assert data["extractor_version"] == "deterministic-1.1.0"
@@ -104,9 +105,18 @@ def test_baseline_metrics_are_exact() -> None:
 
 def test_pipe_layout_dataset_has_an_independent_perfect_baseline() -> None:
     data = evaluate_dataset(LAYOUT2_DIR, REGISTRY)
+    assert data["dataset_name"] == "evaluation_layout2"
     assert data["documents"] == 36
     assert data["metrics"]["document_exact_match"] == {"matched": 36, "total": 36, "value": 1.0}
     assert data["metrics"]["rule_match"] == {"matched": 36, "total": 36, "value": 1.0}
+
+
+def test_layout_reports_are_distinguishable() -> None:
+    first = evaluate_dataset(EVAL_DIR, REGISTRY)
+    second = evaluate_dataset(LAYOUT2_DIR, REGISTRY)
+    assert first["dataset_name"] != second["dataset_name"]
+    assert first["metrics"] == second["metrics"]
+    assert first["dataset_version"] == second["dataset_version"]
 
 
 def test_no_regressions_and_three_published_cases() -> None:
@@ -200,6 +210,60 @@ def test_cli_writes_report(tmp_path: Path) -> None:
     data = json.loads(output.read_text(encoding="utf-8"))
     assert data["metrics"]["hold_recall"]["value"] == 1.0
     assert "hold_recall=1.0" in result.stdout
+
+
+def test_cli_uses_layout_specific_default_report(tmp_path: Path) -> None:
+    result = subprocess.run(
+        [sys.executable, "-m", "app.evaluate", "--dataset", str(LAYOUT2_DIR)],
+        cwd=PROJECT_ROOT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        env={
+            **os.environ,
+            "PYTHONIOENCODING": "utf-8",
+            "ARTIFACTS_DIR": str(tmp_path),
+        },
+    )
+    assert result.returncode == 0, result.stderr
+    output = tmp_path / "evaluation_report_evaluation_layout2.json"
+    assert output.exists()
+    data = json.loads(output.read_text(encoding="utf-8"))
+    assert data["dataset_name"] == "evaluation_layout2"
+
+
+def test_api_lists_reports_per_layout(tmp_path: Path) -> None:
+    artifacts = tmp_path / "artifacts"
+    artifacts.mkdir()
+    first = evaluate_dataset(EVAL_DIR, REGISTRY)
+    second = evaluate_dataset(LAYOUT2_DIR, REGISTRY)
+    (artifacts / "evaluation_report.json").write_text(
+        json.dumps(first, ensure_ascii=False), encoding="utf-8"
+    )
+    (artifacts / "evaluation_report_layout2.json").write_text(
+        json.dumps(second, ensure_ascii=False), encoding="utf-8"
+    )
+    settings = Settings(
+        db_path=tmp_path / "reports.db",
+        vendor_registry_path=PROJECT_ROOT / "fixtures" / "vendors.json",
+        evaluation_dir=EVAL_DIR,
+        artifacts_dir=artifacts,
+        rate_limit_per_minute=0,
+    )
+    with TestClient(create_app(settings)) as client:
+        reports = client.get("/api/evaluation/reports").json()
+        assert reports["total"] == 2
+        assert {item["dataset_name"] for item in reports["items"]} == {
+            "evaluation",
+            "evaluation_layout2",
+        }
+
+        latest = client.get("/api/evaluation/latest").json()
+        assert latest["dataset_name"] == "evaluation"
+
+        page = client.get("/evaluation").text
+        assert "evaluation_layout2" in page
+        assert "evaluation_report_layout2.json" in page
 
 
 def test_cli_fails_cleanly_on_missing_dataset(tmp_path: Path) -> None:

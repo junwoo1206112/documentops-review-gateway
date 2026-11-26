@@ -1,8 +1,8 @@
 ﻿# HANDOFF — DocumentOps Review Gateway
 
-- 작성일: 2026-11-26
+- 작성일: 2026-11-27
 - 대상: 다음 인수자(사람)와 다음 LLM 세션
-- 현재 브랜치 상태: `main`, Phase 0~15·17 완료; Render 공개 읽기 전용 데모와 Phase 13(스크린리더 실사용), Phase 17(오프라인 LLM 계약 하네스) 완료. OCR·실제 LLM·운영화 Gate 대기
+- 현재 브랜치 상태: `main`, Phase 0~17-I 완료(13 사람 검증 포함); Render 공개 데모 재확인과 OCR·실제 LLM·운영화 Gate 대기
 - 최신 커밋: `git log --oneline`으로 확인한다. 커밋 해시는 이동하므로 이 문서에 고정하지 않는다.
 
 이 문서 하나로 **무엇을 만들었고, 무엇이 검증됐고, 무엇이 남았고, 어떻게 이어서 하는지**를
@@ -18,11 +18,11 @@
 | 핵심 주장 | "AI가 답한다"가 아니라 **근거 없는 값은 승인 불가, blocking 오류는 HOLD, 판정은 사람만** |
 | 스택 | Python 3.12, FastAPI, SQLite, Jinja2 서버 렌더링, pytest, Docker, GitHub Actions |
 | 실행 | `uvicorn app.asgi:app` (주의: `app.main:app` 아님) |
-| 테스트 | **170 passed** (2026-11-26, Python 3.12.10, Windows 11) |
+| 테스트 | **174 passed** (2026-11-27, Python 3.12.10, Windows 11) |
 | 평가 | 공백 표·파이프 표 독립 36건씩: 문서 EM 36/36, HOLD 재현 19/19, 오보류 0/17, 규칙 일치 36/36, 근거 410/412 |
 | Docker | `docker compose up --build` → `healthy`, 데모 4건 처리, 컨테이너 내 평가 동일 |
 | 원격 CI | `main`의 첫 `ci` 성공. README 배지는 실제 실행으로 연결됨 |
-| 공개 데모 | [Render 읽기 전용 데모](https://documentops-review-gateway-demo.onrender.com) — health `ok`, 합성 문서 4건, POST 403 확인(2026-11-26) |
+| 공개 데모 | [Render 읽기 전용 데모](https://documentops-review-gateway-demo.onrender.com) — 2026-11-26 health `ok`/문서 4건/POST 403 확인. **2026-11-27 재확인 시 `/api/health` 503, 재배포 후 재검증 필요** |
 | 남은 일 | OCR·실제 LLM·운영화 Gate 중 하나 선택 → [페이즈 로드맵](docs/ROADMAP_PHASES.md#인수자용-현재-상태와-실행-순서) |
 
 3개 명령으로 상태를 확인할 수 있다.
@@ -74,10 +74,12 @@ python -m app.evaluate --dataset fixtures/evaluation
 | 10 | 실제 UI 자동 녹화, 56.8초 영상·핵심 장면 검수 | `feat(phase10): …` | `artifacts/documentops-demo.webm` (git 미추적) |
 | 11 | 자동 대비 감사, 768/1024px 실제 화면 캡처 | `feat(phase11): …` | `artifacts/accessibility_audit.json` |
 | 12 | GitHub Release 공개, 데모 영상 asset 확인, README·인수 상태 갱신 | `docs(phase12): …` | [v0.1.0-demo](https://github.com/junwoo1206112/documentops-review-gateway/releases/tag/v0.1.0-demo) |
+| 13 | Windows Narrator·Chrome로 HOLD 안내·승인·감사 이력 사람 검증 | `docs(phase13): …` | `docs/reviews/phase-13.md` |
 | 14 | Gate A 결정, 원문 재인용 필드 수정·재검증·append-only 감사·UI | `feat(phase14): …` | 155 passed, `test_corrections.py` 15개 |
 | 14-I | Gate D 결정, 품목 셀 재인용·행 anchor·effective items·재검증 | `feat(phase14i): …` | 156 passed |
 | 15 | 두 번째 파이프 텍스트 양식, 독립 36건 평가, 혼합 양식 422 | `feat(phase15): …` | 두 레이아웃 36/36 |
 | 17 | opt-in 오프라인 LLM provider 계약, evidence HOLD, 명시적 provider 실패 | `feat(phase17): …` | 170 passed, 외부 API 없음 |
+| 17-I | 레이아웃별 리포트 분리, CI·Docker 두 레이아웃 평가, 공개 시드 부분 복구 | `feat(phase17i): …` | 174 passed, `/evaluation` 두 리포트 |
 
 ### 기준선 수치 (재현 가능)
 
@@ -102,12 +104,13 @@ python -m app.evaluate --dataset fixtures/evaluation
 
 | 항목 | 결과 |
 |---|---|
-| `docker build` | 성공, 207MB, 종료 코드 0 |
+| `docker build` | 성공, 208MB, 종료 코드 0 |
 | 실행 사용자 | `appuser` uid 10001 (비루트) |
 | 헬스체크 | `/api/health` → `healthy` |
 | `docker compose up -d --build` | `gateway Up (healthy)` |
 | `scripts/seed_demo.py` → 8000 | 2건 `PENDING_REVIEW`, 2건 `HOLD`(`LINE_TOTAL_MISMATCH`, `DUPLICATE_DOCUMENT`) |
 | `docker compose exec -T gateway python -m app.evaluate …` | 위 기준선과 동일 |
+| 이미지 내 평가 리포트 | 두 레이아웃 리포트를 빌드 시 생성해 `/evaluation`에서 바로 확인 가능 |
 | 데이터 | named volume `documentops-data`에 유지 |
 
 ---
@@ -129,7 +132,7 @@ pip install -e ".[dev]"
 python -m pytest -q
 ```
 
-기대 결과: `170 passed`.
+기대 결과: `174 passed`.
 
 > `uv`와 Node.js는 필요 없다. UI는 Jinja2 서버 렌더링이다(ADR 0002).
 > Python은 3.12 이상이어야 한다.
@@ -140,11 +143,12 @@ python -m pytest -q
 python tools/generate_dataset.py --check
 # 기대: "데이터셋 일치: dataset_version=synth-2026-11-26.3 … evaluation_docs=36 evaluation_layout2_docs=36 demo_docs=4"
 
-python -m app.evaluate --dataset fixtures/evaluation
+python -m app.evaluate --dataset fixtures/evaluation --report artifacts/evaluation_report.json
 # 기대: document_em=1.0, hold_recall=1.0 (19/19), false_hold_rate=0.0 (0/17),
 #       rule_match=1.0, evidence_validity=0.995, exit code 0
 
-python -m app.evaluate --dataset fixtures/evaluation_layout2
+python -m app.evaluate --dataset fixtures/evaluation_layout2 --report artifacts/evaluation_report_layout2.json
+# 기대: 위와 동일한 기준선, dataset_name=evaluation_layout2
 # 파이프 품목 표 36건도 위와 같은 기준선을 재현
 ```
 
@@ -211,7 +215,7 @@ app/
 │  └─ pages.py               HTML 6경로, 원문 하이라이트(escape 후 mark)
 ├─ templates/                base/index/detail/evaluation.html
 ├─ static/style.css          다크 테마, 상태 배지, 반응형
-tests/                       14개 파일, 155 tests
+tests/                       14개 파일, 174 tests
 tools/generate_dataset.py    합성 데이터·정답·manifest·vendors 생성기 (--check)
 scripts/seed_demo.py         데모 4건 HTTP 업로드
 fixtures/                    vendors.json, demo 4건, evaluation 36건+정답+manifest
@@ -377,7 +381,7 @@ POST /api/documents/{id}/revalidate
 - [ ] `app.evaluate` exit 0, 기준선 수치 재현
 - [ ] `uvicorn app.asgi:app` + `scripts/seed_demo.py`로 5장면 재현
 - [ ] `docker compose up --build` 후 healthy
-- [ ] `docs/reviews/phase-0..12.md`와 `phase-14.md` 존재(phase-13은 사람 검증 후 작성)
+- [ ] `phase-0.md`~`phase-15.md`, `phase-17.md`, `phase-17i.md` 리뷰 존재(phase-16은 Gate 대기)
 - [ ] 실제 개인정보·실제 문서가 저장소에 없음
 - [ ] README의 주장이 테스트/실행 증거보다 강하지 않음
 
@@ -401,8 +405,13 @@ POST /api/documents/{id}/revalidate
 | `feat(phase11)` | 자동 대비 감사와 태블릿 폭 화면 검수 |
 | `docs(phase12)` | GitHub Release 공개와 README·인수 상태 갱신 |
 | `feat(phase14)` | Gate A 결정, 원문 재인용 수정·재검증·append-only 감사·UI |
+| `feat(phase14i)` | 품목 셀 재인용과 effective items |
+| `feat(phase15)` | 두 번째 파이프 레이아웃과 독립 평가셋 |
+| `feat(phase17)` | 오프라인 LLM provider 계약 하네스 |
+| `feat(phase17i)` | 레이아웃별 평가 리포트·CI·Docker·공개 시드 복구 |
 | `docs(handoff)` | 인수인계 문서와 `handoff.seed.yaml` |
 
-각 페이즈의 발견·수정 이유는 `docs/reviews/phase-0.md` ~ `phase-12.md`, `phase-14.md`에 있다.
-`phase-13.md`는 사람 청취로 완료됐으며, `phase-14.md`는 원문 근거 수정의 A/B/C 검토 기록이다.
+각 페이즈의 발견·수정 이유는 `docs/reviews/`의 해당 `phase-*.md`에 있다.
+Phase 13은 사람 청취 검증 기록이며, Phase 16은 OCR Gate 입력 전까지 만들지 않는다.
+
 

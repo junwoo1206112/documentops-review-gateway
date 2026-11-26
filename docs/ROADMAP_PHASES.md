@@ -1,6 +1,6 @@
 # 남은 구현 로드맵 — 인수자·LLM 공용
 
-최신화: 2026-11-27 (Phase 17 완료, 공개 읽기 전용 Render 데모 기준)
+최신화: 2026-11-27 (Phase 17-I 완료, Render 데모 재확인 대기)
 
 이 문서는 구현 순서를 **약속**하는 것이 아니라, 이미 검증된 안전 계약을 훼손하지 않으면서
 다음 인수자가 재개할 수 있게 만드는 권장 실행 경로다. P-001~P-006은 제품·운영 결정이므로,
@@ -12,8 +12,9 @@
   WebM asset 5,850,941 bytes, SHA-256
   `841e5e92990b56fc2c1342d9738c7dfc0c8fe35b888b1aba24415f285ccbe664`.
 - 원격 검증: [CI run 45702069278](https://github.com/junwoo1206112/documentops-review-gateway/actions/runs/45702069278) 성공 (`7b2c1ba`).
-- 재현 기준선: 170 tests, 각 텍스트 레이아웃 36/36 문서 일치, HOLD 19/19, false HOLD 0/17, 규칙 36/36,
+- 재현 기준선: 174 tests, 각 텍스트 레이아웃 36/36 문서 일치, HOLD 19/19, false HOLD 0/17, 규칙 36/36,
   근거 410/412(의도된 파생 총액 2건).
+- 평가 증거: 레이아웃별 리포트 분리(`dataset_name`), `/evaluation` 두 표, CI artifact 2개.
 - 불변 계약: 자동 승인 없음, `HOLD → APPROVED` 직접 전이 금지, blocking이면 HOLD,
   근거 span 필수, 감사 append-only. 상세는 [HANDOFF.md](../HANDOFF.md) 1절을 따른다.
 
@@ -27,6 +28,7 @@
 | 14 / 14-I | 완료 | 원문 재인용 scalar·기존 품목 셀 수정, 재검증, append-only 감사 |
 | 15 | 완료 | 기존 공백 표와 파이프 표의 **독립** 36건 평가 |
 | 17 | 완료 | `llm-contract-stub`의 opt-in 계약, span 누락 HOLD, provider 실패 422 |
+| 17-I | 완료 | 레이아웃별 리포트 분리, CI·Docker 두 레이아웃 평가, 공개 시드 부분 복구 |
 
 ### 아직 구현하면 안 되는 페이즈 — Gate 입력이 먼저다
 

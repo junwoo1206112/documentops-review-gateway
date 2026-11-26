@@ -39,6 +39,8 @@ def test_dockerfile_is_non_root_and_healthchecked() -> None:
     assert "HEALTHCHECK" in dockerfile
     assert "app.asgi:app" in dockerfile
     assert "0.0.0.0" in dockerfile
+    assert "fixtures/evaluation_layout2" in dockerfile
+    assert "evaluation_report_layout2.json" in dockerfile
 
 
 def test_compose_uses_volume_and_healthcheck() -> None:
@@ -54,6 +56,8 @@ def test_ci_runs_tests_dataset_and_evaluation_without_secrets() -> None:
     assert "python -m pytest" in workflow
     assert "tools/generate_dataset.py --check" in workflow
     assert "app.evaluate" in workflow
+    assert "fixtures/evaluation_layout2" in workflow
+    assert "artifacts/evaluation_report*.json" in workflow
     assert "upload-artifact" in workflow
     lowered = workflow.lower()
     for forbidden in ("api_key", "secrets.", "openai", "anthropic"):
@@ -116,9 +120,16 @@ def test_artifacts_and_db_are_not_tracked_candidates() -> None:
 
 
 def test_phase_reviews_exist_for_every_phase() -> None:
+    import re
+
+    def phase_key(path: Path) -> tuple[int, str]:
+        match = re.fullmatch(r"phase-(\d+)(.*)\.md", path.name)
+        assert match is not None
+        return int(match.group(1)), match.group(2)
+
     reviews = sorted(
         (PROJECT_ROOT / "docs" / "reviews").glob("phase-*.md"),
-        key=lambda path: int(path.stem.removeprefix("phase-")),
+        key=phase_key,
     )
     assert [path.name for path in reviews] == [
         "phase-0.md",
@@ -138,6 +149,7 @@ def test_phase_reviews_exist_for_every_phase() -> None:
         "phase-14.md",
         "phase-15.md",
         "phase-17.md",
+        "phase-17i.md",
     ]
 
 
@@ -181,14 +193,18 @@ def test_handoff_seed_is_valid_and_tracks_state() -> None:
 
     data = yaml.safe_load(read("handoff.seed.yaml"))
     assert data["schema"] == "handoff-seed-1"
-    assert data["status"] == "phase-17-llm-contract-harness-complete-public-demo-live"
+    assert data["status"] == "phase-17i-evaluation-evidence-isolated"
     assert data["versions"]["dataset"] == "synth-2026-11-26.3"
-    assert data["verified"]["tests_passed"] >= 155
+    assert data["verified"]["tests_passed"] >= 174
+    assert data["verified"]["evaluation_reports"]["files"]["evaluation_layout2"].endswith(
+        "evaluation_report_evaluation_layout2.json"
+    )
+    assert data["verified"]["public_demo"]["status"] == "deployed_unverified"
     assert data["verified"]["corrections"]["model"] == "original_quote_only"
     assert data["verified"]["tests_collected_after_phase_6"] == 133
     assert data["verified"]["evaluation_exit_code"] == 0
     assert data["verified"]["ci_remote"]["status"] == "success"
-    assert data["verified"]["ci_remote"]["run_url"].endswith("/45697512065")
+    assert data["verified"]["ci_remote"]["run_url"].endswith("/45702069278")
 
     task_ids = {task["id"] for task in data["remaining"]}
     assert {"R-001", "R-002", "R-003", "R-004", "R-005", "R-008"} <= task_ids

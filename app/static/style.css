@@ -605,6 +605,24 @@ textarea:focus {
   margin-bottom: 18px;
 }
 
+.report-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-top: 2px solid var(--border);
+  margin-top: 28px;
+  padding-top: 18px;
+}
+
+.report-head h2 {
+  margin: 0 0 4px;
+  font-size: 20px;
+}
+
+.report-head p {
+  margin: 0;
+}
+
 .meta-grid div {
   background: var(--surface);
   border: 1px solid var(--border);

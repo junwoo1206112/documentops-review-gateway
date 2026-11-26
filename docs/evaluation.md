@@ -123,12 +123,22 @@
 
 ## 4. 리포트 스키마
 
-`artifacts/evaluation_report.json`
+레이아웃별로 **서로 다른 파일**에 쓴다. 한 파일을 덮어쓰면 어느 데이터셋의 결과인지 알 수 없다.
+
+| 데이터셋 | 기본 리포트 경로 | `dataset_name` |
+|---|---|---|
+| `fixtures/evaluation` | `artifacts/evaluation_report.json` | `evaluation` |
+| `fixtures/evaluation_layout2` | `artifacts/evaluation_report_evaluation_layout2.json` | `evaluation_layout2` |
+
+`--report`를 지정하면 그 경로를 쓴다. 판정·CI·Docker는 항상 명시 경로를 쓴다.
+`/evaluation`은 `artifacts/evaluation_report*.json`을 모두 읽어 데이터셋별로 렌더링하고,
+`/api/evaluation/latest`는 기본 데이터셋(`evaluation`) 리포트를 우선 반환한다.
 
 ```json
 {
   "schema_version": "eval-report-1",
-  "dataset_version": "synth-2026-11-26.1",
+  "dataset_name": "evaluation",
+  "dataset_version": "synth-2026-11-26.3",
   "ruleset_version": "rules-1.0.0",
   "extractor_version": "deterministic-1.1.0",
   "documents": 36,
@@ -169,5 +179,6 @@
 
 - 리포트 생성은 네트워크·외부 API·시스템 시각에 의존하지 않는다.
 - 같은 커밋 + 같은 데이터셋이면 `metrics`, `failures`가 동일해야 한다(테스트).
+- 레이아웃별 리포트는 `dataset_name`으로 구분하며, 다른 데이터셋의 결과를 한 파일에 섞지 않는다.
 - 데이터셋 파일이 바뀌면 `DATASET_VERSION`과 manifest SHA-256이 함께 바뀐다.
 - `python -m app.evaluate`는 `fixtures/evaluation`이 쓰기 불가여도 동작해야 한다(읽기만).

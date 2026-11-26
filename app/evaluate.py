@@ -228,6 +228,7 @@ def evaluate_dataset(dataset_dir: Path, registry: VendorRegistry) -> dict[str, A
 
     return {
         "schema_version": SCHEMA_VERSION,
+        "dataset_name": dataset_dir.name,
         "dataset_version": dataset_version,
         "ruleset_version": RULESET_VERSION,
         "extractor_version": EXTRACTOR_VERSION,
@@ -286,10 +287,15 @@ def main(argv: list[str] | None = None) -> int:
     settings = Settings.from_env()
     parser = argparse.ArgumentParser(description="고정 데이터셋 평가")
     parser.add_argument("--dataset", type=Path, default=settings.evaluation_dir)
-    parser.add_argument(
-        "--report", type=Path, default=settings.artifacts_dir / "evaluation_report.json"
-    )
+    parser.add_argument("--report", type=Path, default=None)
     args = parser.parse_args(argv)
+
+    report_path = args.report
+    if report_path is None:
+        if args.dataset.resolve() == settings.evaluation_dir.resolve():
+            report_path = settings.artifacts_dir / "evaluation_report.json"
+        else:
+            report_path = settings.artifacts_dir / f"evaluation_report_{args.dataset.name}.json"
 
     try:
         registry = VendorRegistry.load(settings.vendor_registry_path)
@@ -298,7 +304,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"평가 실패: {exc}", file=sys.stderr)
         return 2
 
-    write_report(report, args.report)
+    write_report(report, report_path)
     metrics = report["metrics"]
     print(f"dataset={report['dataset_version']} documents={report['documents']}")
     print(f"document_em={metrics['document_exact_match']['value']}")
@@ -311,7 +317,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"rule_match={metrics['rule_match']['value']}")
     print(f"evidence_validity={metrics['evidence_validity']['value']}")
     print(f"p50={report['measurement']['p50_ms']}ms p95={report['measurement']['p95_ms']}ms")
-    print(f"report={args.report}")
+    print(f"report={report_path}")
     if report["regressions"]:
         print(f"회귀 {len(report['regressions'])}건:", file=sys.stderr)
         for regression in report["regressions"]:

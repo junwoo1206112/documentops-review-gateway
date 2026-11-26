@@ -9,21 +9,31 @@
     <h1>정확도 하나로 말하지 않습니다.</h1>
     <p class="lede">
       필드 정확도, HOLD 재현율, 오보류율, 근거 유효율을 분모와 함께 봅니다.
-      데이터셋·규칙·추출기 버전이 리포트에 함께 기록됩니다.
+      레이아웃별 리포트를 분리해, 어느 문서 형식의 결과인지 섞이지 않게 합니다.
     </p>
   </div>
 </section>
 
-{% if error %}<p class="alert error" role="alert">{{ error }}</p>{% endif %}
-
-{% if not report %}
+{% if not reports %}
 <section class="panel">
   <h2>아직 리포트가 없습니다</h2>
-  <p>다음 명령으로 고정 데이터셋을 평가하세요.</p>
-  <pre class="cmd">python -m app.evaluate --dataset fixtures/evaluation</pre>
-  <p class="hint">리포트 경로: <span class="mono">{{ path }}</span></p>
+  <p>다음 명령으로 두 레이아웃을 각각 평가하세요.</p>
+  <pre class="cmd">python -m app.evaluate --dataset fixtures/evaluation --report artifacts/evaluation_report.json
+python -m app.evaluate --dataset fixtures/evaluation_layout2 --report artifacts/evaluation_report_layout2.json</pre>
+  <p class="hint">리포트 경로: <span class="mono">{{ artifacts_dir }}</span></p>
 </section>
 {% else %}
+
+{% for report in reports %}
+<section class="report-head">
+  <div>
+    <h2>{{ report.dataset_name }}</h2>
+    <p class="hint mono">
+      {{ report.report_file }} · dataset {{ report.dataset_version }}
+      {% if report.dataset_name == default_dataset %}<span class="badge">기본</span>{% endif %}
+    </p>
+  </div>
+</section>
 
 <section class="meta-grid">
   <div><span>dataset</span><strong class="mono">{{ report.dataset_version }}</strong></div>
@@ -35,7 +45,7 @@
 <section class="panel">
   <h2>지표</h2>
   <table class="metrics">
-    <caption class="sr-only">고정 데이터셋 평가 지표</caption>
+    <caption class="sr-only">{{ report.dataset_name }} 고정 데이터셋 평가 지표</caption>
     <thead><tr><th scope="col">지표</th><th scope="col" class="num">matched / total</th><th scope="col" class="num">값</th></tr></thead>
     <tbody>
       {% for name, metric in report.metrics.items() %}
@@ -95,5 +105,6 @@
     {% for item in report.limitations %}<li>{{ item }}</li>{% endfor %}
   </ul>
 </section>
+{% endfor %}
 {% endif %}
 {% endblock %}

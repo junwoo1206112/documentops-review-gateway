@@ -179,10 +179,18 @@ def build_spec(spec: Spec) -> tuple[str, dict[str, object]]:
     builder = TextBuilder()
     if spec.layout == "legacy":
         builder.line("[거래명세서]")
-        headers = (("거래처", "vendor", spec.vendor), ("문서번호", "doc_no", spec.doc_no), ("작성일자", "doc_date", spec.date_raw))
+        headers = (
+            ("거래처", "vendor", spec.vendor),
+            ("문서번호", "doc_no", spec.doc_no),
+            ("작성일자", "doc_date", spec.date_raw),
+        )
     elif spec.layout == "pipe":
         builder.line("[파이프 거래명세서]")
-        headers = (("문서번호", "doc_no", spec.doc_no), ("작성일", "doc_date", spec.date_raw), ("거래처", "vendor", spec.vendor))
+        headers = (
+            ("문서번호", "doc_no", spec.doc_no),
+            ("작성일", "doc_date", spec.date_raw),
+            ("거래처", "vendor", spec.vendor),
+        )
     else:
         raise ValueError(f"unknown layout: {spec.layout}")
     for label, path, value in headers:
@@ -196,9 +204,12 @@ def build_spec(spec: Spec) -> tuple[str, dict[str, object]]:
     for index, item in enumerate(spec.items):
         separator = "  " if spec.layout == "legacy" else " | "
         builder.line(
-            (f"items[{index}].name", item.name), separator,
-            (f"items[{index}].qty", str(item.qty)), separator,
-            (f"items[{index}].unit_price", money(item.unit_price)), separator,
+            (f"items[{index}].name", item.name),
+            separator,
+            (f"items[{index}].qty", str(item.qty)),
+            separator,
+            (f"items[{index}].unit_price", money(item.unit_price)),
+            separator,
             (f"items[{index}].amount", money(item.amount)),
         )
     builder.blank()
@@ -569,7 +580,9 @@ def render_registry() -> dict[Path, bytes]:
 def all_files() -> dict[Path, bytes]:
     evaluation, demo = build_documents()
     files = render_set(evaluation)
-    files.update(render_set([replace(spec, layout="pipe") for spec in evaluation], EVAL_LAYOUT2_DIR))
+    files.update(
+        render_set([replace(spec, layout="pipe") for spec in evaluation], EVAL_LAYOUT2_DIR)
+    )
     files.update(render_demo(demo))
     files.update(render_registry())
     return files

@@ -38,7 +38,9 @@ class OfflineLLMContractStub:
         except Exception as exc:
             raise ExtractionProviderError("오프라인 LLM 계약 스텁이 추출에 실패했습니다.") from exc
         if not isinstance(result, ExtractionResult):
-            raise ExtractionProviderError("provider 결과가 ExtractionResult 계약을 지키지 않습니다.")
+            raise ExtractionProviderError(
+                "provider 결과가 ExtractionResult 계약을 지키지 않습니다."
+            )
         return result
 
 

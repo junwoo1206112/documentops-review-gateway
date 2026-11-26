@@ -2,9 +2,6 @@
 
 from __future__ import annotations
 
-import json
-from pathlib import Path
-
 from fastapi import APIRouter, File, Query, Request, UploadFile
 
 from app.api.schemas import CorrectionRequest, DecisionRequest
@@ -12,6 +9,7 @@ from app.domain.fields import FIELD_LABELS
 from app.domain.rules import RULES
 from app.domain.statuses import STATUSES
 from app.errors import NotFoundError, PayloadTooLargeError, UnprocessableError
+from app.services.reports import load_reports, primary_report
 from app.version import (
     APP_NAME,
     APP_VERSION,
@@ -113,12 +111,19 @@ def decide(request: Request, document_id: str, payload: DecisionRequest) -> dict
 
 @router.get("/evaluation/latest")
 def latest_evaluation(request: Request) -> dict:
-    path: Path = request.app.state.settings.artifacts_dir / "evaluation_report.json"
-    if not path.exists():
+    settings = request.app.state.settings
+    reports = load_reports(settings.artifacts_dir)
+    if not reports:
         raise NotFoundError(
             "아직 평가 리포트가 없습니다. python -m app.evaluate를 먼저 실행하세요."
         )
-    try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
-        raise NotFoundError("평가 리포트를 읽을 수 없습니다.") from exc
+    report = primary_report(reports, settings.evaluation_dir.name)
+    if report is None:  # pragma: no cover
+        raise NotFoundError("평가 리포트를 읽을 수 없습니다.")
+    return report
+
+
+@router.get("/evaluation/reports")
+def evaluation_reports(request: Request) -> dict:
+    reports = load_reports(request.app.state.settings.artifacts_dir)
+    return {"items": reports, "total": len(reports)}

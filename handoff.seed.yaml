@@ -1,7 +1,7 @@
 ﻿schema: handoff-seed-1
 as_of: "2026-11-27"
 project: documentops-review-gateway
-status: phase-17-llm-contract-harness-complete-public-demo-live
+status: phase-17i-evaluation-evidence-isolated
 language: ko
 
 goal: >
@@ -40,9 +40,9 @@ versions:
   vendor_registry: vendors-2026-11-26.1
 
 verified:
-  date: "2026-11-26"
+  date: "2026-11-27"
   platform: "Windows 11, Python 3.12.10"
-  tests_passed: 170
+  tests_passed: 174
   tests_collected_after_phase_6: 133
   dataset_check: pass
   evaluation_exit_code: 0
@@ -59,20 +59,29 @@ verified:
     revalidate: always
     audit: append_only
   docker:
-    image_size: 207MB
+    image_size: 208MB
     user: "appuser uid 10001"
     health: healthy
     compose_demo_documents: 4
     evaluation_in_container: baseline_reproduced
+    baked_reports: ["evaluation", "evaluation_layout2"]
   ci_remote:
     status: success
-    run_url: "https://github.com/junwoo1206112/documentops-review-gateway/actions/runs/45697512065"
-    note: "main의 첫 ci 실행에서 install, format, lint, dataset, tests, evaluation, artifact upload가 모두 성공했다."
+    run_url: "https://github.com/junwoo1206112/documentops-review-gateway/actions/runs/45702069278"
+    note: "최신 성공 실행. 두 레이아웃 평가 job은 Phase 17-I에서 추가했으며 다음 push에서 확인한다."
+  evaluation_reports:
+    default_dataset: evaluation
+    files:
+      evaluation: artifacts/evaluation_report.json
+      evaluation_layout2: artifacts/evaluation_report_evaluation_layout2.json
+    api: ["/api/evaluation/latest", "/api/evaluation/reports"]
+    ui: "/evaluation"
   public_demo:
-    status: live
+    status: deployed_unverified
     url: "https://documentops-review-gateway-demo.onrender.com"
-    verified: "2026-11-26"
-    checks: ["GET /api/health = 200", "GET /api/documents total = 4", "POST /api/documents = E_PUBLIC_DEMO_READ_ONLY 403"]
+    last_verified: "2026-11-26"
+    observed: "2026-11-27 GET /api/health = 503; redeploy 후 재검증 필요"
+    checks_expected: ["GET /api/health = 200", "GET /api/documents total = 4", "POST /api/documents = E_PUBLIC_DEMO_READ_ONLY 403", "GET /evaluation 두 리포트"]
 
 commands:
   setup:
@@ -82,7 +91,8 @@ commands:
   verify:
     - "python -m pytest -q"
     - "python tools/generate_dataset.py --check"
-    - "python -m app.evaluate --dataset fixtures/evaluation"
+    - "python -m app.evaluate --dataset fixtures/evaluation --report artifacts/evaluation_report.json"
+    - "python -m app.evaluate --dataset fixtures/evaluation_layout2 --report artifacts/evaluation_report_layout2.json"
   run:
     - "uvicorn app.asgi:app --reload"
     - "python scripts/seed_demo.py"

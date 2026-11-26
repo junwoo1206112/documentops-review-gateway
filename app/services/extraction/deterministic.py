@@ -200,7 +200,9 @@ def _detect_layout(text: str) -> str:
         raise DocumentFormatError("서로 다른 문서 레이아웃을 섞을 수 없습니다.")
     if has_pipe_table or has_pipe_date:
         if not (has_pipe_table and has_pipe_date):
-            raise DocumentFormatError("파이프 양식은 작성일과 정확한 품목 표 헤더가 모두 필요합니다.")
+            raise DocumentFormatError(
+                "파이프 양식은 작성일과 정확한 품목 표 헤더가 모두 필요합니다."
+            )
         if has_legacy_date:
             raise DocumentFormatError("파이프 양식에는 작성일자 라벨을 사용할 수 없습니다.")
         return "pipe"

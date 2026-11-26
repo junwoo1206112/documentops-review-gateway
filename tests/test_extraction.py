@@ -120,7 +120,9 @@ def test_parses_pipe_layout_with_exact_cell_spans() -> None:
     "mutation",
     [
         lambda text: text.replace("품목 | 수량 | 단가 | 금액", "품목 | 수량 | 단가", 1),
-        lambda text: text.replace("산업용 볼트 M8 | 9 | 1,500 | 13,500", "산업용 볼트 M8 | 9 | | 13,500", 1),
+        lambda text: text.replace(
+            "산업용 볼트 M8 | 9 | 1,500 | 13,500", "산업용 볼트 M8 | 9 | | 13,500", 1
+        ),
         lambda text: text.replace("작성일: ", "작성일자: ", 1),
     ],
 )

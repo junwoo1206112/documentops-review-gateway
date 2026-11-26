@@ -13,6 +13,10 @@ COPY fixtures ./fixtures
 COPY scripts ./scripts
 
 RUN pip install --no-cache-dir . \
+    && python -m app.evaluate --dataset fixtures/evaluation \
+         --report artifacts/evaluation_report.json \
+    && python -m app.evaluate --dataset fixtures/evaluation_layout2 \
+         --report artifacts/evaluation_report_layout2.json \
     && adduser --disabled-password --gecos "" --uid 10001 appuser \
     && mkdir -p /app/data /app/artifacts \
     && chown -R appuser:appuser /app

@@ -8,9 +8,9 @@
 증명하려는 역량은 "AI가 답을 낸다"가 아니라,
 **AI 산출물을 실제 업무에 투입하기 전에 검증·보류·승인·추적하는 방법**입니다.
 
-**상태: Phase 0~12·14·14-I·15·17 완료** (계약 → 데이터 → 추출·검증 → 검토 UI/감사 → 평가 → Docker/CI → 운영·접근성 → 데모 공개 → 사람·품목 수정 → 두 번째 레이아웃 → LLM 계약 하네스).
+**상태: Phase 0~12·14·14-I·15·17·17-I 완료** (계약 → 데이터 → 추출·검증 → 검토 UI/감사 → 평가 → Docker/CI → 운영·접근성 → 데모 공개 → 사람·품목 수정 → 두 번째 레이아웃 → LLM 계약 하네스 → 평가 증거 격리).
 원격 CI·배지와 56.8초 데모 영상 공개를 완료했고, Gate A 결정에 따라 **원문 재인용 필드 수정**을 추가했습니다.
-Phase 13 스크린리더 실사용과 Phase 17 오프라인 LLM 계약 하네스를 완료했고, 남은 것은 OCR·실제 LLM·운영화 Gate입니다. 실제 LLM·인증은 의도적으로 보류했고,
+레이아웃별 평가 리포트를 분리해 `/evaluation`에서 함께 확인할 수 있습니다. 남은 것은 OCR·실제 LLM·운영화 Gate입니다. 실제 LLM·인증은 의도적으로 보류했고,
 [보류 결정](docs/decisions/pending.md)에 근거를 남겼습니다.
 
 ![문서 목록 화면](docs/images/documents.jpg)
@@ -71,6 +71,7 @@ python scripts/seed_demo.py     # 4건을 위 순서대로 접수 (서버 실행
 
 기존 공백 표 `fixtures/evaluation` 36건과 파이프 표 `fixtures/evaluation_layout2` 36건을
 분리해 평가합니다(`dataset_version=synth-2026-11-26.3`). 두 레이아웃 모두 아래 기준선을 재현합니다.
+리포트는 서로 덮어쓰지 않도록 **레이아웃별 파일**로 저장되고, `/evaluation`은 두 리포트를 함께 보여 줍니다.
 
 | 지표 | 값 | 분모 |
 |---|---|---|
@@ -83,7 +84,8 @@ python scripts/seed_demo.py     # 4건을 위 순서대로 접수 (서버 실행
 
 - 필드 EM은 10개 필드 모두 1.000이다(품목 셀 포함 51/51).
 - 근거 유효율의 부족 2건은 **의도된 파생 총액**이다. 값은 맞지만 원문 span이 없어 `HOLD`다.
-- p50/p95는 환경 의존이므로 README의 성과 수치로 쓰지 않는다. `artifacts/evaluation_report.json`에만 남긴다.
+- p50/p95는 환경 의존이므로 README의 성과 수치로 쓰지 않는다. `artifacts/evaluation_report*.json`에만 남긴다.
+- 리포트는 `dataset_name`으로 구분한다: `evaluation`, `evaluation_layout2`.
 - 자동 승인되지 않은 대표 사례 3건과 한계 7개를 `/evaluation`과 [docs/evaluation.md](docs/evaluation.md)에 공개한다.
 
 ## 아키텍처
@@ -118,17 +120,31 @@ python -m venv .venv
 # source .venv/bin/activate         # Linux/macOS
 pip install -e ".[dev]"
 
-python -m pytest -q                 # 170 passed (2026-11-26, Python 3.12.10)
+python -m pytest -q                 # 174 passed (2026-11-27, Python 3.12.10)
 python tools/generate_dataset.py --check
 python -m app.inspect fixtures/evaluation/DOC-0001.txt
 
 uvicorn app.asgi:app --reload       # http://127.0.0.1:8000
 python scripts/seed_demo.py
-python -m app.evaluate --dataset fixtures/evaluation
-python -m app.evaluate --dataset fixtures/evaluation_layout2
+python -m app.evaluate --dataset fixtures/evaluation --report artifacts/evaluation_report.json
+python -m app.evaluate --dataset fixtures/evaluation_layout2 --report artifacts/evaluation_report_layout2.json
 ```
 
 ### Docker
+
+Docker Desktop(또는 Docker Engine)이 실행 중이어야 합니다.
+
+```bash
+docker compose up --build
+# http://127.0.0.1:8000  (health: healthy)
+docker compose exec -T gateway python -m app.evaluate --dataset fixtures/evaluation \
+  --report artifacts/evaluation_report.json
+docker compose exec -T gateway python -m app.evaluate --dataset fixtures/evaluation_layout2 \
+  --report artifacts/evaluation_report_layout2.json
+```
+
+확인한 사실(2026-11-27): 비루트 사용자(uid 10001), 헬스체크 `healthy`, 두 레이아웃 리포트가
+이미지에 포함되어 `/evaluation`에서 함께 보인다. SQLite는 named volume에 유지된다.
 
 ### 공개 읽기 전용 데모(Render)
 
@@ -139,21 +155,9 @@ Blueprint로 연결하면 `PUBLIC_DEMO_READ_ONLY=true`가 적용되어 외부 �
 403으로 차단된다. 빈 공개 DB에는 버전 관리되는 합성 데모 4건이 자동으로 준비되며, 화면에서도 쓰기 폼을
 숨긴다. 공개 방문자는 합성 데이터 고지, 검증·감사 화면, Release 데모 영상을 볼 수 있다.
 
-배포 후에는 공개 URL에서 `/api/health`가 200인지와 POST `/api/documents`가
-`E_PUBLIC_DEMO_READ_ONLY` 403인지 확인한다. 읽기 전용이므로 실제 상호작용 흐름은 Release 영상으로 제공한다.
-2026-11-26에 이 URL에서 health `ok`, 문서 4건, 쓰기 차단 403을 확인했다. 무료 인스턴스는 비활성 후
-재기동 시 첫 응답이 늦어질 수 있다.
-
-Docker Desktop(또는 Docker Engine)이 실행 중이어야 합니다.
-
-```bash
-docker compose up --build
-# http://127.0.0.1:8000  (health: healthy)
-docker compose exec -T gateway python -m app.evaluate --dataset fixtures/evaluation
-```
-
-확인한 사실(2026-11-26): 이미지 207MB, 비루트 사용자(uid 10001), 헬스체크 `healthy`,
-데모 4건 처리, 컨테이너 내 평가에서 위 기준선과 동일한 지표. SQLite는 named volume에 유지된다.
+- 2026-11-26: 공개 URL에서 health `ok`, 문서 4건, 쓰기 차단 403을 확인했다.
+- 2026-11-27: 재확인 시 `/api/health`가 **503**이었다. 재배포 후 health·목록 4건·POST 403·`/evaluation`
+  두 리포트를 다시 확인하기 전까지 "live"로 주장하지 않는다. 무료 인스턴스는 비활성 후 재기동 시 첫 응답이 늦을 수 있다.
 
 ### CI
 
@@ -164,11 +168,10 @@ docker compose exec -T gateway python -m app.evaluate --dataset fixtures/evaluat
 3. `ruff check .`
 4. `python tools/generate_dataset.py --check`
 5. `python -m pytest -q`
-6. `python -m app.evaluate …` 후 리포트 artifact 업로드
+6. 두 레이아웃 `python -m app.evaluate …` 후 `artifacts/evaluation_report*.json` artifact 업로드
 
 [`ci` 워크플로 첫 실행](https://github.com/junwoo1206112/documentops-review-gateway/actions/runs/45697512065)이
-`main`에서 성공했습니다. 배지는 이 실제 실행으로 연결되며, 포맷·린트·데이터셋·141개 테스트·평가·
-리포트 artifact 업로드를 모두 통과한 상태만 나타냅니다.
+`main`에서 성공했습니다. 두 번째 레이아웃 평가 단계는 Phase 17-I에서 추가했으며, 다음 push에서 실행을 확인한다.
 
 ## 데모 영상 촬영
 

@@ -215,22 +215,25 @@ class PublicDemoReadOnlyMiddleware(BaseHTTPMiddleware):
 
 
 def seed_public_demo(service: ReviewService, settings: Settings) -> None:
-    """Seed only an empty public-demo database with versioned synthetic fixtures.
+    """Seed missing public-demo fixtures in order, even after a partial seed.
 
-    Public Render instances have no operator upload path by design.  Starting
+    Public Render instances have no operator upload path by design. Starting
     from the committed fixtures lets a visitor inspect the normal, HOLD, and
     duplicate cases without making the public endpoint writable.
     """
-    _, total = service.list_documents(limit=1)
-    if total:
-        return
-
+    existing_items, _ = service.list_documents(limit=1000)
+    existing_filenames = {item["filename"] for item in existing_items}
+    seeded = 0
     for filename in PUBLIC_DEMO_FIXTURES:
+        if filename in existing_filenames:
+            continue
         path = settings.demo_dir / filename
         if not path.is_file():
             raise RuntimeError(f"public demo fixture is missing: {path}")
         service.ingest(filename, path.read_bytes())
-    logger.info("seeded public demo fixtures count=%s", len(PUBLIC_DEMO_FIXTURES))
+        seeded += 1
+    if seeded:
+        logger.info("seeded public demo fixtures count=%s", seeded)
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:

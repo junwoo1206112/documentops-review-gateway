@@ -79,7 +79,8 @@ def test_stub_provider_is_opt_in_and_recorded_on_ingest(settings: Settings, demo
     app = create_app(replace(settings, extraction_provider="llm-contract-stub"))
     with TestClient(app) as client:
         response = client.post(
-            "/api/documents", files={"file": ("demo.txt", demo_bytes("DEMO-0001.txt"), "text/plain")}
+            "/api/documents",
+            files={"file": ("demo.txt", demo_bytes("DEMO-0001.txt"), "text/plain")},
         )
         assert response.status_code == 201
         document_id = response.json()["document"]["id"]

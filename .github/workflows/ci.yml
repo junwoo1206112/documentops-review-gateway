@@ -39,12 +39,15 @@ jobs:
       - name: Tests
         run: python -m pytest -q
 
-      - name: Evaluation baseline
+      - name: Evaluation baseline (layout 1)
         run: python -m app.evaluate --dataset fixtures/evaluation --report artifacts/evaluation_report.json
 
-      - name: Upload evaluation report
+      - name: Evaluation baseline (layout 2)
+        run: python -m app.evaluate --dataset fixtures/evaluation_layout2 --report artifacts/evaluation_report_layout2.json
+
+      - name: Upload evaluation reports
         uses: actions/upload-artifact@v4
         with:
-          name: evaluation-report
-          path: artifacts/evaluation_report.json
+          name: evaluation-reports
+          path: artifacts/evaluation_report*.json
           if-no-files-found: error
