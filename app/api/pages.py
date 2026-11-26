@@ -108,15 +108,24 @@ def _detail_context(request: Request, detail: dict, *, form_error: str | None = 
             for item in detail.get("effective_items", detail["items"])
             for key in ("name", "qty", "unit_price", "amount")
         ],
-        "can_correct": detail["document"]["status"] in {"HOLD", "PENDING_REVIEW"},
+        "can_correct": (
+            not request.app.state.settings.public_demo_read_only
+            and detail["document"]["status"] in {"HOLD", "PENDING_REVIEW"}
+        ),
         "public_demo_read_only": request.app.state.settings.public_demo_read_only,
         "raw_highlighted": highlight_evidence(detail["raw_text"], fields),
         "status_labels": STATUS_LABELS,
         "evidence_labels": EVIDENCE_LABELS,
         "event_labels": EVENT_LABELS,
         "form_error": form_error,
-        "can_revalidate": detail["document"]["status"] in {"HOLD", "PENDING_REVIEW"},
-        "can_decide": detail["document"]["status"] in {"PENDING_REVIEW", "HOLD"},
+        "can_revalidate": (
+            not request.app.state.settings.public_demo_read_only
+            and detail["document"]["status"] in {"HOLD", "PENDING_REVIEW"}
+        ),
+        "can_decide": (
+            not request.app.state.settings.public_demo_read_only
+            and detail["document"]["status"] in {"PENDING_REVIEW", "HOLD"}
+        ),
     }
 
 
@@ -142,6 +151,7 @@ def index(request: Request, status: str | None = None) -> HTMLResponse:
             "selected": status or "",
             "status_labels": STATUS_LABELS,
             "error": None,
+            "public_demo_read_only": request.app.state.settings.public_demo_read_only,
         },
     )
 

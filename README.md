@@ -116,7 +116,7 @@ python -m venv .venv
 # source .venv/bin/activate         # Linux/macOS
 pip install -e ".[dev]"
 
-python -m pytest -q                 # 156 passed (2026-11-26, Python 3.12.10)
+python -m pytest -q                 # 157 passed (2026-11-26, Python 3.12.10)
 python tools/generate_dataset.py --check
 python -m app.inspect fixtures/evaluation/DOC-0001.txt
 
@@ -131,7 +131,8 @@ python -m app.evaluate --dataset fixtures/evaluation
 
 루트의 `render.yaml`은 무료(`free`) Docker 웹 서비스와 `/api/health` 헬스체크를 정의한다. Render에서 이 저장소를
 Blueprint로 연결하면 `PUBLIC_DEMO_READ_ONLY=true`가 적용되어 외부 사용자의 업로드·수정·재검증·판정 요청은
-403으로 차단된다. 공개 방문자는 합성 데이터 고지, 화면, Release 데모 영상을 볼 수 있다.
+403으로 차단된다. 빈 공개 DB에는 버전 관리되는 합성 데모 4건이 자동으로 준비되며, 화면에서도 쓰기 폼을
+숨긴다. 공개 방문자는 합성 데이터 고지, 검증·감사 화면, Release 데모 영상을 볼 수 있다.
 
 배포 후에는 공개 URL에서 `/api/health`가 200인지와 POST `/api/documents`가
 `E_PUBLIC_DEMO_READ_ONLY` 403인지 확인한다. 읽기 전용이므로 실제 상호작용 흐름은 Release 영상으로 제공한다.

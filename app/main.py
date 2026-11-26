@@ -27,6 +27,13 @@ from app.version import APP_NAME, APP_VERSION
 
 logger = logging.getLogger(__name__)
 
+PUBLIC_DEMO_FIXTURES = (
+    "DEMO-0001.txt",
+    "DEMO-0002.txt",
+    "DEMO-0003.txt",
+    "DEMO-0004.txt",
+)
+
 CSP = (
     "default-src 'none'; "
     "style-src 'self'; "
@@ -207,6 +214,25 @@ class PublicDemoReadOnlyMiddleware(BaseHTTPMiddleware):
         return await call_next(request)
 
 
+def seed_public_demo(service: ReviewService, settings: Settings) -> None:
+    """Seed only an empty public-demo database with versioned synthetic fixtures.
+
+    Public Render instances have no operator upload path by design.  Starting
+    from the committed fixtures lets a visitor inspect the normal, HOLD, and
+    duplicate cases without making the public endpoint writable.
+    """
+    _, total = service.list_documents(limit=1)
+    if total:
+        return
+
+    for filename in PUBLIC_DEMO_FIXTURES:
+        path = settings.demo_dir / filename
+        if not path.is_file():
+            raise RuntimeError(f"public demo fixture is missing: {path}")
+        service.ingest(filename, path.read_bytes())
+    logger.info("seeded public demo fixtures count=%s", len(PUBLIC_DEMO_FIXTURES))
+
+
 def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or Settings.from_env()
     settings.ensure_dirs()
@@ -214,6 +240,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     db.initialize()
     registry = VendorRegistry.load(settings.vendor_registry_path)
     service = ReviewService(settings, registry, db)
+    if settings.public_demo_read_only:
+        seed_public_demo(service, settings)
 
     templates = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
     setup_filters(templates)

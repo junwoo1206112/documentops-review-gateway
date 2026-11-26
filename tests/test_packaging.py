@@ -165,7 +165,7 @@ def test_handoff_seed_is_valid_and_tracks_state() -> None:
 
     data = yaml.safe_load(read("handoff.seed.yaml"))
     assert data["schema"] == "handoff-seed-1"
-    assert data["status"] == "phase-14-complete"
+    assert data["status"] == "phase-14i-complete-public-demo-deploy-pending"
     assert data["versions"]["dataset"] == "synth-2026-11-26.2"
     assert data["verified"]["tests_passed"] >= 155
     assert data["verified"]["corrections"]["model"] == "original_quote_only"

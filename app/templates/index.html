@@ -10,12 +10,19 @@
       <strong>HOLD(보류)</strong>로 멈춥니다. 승인·반려는 사유를 남긴 사람만 할 수 있습니다.
     </p>
   </div>
+  {% if public_demo_read_only %}
+  <div class="upload" aria-label="공개 데모 안내">
+    <strong>공개 읽기 전용 데모</strong>
+    <p class="hint">합성 예시 4건을 탐색할 수 있습니다. 업로드·수정·재검증·판정은 허용되지 않습니다.</p>
+  </div>
+  {% else %}
   <form class="upload" action="/upload" method="post" enctype="multipart/form-data">
     <label for="file">문서 업로드</label>
     <input id="file" type="file" name="file" accept=".txt" required aria-describedby="upload-hint" />
     <button type="submit">업로드하고 검증</button>
     <span class="hint" id="upload-hint">UTF-8 · .txt · 512 KiB 이하 · 합성 문서만</span>
   </form>
+  {% endif %}
 </section>
 
 {% if error %}<p class="alert error" role="alert">{{ error }}</p>{% endif %}

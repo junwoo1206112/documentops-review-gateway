@@ -1,6 +1,6 @@
 # 남은 구현 로드맵 — 인수자·LLM 공용
 
-최신화: 2026-11-26 (Phase 12 Release·원격 CI 성공 기준)
+최신화: 2026-11-26 (Phase 14-I 완료, 공개 읽기 전용 Render 데모 배포 준비 기준)
 
 이 문서는 구현 순서를 **약속**하는 것이 아니라, 이미 검증된 안전 계약을 훼손하지 않으면서
 다음 인수자가 재개할 수 있게 만드는 권장 실행 경로다. P-001~P-006은 제품·운영 결정이므로,
@@ -12,7 +12,7 @@
   WebM asset 5,850,941 bytes, SHA-256
   `841e5e92990b56fc2c1342d9738c7dfc0c8fe35b888b1aba24415f285ccbe664`.
 - 원격 검증: [CI run 45702069278](https://github.com/junwoo1206112/documentops-review-gateway/actions/runs/45702069278) 성공 (`7b2c1ba`).
-- 재현 기준선: 155 tests, 36/36 문서 일치, HOLD 19/19, false HOLD 0/17, 규칙 36/36,
+- 재현 기준선: 157 tests, 36/36 문서 일치, HOLD 19/19, false HOLD 0/17, 규칙 36/36,
   근거 410/412(의도된 파생 총액 2건).
 - 불변 계약: 자동 승인 없음, `HOLD → APPROVED` 직접 전이 금지, blocking이면 HOLD,
   근거 span 필수, 감사 append-only. 상세는 [HANDOFF.md](../HANDOFF.md) 1절을 따른다.

@@ -1,7 +1,7 @@
 ﻿schema: handoff-seed-1
 as_of: "2026-11-26"
 project: documentops-review-gateway
-status: phase-14-complete
+status: phase-14i-complete-public-demo-deploy-pending
 language: ko
 
 goal: >
@@ -42,7 +42,7 @@ versions:
 verified:
   date: "2026-11-26"
   platform: "Windows 11, Python 3.12.10"
-  tests_passed: 155
+  tests_passed: 157
   tests_collected_after_phase_6: 133
   dataset_check: pass
   evaluation_exit_code: 0
@@ -159,14 +159,17 @@ remaining:
   - id: R-008
     title: 품목(items[]) 원문 재인용 수정
     priority: P2
-    state: blocked_on_decision
-    depends_on: [Gate-D]
+    state: complete
+    depends_on: []
     acceptance:
       - "행 식별·허용 편집·근거 단위·합계 처리·감사 표시를 ADR로 확정"
       - "원본 items/effective_items 분리와 append-only 수정 이력"
       - "행 추가·삭제·재정렬·원문 없는 품목은 명시적으로 차단 또는 재업로드 경로"
       - "산술·중복 재검증 및 기존 36건 기준선 불변"
-    notes: "권장안: original ordinal + row anchor를 고정하고 기존 행의 단일 셀만 원문 재인용으로 수정한다."
+    done:
+      - "Gate D: original ordinal + row anchor, 기존 행의 단일 셀만 원문 재인용, 행 구조 변경 금지"
+      - "effective_items 분리, append-only 수정 이력, 산술·중복 전체 재검증"
+    notes: "원문에 없는 신규 품목과 행 추가·삭제·재정렬은 재업로드만 허용한다."
 
   - id: R-005
     title: LLM 추출 어댑터

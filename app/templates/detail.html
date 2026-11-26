@@ -192,7 +192,9 @@
 
 <section class="panel">
   <h2>사람 판정</h2>
-  {% if not can_decide %}
+  {% if public_demo_read_only %}
+  <p class="hint">공개 데모에서는 판정할 수 없습니다. 합성 문서의 근거·검증·감사 이력만 열람할 수 있습니다.</p>
+  {% elif not can_decide %}
   <p class="hint">종료 상태입니다. 추가 판정은 허용되지 않습니다.</p>
   {% else %}
   <p class="hint">
