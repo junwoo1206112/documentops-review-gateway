@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+import os
+import re
+import subprocess
+import sys
 import tomllib
 from pathlib import Path
 
@@ -144,6 +148,44 @@ def test_artifacts_and_db_are_not_tracked_candidates() -> None:
     assert ".env" in gitignore
 
 
+def test_documented_test_counts_match_collected_suite() -> None:
+    result = subprocess.run(
+        [sys.executable, "-m", "pytest", "--collect-only", "-p", "no:warnings"],
+        cwd=PROJECT_ROOT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        env={**os.environ, "PYTHONIOENCODING": "utf-8"},
+    )
+    assert result.returncode == 0, result.stderr
+    match = re.search(r"(\d+) tests? collected", result.stdout)
+    assert match is not None, result.stdout[-500:]
+    count = int(match.group(1))
+
+    import yaml
+
+    seed = yaml.safe_load(read("handoff.seed.yaml"))
+    assert seed["verified"]["tests_passed"] == count
+    assert f"**{count} passed**" in read("HANDOFF.md")
+    assert f"# {count} passed" in read("README.md")
+    assert f"{count} tests" in read("docs/ROADMAP_PHASES.md")
+    assert f"`{count} passed`" in read("docs/NEXT_PHASES_HANDOFF.md")
+
+
+def test_layout2_report_filename_is_consistent() -> None:
+    filename = "evaluation_report_evaluation_layout2.json"
+    for path in (
+        ".github/workflows/ci.yml",
+        "Dockerfile",
+        "handoff.seed.yaml",
+        "README.md",
+        "HANDOFF.md",
+        "docs/NEXT_PHASES_HANDOFF.md",
+        "docs/evaluation.md",
+    ):
+        assert filename in read(path), f"{path}에 {filename} 경로가 없습니다"
+
+
 def test_phase_reviews_exist_for_every_phase() -> None:
     import re
 
@@ -175,6 +217,7 @@ def test_phase_reviews_exist_for_every_phase() -> None:
         "phase-15.md",
         "phase-17.md",
         "phase-17i.md",
+        "phase-17j.md",
     ]
 
 
@@ -204,7 +247,6 @@ def test_next_phases_handoff_covers_each_remaining_gate() -> None:
         "Phase 19",
         "Phase 20",
         "한 번에 Gate 하나만 연다",
-        "178 passed",
     ):
         assert token in handoff
 
@@ -232,7 +274,7 @@ def test_handoff_seed_is_valid_and_tracks_state() -> None:
 
     data = yaml.safe_load(read("handoff.seed.yaml"))
     assert data["schema"] == "handoff-seed-1"
-    assert data["status"] == "phase-17i-evaluation-evidence-isolated"
+    assert data["status"] == "phase-17j-handoff-consistency"
     assert data["versions"]["dataset"] == "synth-2026-11-26.3"
     assert data["verified"]["tests_passed"] >= 174
     assert data["verified"]["evaluation_reports"]["files"]["evaluation_layout2"].endswith(

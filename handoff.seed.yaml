@@ -1,7 +1,7 @@
 ﻿schema: handoff-seed-1
 as_of: "2026-11-27"
 project: documentops-review-gateway
-status: phase-17i-evaluation-evidence-isolated
+status: phase-17j-handoff-consistency
 language: ko
 
 goal: >
@@ -42,7 +42,7 @@ versions:
 verified:
   date: "2026-11-27"
   platform: "Windows 11, Python 3.12.10"
-  tests_passed: 178
+  tests_passed: 180
   tests_collected_after_phase_6: 133
   dataset_check: pass
   evaluation_exit_code: 0
@@ -79,7 +79,7 @@ verified:
   public_demo:
     status: deployed_verified
     url: "https://documentops-review-gateway-demo.onrender.com"
-    last_verified: "2026-11-26"
+    last_verified: "2026-11-27"
     observed: "2026-11-27 commit 4341fb0 수동 배포 후 health=200, documents=4, POST=403, /api/evaluation/reports=2, /evaluation 두 리포트 확인"
     checks_expected: ["GET /api/health = 200", "GET /api/documents total = 4", "POST /api/documents = E_PUBLIC_DEMO_READ_ONLY 403", "GET /evaluation 두 리포트"]
 
@@ -240,4 +240,5 @@ resume:
   next: [P-001, actual_llm_provider, P-004, P-005, P-006]
   phase_plan: docs/ROADMAP_PHASES.md
   review_log: docs/reviews/phase-*.md
+
 

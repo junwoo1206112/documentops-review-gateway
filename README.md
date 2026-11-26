@@ -8,7 +8,7 @@
 증명하려는 역량은 "AI가 답을 낸다"가 아니라,
 **AI 산출물을 실제 업무에 투입하기 전에 검증·보류·승인·추적하는 방법**입니다.
 
-**상태: Phase 0~12·14·14-I·15·17·17-I 완료** (계약 → 데이터 → 추출·검증 → 검토 UI/감사 → 평가 → Docker/CI → 운영·접근성 → 데모 공개 → 사람·품목 수정 → 두 번째 레이아웃 → LLM 계약 하네스 → 평가 증거 격리).
+**상태: Phase 0~12·14·14-I·15·17·17-I·17-J 완료** (계약 → 데이터 → 추출·검증 → 검토 UI/감사 → 평가 → Docker/CI → 운영·접근성 → 데모 공개 → 사람·품목 수정 → 두 번째 레이아웃 → LLM 계약 하네스 → 평가 증거 격리).
 원격 CI·배지와 56.8초 데모 영상 공개를 완료했고, Gate A 결정에 따라 **원문 재인용 필드 수정**을 추가했습니다.
 레이아웃별 평가 리포트를 분리해 `/evaluation`에서 함께 확인할 수 있습니다. OCR은 현재 릴리스에서
 의도적으로 채택하지 않고 텍스트 전용으로 유지합니다. 실제 LLM·운영화는 별도 Gate이며,
@@ -121,7 +121,7 @@ python -m venv .venv
 # source .venv/bin/activate         # Linux/macOS
 pip install -e ".[dev]"
 
-python -m pytest -q                 # 178 passed (2026-11-27, Python 3.12.10)
+python -m pytest -q                 # 180 passed (2026-11-27, Python 3.12.10)
 python tools/generate_dataset.py --check
 python -m app.inspect fixtures/evaluation/DOC-0001.txt
 
@@ -251,5 +251,6 @@ OpenAPI는 `/api/openapi.json`에서 확인할 수 있습니다.
 - [마스터 구현 계획](docs/reference/PORTFOLIO_IMPROVEMENT_MASTER_PLAN.md)
 - [포트폴리오 실행 로그](docs/reference/PORTFOLIO_PHASE_LOG_20261125.md)
 - [데모·사이트 원고](docs/reference/PORTFOLIO_DEMO_AND_SITE_COPY.md)
+
 
 

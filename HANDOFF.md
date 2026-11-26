@@ -2,7 +2,7 @@
 
 - 작성일: 2026-11-27
 - 대상: 다음 인수자(사람)와 다음 LLM 세션
-- 현재 브랜치 상태: `main`, Phase 0~17-I 완료(13 사람 검증 포함); Render 공개 데모 재확인 완료, OCR은 현 릴리스 미도입(텍스트 전용 유지), 실제 LLM·운영화 Gate 대기
+- 현재 브랜치 상태: `main`, Phase 0~17-J 완료(13 사람 검증 포함); Render 데모 2026-11-27 health 200 확인, OCR은 현 릴리스 미도입(텍스트 전용 유지), 실제 LLM·운영화 Gate 대기
 - 최신 커밋: `git log --oneline`으로 확인한다. 커밋 해시는 이동하므로 이 문서에 고정하지 않는다.
 
 이 문서 하나로 **무엇을 만들었고, 무엇이 검증됐고, 무엇이 남았고, 어떻게 이어서 하는지**를
@@ -18,7 +18,7 @@
 | 핵심 주장 | "AI가 답한다"가 아니라 **근거 없는 값은 승인 불가, blocking 오류는 HOLD, 판정은 사람만** |
 | 스택 | Python 3.12, FastAPI, SQLite, Jinja2 서버 렌더링, pytest, Docker, GitHub Actions |
 | 실행 | `uvicorn app.asgi:app` (주의: `app.main:app` 아님) |
-| 테스트 | **178 passed** (2026-11-27, Python 3.12.10, Windows 11) |
+| 테스트 | **180 passed** (2026-11-27, Python 3.12.10, Windows 11) |
 | 평가 | 공백 표·파이프 표 독립 36건씩: 문서 EM 36/36, HOLD 재현 19/19, 오보류 0/17, 규칙 일치 36/36, 근거 410/412 |
 | Docker | `docker compose up --build` → `healthy`, 데모 4건 처리, 컨테이너 내 평가 동일 |
 | 원격 CI | `main`의 첫 `ci` 성공. README 배지는 실제 실행으로 연결됨 |
@@ -80,6 +80,7 @@ python -m app.evaluate --dataset fixtures/evaluation
 | 15 | 두 번째 파이프 텍스트 양식, 독립 36건 평가, 혼합 양식 422 | `feat(phase15): …` | 두 레이아웃 36/36 |
 | 17 | opt-in 오프라인 LLM provider 계약, evidence HOLD, 명시적 provider 실패 | `feat(phase17): …` | 170 passed, 외부 API 없음 |
 | 17-I | 레이아웃별 리포트 분리, CI·Docker 두 레이아웃 평가, 공개 시드 부분 복구 | `feat(phase17i): …` | 175 passed, [CI run 45897296626](https://github.com/junwoo1206112/documentops-review-gateway/actions/runs/45897296626) 두 평가 성공 |
+| 17-J | 인수 문서 수치·리포트 경로 자동 가드, 데모 검증 시점 통일 | `test(phase17j): …` | 180 passed, 가드 2개 |
 
 ### 기준선 수치 (재현 가능)
 
@@ -132,7 +133,7 @@ pip install -e ".[dev]"
 python -m pytest -q
 ```
 
-기대 결과: `175 passed`.
+기대 결과: `180 passed`.
 
 > `uv`와 Node.js는 필요 없다. UI는 Jinja2 서버 렌더링이다(ADR 0002).
 > Python은 3.12 이상이어야 한다.
@@ -219,7 +220,7 @@ app/
 │  └─ pages.py               HTML 6경로, 원문 하이라이트(escape 후 mark)
 ├─ templates/                base/index/detail/evaluation.html
 ├─ static/style.css          다크 테마, 상태 배지, 반응형
-tests/                       14개 파일, 174 tests
+tests/                       14개 파일, 180 tests
 tools/generate_dataset.py    합성 데이터·정답·manifest·vendors 생성기 (--check)
 scripts/seed_demo.py         데모 4건 HTTP 업로드
 fixtures/                    vendors.json, demo 4건, evaluation 36건+정답+manifest
@@ -387,7 +388,7 @@ POST /api/documents/{id}/revalidate
 - [ ] `app.evaluate` exit 0, 기준선 수치 재현
 - [ ] `uvicorn app.asgi:app` + `scripts/seed_demo.py`로 5장면 재현
 - [ ] `docker compose up --build` 후 healthy
-- [ ] `phase-0.md`~`phase-15.md`, `phase-17.md`, `phase-17i.md` 리뷰 존재(phase-16은 Gate 대기)
+- [ ] `phase-0.md`~`phase-15.md`, `phase-17.md`, `phase-17i.md`, `phase-17j.md` 리뷰 존재(phase-16은 Gate 대기)
 - [ ] 실제 개인정보·실제 문서가 저장소에 없음
 - [ ] README의 주장이 테스트/실행 증거보다 강하지 않음
 
@@ -415,9 +416,11 @@ POST /api/documents/{id}/revalidate
 | `feat(phase15)` | 두 번째 파이프 레이아웃과 독립 평가셋 |
 | `feat(phase17)` | 오프라인 LLM provider 계약 하네스 |
 | `feat(phase17i)` | 레이아웃별 평가 리포트·CI·Docker·공개 시드 복구 |
+| `test(phase17j)` | 인수 문서 수치·리포트 파일명 자동 가드 |
 | `docs(handoff)` | 인수인계 문서와 `handoff.seed.yaml` |
 
 각 페이즈의 발견·수정 이유는 `docs/reviews/`의 해당 `phase-*.md`에 있다.
 Phase 13은 사람 청취 검증 기록이며, Phase 16은 실제 스캔 요구가 생겨 P-001 Gate를 다시 열기 전까지 만들지 않는다.
+
 
 
