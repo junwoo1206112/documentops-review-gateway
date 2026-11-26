@@ -129,6 +129,8 @@ python -m app.evaluate --dataset fixtures/evaluation
 
 ### 공개 읽기 전용 데모(Render)
 
+**공개 URL:** [documentops-review-gateway-demo.onrender.com](https://documentops-review-gateway-demo.onrender.com)
+
 루트의 `render.yaml`은 무료(`free`) Docker 웹 서비스와 `/api/health` 헬스체크를 정의한다. Render에서 이 저장소를
 Blueprint로 연결하면 `PUBLIC_DEMO_READ_ONLY=true`가 적용되어 외부 사용자의 업로드·수정·재검증·판정 요청은
 403으로 차단된다. 빈 공개 DB에는 버전 관리되는 합성 데모 4건이 자동으로 준비되며, 화면에서도 쓰기 폼을
@@ -136,6 +138,8 @@ Blueprint로 연결하면 `PUBLIC_DEMO_READ_ONLY=true`가 적용되어 외부 �
 
 배포 후에는 공개 URL에서 `/api/health`가 200인지와 POST `/api/documents`가
 `E_PUBLIC_DEMO_READ_ONLY` 403인지 확인한다. 읽기 전용이므로 실제 상호작용 흐름은 Release 영상으로 제공한다.
+2026-11-26에 이 URL에서 health `ok`, 문서 4건, 쓰기 차단 403을 확인했다. 무료 인스턴스는 비활성 후
+재기동 시 첫 응답이 늦어질 수 있다.
 
 Docker Desktop(또는 Docker Engine)이 실행 중이어야 합니다.
 

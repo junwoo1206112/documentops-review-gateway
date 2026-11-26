@@ -1,7 +1,7 @@
 ﻿schema: handoff-seed-1
 as_of: "2026-11-26"
 project: documentops-review-gateway
-status: phase-14i-complete-public-demo-deploy-pending
+status: phase-14i-complete-public-demo-live
 language: ko
 
 goal: >
@@ -68,6 +68,11 @@ verified:
     status: success
     run_url: "https://github.com/junwoo1206112/documentops-review-gateway/actions/runs/45697512065"
     note: "main의 첫 ci 실행에서 install, format, lint, dataset, tests, evaluation, artifact upload가 모두 성공했다."
+  public_demo:
+    status: live
+    url: "https://documentops-review-gateway-demo.onrender.com"
+    verified: "2026-11-26"
+    checks: ["GET /api/health = 200", "GET /api/documents total = 4", "POST /api/documents = E_PUBLIC_DEMO_READ_ONLY 403"]
 
 commands:
   setup:
