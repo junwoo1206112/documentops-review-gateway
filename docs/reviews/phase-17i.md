@@ -20,6 +20,7 @@
 | P17I-3 | Docker 이미지에 `artifacts/`가 없어 공개 데모 `/evaluation`이 빈 화면이 된다. | 공개 포트폴리오에서 "공개 평가" 약속이 깨진다. | 이미지 빌드 시 두 레이아웃 리포트를 생성해 포함. | `test_dockerfile_is_non_root_and_healthchecked` |
 | P17I-4 | 공개 시드가 "문서가 1건이라도 있으면" 전체를 건너뛰었다. | 시드 중단 시 2/4건만 있는 상태로 고정되고 재기동해도 복구되지 않는다. | 파일명 기준으로 누락분만 순서대로 시드. | `test_public_demo_seed_recovers_partial_database` |
 | P17I-5 | HANDOFF/seed가 Render 데모를 "live"로 표기했지만 2026-11-27 `/api/health`가 503이었다. | 인수자가 실제 상태를 오해한다. | "2026-11-26 마지막 확인, 2026-11-27 503, 재배포 후 재검증"으로 하향. | `test_handoff_seed_is_valid_and_tracks_state` |
+| P17I-6 | 구형 리포트에는 `dataset_name`이 없고 layout2 파일명이 여러 형태였다. | 화면의 레이아웃 표시와 CI/Docker/런북 경로가 엇갈릴 수 있다. | 구형 두 파일명을 호환 매핑하고, layout2의 정식 경로를 `evaluation_report_evaluation_layout2.json`으로 통일했다. | `test_legacy_report_filenames_keep_layout_identity` |
 
 ## A. 제품·인수
 
@@ -45,6 +46,7 @@
 | C-2 | Docker와 로컬 평가 경로가 다르면 공개 화면이 비어도 테스트가 통과한다. | Dockerfile에서 두 리포트를 생성하고, 패키징 테스트가 문자열을 검사. |
 | C-3 | 부분 시드 복구가 테스트되지 않았다. | 2건만 있는 DB에서 공개 앱을 기동해 4건으로 복구되는지 검증. |
 | C-4 | 새 API/리포트 목록이 문서에 없다. | `docs/schema.md`, `docs/evaluation.md`, README, HANDOFF, ROADMAP에 반영. |
+| C-5 | Compose artifact bind mount가 이미지의 baked report를 가린다. | 로컬 `/evaluation`이 평가 전에는 비어 보일 수 있다. | README/HANDOFF에 두 평가 명령을 먼저 실행해야 함을 명시했다. |
 
 ## 실행 증거
 

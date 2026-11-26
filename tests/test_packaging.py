@@ -40,7 +40,7 @@ def test_dockerfile_is_non_root_and_healthchecked() -> None:
     assert "app.asgi:app" in dockerfile
     assert "0.0.0.0" in dockerfile
     assert "fixtures/evaluation_layout2" in dockerfile
-    assert "evaluation_report_layout2.json" in dockerfile
+    assert "evaluation_report_evaluation_layout2.json" in dockerfile
 
 
 def test_compose_uses_volume_and_healthcheck() -> None:

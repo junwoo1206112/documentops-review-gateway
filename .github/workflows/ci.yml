@@ -43,7 +43,7 @@ jobs:
         run: python -m app.evaluate --dataset fixtures/evaluation --report artifacts/evaluation_report.json
 
       - name: Evaluation baseline (layout 2)
-        run: python -m app.evaluate --dataset fixtures/evaluation_layout2 --report artifacts/evaluation_report_layout2.json
+        run: python -m app.evaluate --dataset fixtures/evaluation_layout2 --report artifacts/evaluation_report_evaluation_layout2.json
 
       - name: Upload evaluation reports
         uses: actions/upload-artifact@v4

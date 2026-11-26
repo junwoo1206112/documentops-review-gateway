@@ -147,7 +147,7 @@ python -m app.evaluate --dataset fixtures/evaluation --report artifacts/evaluati
 # 기대: document_em=1.0, hold_recall=1.0 (19/19), false_hold_rate=0.0 (0/17),
 #       rule_match=1.0, evidence_validity=0.995, exit code 0
 
-python -m app.evaluate --dataset fixtures/evaluation_layout2 --report artifacts/evaluation_report_layout2.json
+python -m app.evaluate --dataset fixtures/evaluation_layout2 --report artifacts/evaluation_report_evaluation_layout2.json
 # 기대: 위와 동일한 기준선, dataset_name=evaluation_layout2
 # 파이프 품목 표 36건도 위와 같은 기준선을 재현
 ```
@@ -179,6 +179,10 @@ python scripts/seed_demo.py
 docker compose exec -T gateway python -m app.evaluate --dataset fixtures/evaluation
 docker compose down                        # 볼륨 유지. 초기화는 down -v
 ```
+
+> Compose의 `./artifacts:/app/artifacts` 바인드 마운트는 이미지에 포함된 평가 리포트를 가린다.
+> 로컬 Compose의 `/evaluation`에서 두 리포트를 보려면 위 두 `docker compose exec ... app.evaluate`
+> 명령을 먼저 실행한다. Render에는 이 마운트가 없으므로 영향을 받지 않는다.
 
 ---
 

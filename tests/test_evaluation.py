@@ -13,6 +13,7 @@ from fastapi.testclient import TestClient
 from app.config import Settings
 from app.evaluate import evaluate_dataset, percentile, ratio
 from app.main import create_app
+from app.services.reports import load_reports
 from app.services.vendors import VendorRegistry
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -240,7 +241,7 @@ def test_api_lists_reports_per_layout(tmp_path: Path) -> None:
     (artifacts / "evaluation_report.json").write_text(
         json.dumps(first, ensure_ascii=False), encoding="utf-8"
     )
-    (artifacts / "evaluation_report_layout2.json").write_text(
+    (artifacts / "evaluation_report_evaluation_layout2.json").write_text(
         json.dumps(second, ensure_ascii=False), encoding="utf-8"
     )
     settings = Settings(
@@ -263,7 +264,19 @@ def test_api_lists_reports_per_layout(tmp_path: Path) -> None:
 
         page = client.get("/evaluation").text
         assert "evaluation_layout2" in page
-        assert "evaluation_report_layout2.json" in page
+        assert "evaluation_report_evaluation_layout2.json" in page
+
+
+def test_legacy_report_filenames_keep_layout_identity(tmp_path: Path) -> None:
+    artifacts = tmp_path / "artifacts"
+    artifacts.mkdir()
+    for name in ("evaluation_report.json", "evaluation_report_layout2.json"):
+        (artifacts / name).write_text(json.dumps({"documents": 36}), encoding="utf-8")
+
+    assert [item["dataset_name"] for item in load_reports(artifacts)] == [
+        "evaluation",
+        "evaluation_layout2",
+    ]
 
 
 def test_cli_fails_cleanly_on_missing_dataset(tmp_path: Path) -> None:

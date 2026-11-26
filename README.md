@@ -127,7 +127,7 @@ python -m app.inspect fixtures/evaluation/DOC-0001.txt
 uvicorn app.asgi:app --reload       # http://127.0.0.1:8000
 python scripts/seed_demo.py
 python -m app.evaluate --dataset fixtures/evaluation --report artifacts/evaluation_report.json
-python -m app.evaluate --dataset fixtures/evaluation_layout2 --report artifacts/evaluation_report_layout2.json
+python -m app.evaluate --dataset fixtures/evaluation_layout2 --report artifacts/evaluation_report_evaluation_layout2.json
 ```
 
 ### Docker
@@ -140,7 +140,7 @@ docker compose up --build
 docker compose exec -T gateway python -m app.evaluate --dataset fixtures/evaluation \
   --report artifacts/evaluation_report.json
 docker compose exec -T gateway python -m app.evaluate --dataset fixtures/evaluation_layout2 \
-  --report artifacts/evaluation_report_layout2.json
+  --report artifacts/evaluation_report_evaluation_layout2.json
 ```
 
 확인한 사실(2026-11-27): 비루트 사용자(uid 10001), 헬스체크 `healthy`, 두 레이아웃 리포트가

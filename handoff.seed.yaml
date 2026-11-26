@@ -92,7 +92,7 @@ commands:
     - "python -m pytest -q"
     - "python tools/generate_dataset.py --check"
     - "python -m app.evaluate --dataset fixtures/evaluation --report artifacts/evaluation_report.json"
-    - "python -m app.evaluate --dataset fixtures/evaluation_layout2 --report artifacts/evaluation_report_layout2.json"
+    - "python -m app.evaluate --dataset fixtures/evaluation_layout2 --report artifacts/evaluation_report_evaluation_layout2.json"
   run:
     - "uvicorn app.asgi:app --reload"
     - "python scripts/seed_demo.py"

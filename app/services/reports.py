@@ -6,6 +6,19 @@ import json
 from pathlib import Path
 
 LEGACY_REPORT = "evaluation_report.json"
+LAYOUT2_LEGACY_REPORT = "evaluation_report_layout2.json"
+
+
+def _dataset_name(path: Path, data: dict) -> str:
+    """Phase 17-I 이전 리포트도 화면에서 올바른 레이아웃명으로 보여 준다."""
+    declared = data.get("dataset_name")
+    if isinstance(declared, str) and declared:
+        return declared
+    if path.name == LEGACY_REPORT:
+        return "evaluation"
+    if path.name == LAYOUT2_LEGACY_REPORT:
+        return "evaluation_layout2"
+    return path.stem.removeprefix("evaluation_report_")
 
 
 def load_reports(artifacts_dir: Path) -> list[dict]:
@@ -20,7 +33,7 @@ def load_reports(artifacts_dir: Path) -> list[dict]:
             continue
         if not isinstance(data, dict):
             continue
-        data.setdefault("dataset_name", path.stem)
+        data["dataset_name"] = _dataset_name(path, data)
         data["report_file"] = path.name
         reports.append(data)
     reports.sort(
