@@ -35,7 +35,8 @@
   4. 권한: `reviewer_alias` 유지. 인증(P-006)은 도입하지 않는다.
 - 결과: 스칼라 필드 6개 수정 API/UI, `field_corrections` 테이블, 감사 2건
   (`CORRECTION_RECORDED`, `REVALIDATED`). 상세는 [ADR 0003](../adr/0003-human-correction.md).
-- 남은 범위: 품목(`items[]`) 수정, 수정값 이력의 화면 필터링은 후속 후보.
+- 완료 범위: 스칼라 6필드와 기존 품목(`items[]`) 셀의 원문 재인용 수정.
+- 남은 후보: 수정 이력의 화면 필터·내보내기. 대상 역할·형식·보존 정책이 확정되기 전에는 구현하지 않는다.
 
 ## P-004 — Postgres 전환
 

@@ -158,7 +158,7 @@ remaining:
       - "field_corrections append-only + CORRECTION_RECORDED/REVALIDATED 감사"
       - "fields(추출 원본) / effective_fields(수정 반영) 분리"
       - "test_corrections.py 15개, 전체 155 passed"
-    notes: "스칼라 6필드만 지원한다. 원문에 없는 MISSING_REQUIRED는 재업로드가 유일한 경로다. 품목 수정은 후속 Gate."
+    notes: "스칼라 6필드와 기존 품목 셀 수정이 완료됐다. 원문에 없는 MISSING_REQUIRED는 재업로드가 유일한 경로이며, 행 추가·삭제·재정렬은 범위 밖이다. 수정 이력 필터·내보내기는 별도 정책 Gate다."
 
   - id: R-004
     title: OCR 확장

@@ -300,7 +300,7 @@ POST /api/documents/{id}/revalidate
 - 결정: Gate A에서 **원문 재인용만**, **항상 재검증**, **영구 감사**, **alias 유지**로 확정.
 - 구현: `POST /api/documents/{id}/corrections`, `field_corrections`(append-only),
   상세 화면 수정 폼·이력, `fields`(추출 원본)와 `effective_fields`(수정 반영) 분리.
-- 제약: 원문에 없는 `MISSING_REQUIRED` 값은 만들 수 없다(재업로드). 품목 수정은 범위 밖.
+- 제약: 원문에 없는 `MISSING_REQUIRED` 값은 만들 수 없다(재업로드). 품목 셀 수정은 Phase 14-I에서 완료했고, 행 추가·삭제·재정렬은 범위 밖이다.
 - 근거: [ADR 0003](docs/adr/0003-human-correction.md), [Phase 14 리뷰](docs/reviews/phase-14.md).
 
 ### R-008 — 품목(`items[]`) 수정 (완료, Phase 14-I)

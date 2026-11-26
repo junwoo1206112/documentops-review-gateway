@@ -264,6 +264,10 @@ def test_next_phases_handoff_covers_each_remaining_gate() -> None:
         "Phase 18",
         "Phase 19",
         "Phase 20",
+        "Phase 14-II",
+        "Phase 15-II",
+        "단일 재개 매트릭스",
+        "Gate 결정 기록 템플릿",
         "한 번에 Gate 하나만 연다",
     ):
         assert token in handoff
