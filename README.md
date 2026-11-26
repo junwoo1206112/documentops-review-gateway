@@ -200,7 +200,8 @@ OpenAPI는 `/api/openapi.json`에서 확인할 수 있습니다.
 | [docs/evaluation.md](docs/evaluation.md) | 데이터셋 분리, 지표 정의·분모, 리포트 스키마 |
 | [docs/security.md](docs/security.md) | 데이터 정책, 위협 모델, 배포 검증 |
 | [docs/decisions/pending.md](docs/decisions/pending.md) | 의도적으로 보류한 결정 6건 |
-| [docs/reviews/](docs/reviews/) | Phase 0~7 전문가 A·B·C 교차 검증 기록 |
+| [docs/ROADMAP_PHASES.md](docs/ROADMAP_PHASES.md) | 인수자·LLM 공용: Gate·수용 기준·권장 구현 순서 |
+| [docs/reviews/](docs/reviews/) | Phase 0~12 전문가 A·B·C 교차 검증 기록 |
 | [docs/reference/](docs/reference/) | 인수인계 원본 계획·실행 로그·데모 원고 |
 | [HANDOFF.md](HANDOFF.md) | 인수자용: 현재 상태·검증 증거·남은 작업·재개 절차 |
 | [handoff.seed.yaml](handoff.seed.yaml) | 기계 판독용 인수인계 상태(작업 ID·수용 기준) |

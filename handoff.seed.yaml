@@ -188,8 +188,9 @@ do_not:
   - p50/p95를 성과 수치로 README에 옮기지 않는다.
 
 resume:
-  read_first: [HANDOFF.md, README.md, docs/schema.md, docs/rules.md, docs/evaluation.md]
+  read_first: [HANDOFF.md, README.md, docs/ROADMAP_PHASES.md, docs/schema.md, docs/rules.md, docs/evaluation.md]
   gate: "python -m pytest -q && python tools/generate_dataset.py --check && python -m app.evaluate --dataset fixtures/evaluation"
   next: [R-007]
+  phase_plan: docs/ROADMAP_PHASES.md
   review_log: docs/reviews/phase-{0..12}.md
 

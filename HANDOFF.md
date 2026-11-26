@@ -340,11 +340,11 @@ POST /api/documents/{id}/revalidate
 
 ## 8. 다음 LLM 세션 재개 체크리스트
 
-1. 이 파일과 `README.md`, `docs/schema.md`, `docs/rules.md`, `docs/evaluation.md`를 읽는다.
+1. 이 파일과 `README.md`, `docs/ROADMAP_PHASES.md`, `docs/schema.md`, `docs/rules.md`, `docs/evaluation.md`를 읽는다.
 2. 3절의 검증 블록을 그대로 실행한다. **하나라도 실패하면 기능 추가를 시작하지 않는다.**
 3. `git status`가 깨끗한지 확인한다. 사용자 변경이 있으면 덮어쓰지 않는다.
 4. `docs/decisions/pending.md`를 읽고, 요청이 보류 결정을 건드리는지 확인한다.
-5. R-007 스크린리더 실사용 검토를 끝낸다. P2 항목은 사용자 결정 없이 시작하지 않는다.
+5. [Phase 로드맵](docs/ROADMAP_PHASES.md)의 Gate를 확인한다. R-007 스크린리더 실사용 검토를 끝낸다. P2 항목은 사용자 결정 없이 시작하지 않는다.
 6. 계약을 바꾸면 5절 절차를 지키고, `docs/reviews/phase-N.md`에 A·B·C 검토를 남긴다. Phase 6의 운영 개선과 환경 제한은 `docs/reviews/phase-6.md`에 있다.
 7. 완료 시 `HANDOFF.md` 6절 상태, README 상태/수치, 이 문서의 "최신 커밋" 설명을 갱신한다.
 8. 커밋 단위는 페이즈/의미 단위로 유지한다: `feat(phaseN): …`, `docs(handoff): …`.

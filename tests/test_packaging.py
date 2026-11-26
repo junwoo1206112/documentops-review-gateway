@@ -138,6 +138,23 @@ def test_handoff_document_covers_resume_and_backlog() -> None:
         "R-002",
     ):
         assert token in handoff, f"HANDOFF.md에 '{token}'이 없습니다"
+    assert "docs/ROADMAP_PHASES.md" in handoff
+
+
+def test_phase_roadmap_preserves_decision_gates() -> None:
+    roadmap = read("docs/ROADMAP_PHASES.md")
+    for token in (
+        "Phase 13",
+        "Gate A",
+        "P-001",
+        "P-002",
+        "P-003",
+        "P-004",
+        "P-005",
+        "P-006",
+        "자동 승인 없음",
+    ):
+        assert token in roadmap
 
 
 def test_handoff_seed_is_valid_and_tracks_state() -> None:
@@ -157,3 +174,4 @@ def test_handoff_seed_is_valid_and_tracks_state() -> None:
     assert {"R-001", "R-002", "R-003", "R-004", "R-005"} <= task_ids
     assert data["do_not"]
     assert data["resume"]["read_first"][0] == "HANDOFF.md"
+    assert data["resume"]["phase_plan"] == "docs/ROADMAP_PHASES.md"
