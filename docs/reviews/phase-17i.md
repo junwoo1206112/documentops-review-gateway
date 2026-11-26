@@ -19,7 +19,7 @@
 | P17I-2 | CI는 `fixtures/evaluation`만 평가하고 artifact 이름도 하나였다. | layout2는 pytest에만 의존해 **평가 증거·artifact가 CI에 남지 않는다**. | 두 레이아웃 평가 단계와 `artifacts/evaluation_report*.json` 업로드로 변경. | `test_ci_runs_tests_dataset_and_evaluation_without_secrets` |
 | P17I-3 | Docker 이미지에 `artifacts/`가 없어 공개 데모 `/evaluation`이 빈 화면이 된다. | 공개 포트폴리오에서 "공개 평가" 약속이 깨진다. | 이미지 빌드 시 두 레이아웃 리포트를 생성해 포함. | `test_dockerfile_is_non_root_and_healthchecked` |
 | P17I-4 | 공개 시드가 "문서가 1건이라도 있으면" 전체를 건너뛰었다. | 시드 중단 시 2/4건만 있는 상태로 고정되고 재기동해도 복구되지 않는다. | 파일명 기준으로 누락분만 순서대로 시드. | `test_public_demo_seed_recovers_partial_database` |
-| P17I-5 | Render는 첫 재확인 때 503이었고, 이후 health·문서·POST는 복구됐지만 새 리포트 API는 404이다. | 인수자가 배포된 이미지의 범위를 오해한다. | 현재 상태를 health 200·문서 4건·POST 403·새 리포트 API 404로 기록하고, 수동 재배포 후 두 리포트를 재확인하게 했다. | `test_handoff_seed_is_valid_and_tracks_state` |
+| P17I-5 | Render는 첫 재확인 때 503이었고, 이전 이미지에서는 새 리포트 API가 404이었다. | 인수자가 배포된 이미지의 범위를 오해한다. | 최신 commit `4341fb0` 수동 배포 후 health 200·문서 4건·POST 403·리포트 2건·화면 두 리포트를 실측하고 기록했다. | `test_handoff_seed_is_valid_and_tracks_state` |
 | P17I-6 | 구형 리포트에는 `dataset_name`이 없고 layout2 파일명이 여러 형태였다. | 화면의 레이아웃 표시와 CI/Docker/런북 경로가 엇갈릴 수 있다. | 구형 두 파일명을 호환 매핑하고, layout2의 정식 경로를 `evaluation_report_evaluation_layout2.json`으로 통일했다. | `test_legacy_report_filenames_keep_layout_identity` |
 
 ## A. 제품·인수
@@ -28,7 +28,7 @@
 |---|---|---|
 | A-1 | 평가 화면에 데이터셋 이름이 없어 공백 표/파이프 표를 구분할 수 없다. | `dataset_name`과 `report_file`을 화면 상단에 표시. |
 | A-2 | "최신" 리포트라는 표현이 어느 데이터셋인지 오해를 만든다. | `/api/evaluation/latest`는 기본 데이터셋(`evaluation`) 우선임을 문서화하고, 전체 목록 API를 추가. |
-| A-3 | 공개 데모 상태가 실제와 다르면 포트폴리오 신뢰가 깎인다. | health·문서·POST의 실측과 새 리포트 API 404를 HANDOFF·seed·리뷰에 기록하고, 재배포 후 확인 항목을 명시. |
+| A-3 | 공개 데모 상태가 실제와 다르면 포트폴리오 신뢰가 깎인다. | 최신 배포의 health·문서·POST·두 리포트를 HANDOFF·seed·리뷰에 실측으로 기록. |
 
 ## B. 정확성
 
@@ -59,12 +59,12 @@
 | `/evaluation` | 두 리포트와 파일명을 함께 렌더 |
 | `docker build` | 성공, 208MB, `healthy`, 이미지 내 `/api/evaluation/reports` 2건 |
 | GitHub CI | [run 45897296626](https://github.com/junwoo1206112/documentops-review-gateway/actions/runs/45897296626) 성공: layout1·layout2 평가와 두 리포트 artifact 업로드 완료 |
-| 공개 URL | health 200·문서 4건·POST 403은 확인. `/api/evaluation/reports`가 404라 이전 이미지가 남아 있어 **수동 재배포 후 두 리포트 재확인 필요** |
+| 공개 URL | 최신 commit `4341fb0` 수동 배포 후 health 200, 문서 4건, POST 403, `/api/evaluation/reports` 2건, `/evaluation` 두 리포트 확인 |
 
 ## 남은 위험
 
 - CI의 두 레이아웃 job은 [run 45897296626](https://github.com/junwoo1206112/documentops-review-gateway/actions/runs/45897296626)에서 확인했다.
-- Render 무료 인스턴스는 슬립/중단될 수 있다. 새 리포트 API가 반영될 때까지 "두 리포트 공개" 주장은 하지 않는다.
+- Render 무료 인스턴스는 슬립/중단될 수 있어 첫 요청이 느릴 수 있다. 현재 배포는 두 리포트까지 확인했다.
 - 두 데이터셋의 `dataset_version`이 같다. 식별은 `dataset_name`으로 하며, 파일 내용 계약을
   바꾸면 `DATASET_VERSION`을 올리는 기존 규칙을 따른다.
 - 리포트가 여러 개일 때 `/api/evaluation/latest`는 기본 데이터셋만 반환한다. 클라이언트가

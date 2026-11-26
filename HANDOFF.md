@@ -22,7 +22,7 @@
 | 평가 | 공백 표·파이프 표 독립 36건씩: 문서 EM 36/36, HOLD 재현 19/19, 오보류 0/17, 규칙 일치 36/36, 근거 410/412 |
 | Docker | `docker compose up --build` → `healthy`, 데모 4건 처리, 컨테이너 내 평가 동일 |
 | 원격 CI | `main`의 첫 `ci` 성공. README 배지는 실제 실행으로 연결됨 |
-| 공개 데모 | [Render 읽기 전용 데모](https://documentops-review-gateway-demo.onrender.com) — 2026-11-27 health `200`·문서 4건·POST `403` 재확인. 다만 새 `/api/evaluation/reports`는 아직 `404`라 수동 재배포 후 두 리포트 확인이 남음 |
+| 공개 데모 | [Render 읽기 전용 데모](https://documentops-review-gateway-demo.onrender.com) — 2026-11-27 최신 commit `4341fb0` 수동 배포 후 health `200`·문서 4건·POST `403`·평가 리포트 2건·`/evaluation` 두 레이아웃 표시 확인 |
 | 남은 일 | OCR·실제 LLM·운영화 Gate 중 하나 선택 → [페이즈 로드맵](docs/ROADMAP_PHASES.md#인수자용-현재-상태와-실행-순서) |
 
 3개 명령으로 상태를 확인할 수 있다.

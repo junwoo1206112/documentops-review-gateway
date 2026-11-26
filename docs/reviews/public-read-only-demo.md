@@ -23,8 +23,6 @@
 ## 남은 배포 확인
 
 - 2026-11-26: 공개 URL에서 `/api/health` 200, 문서 목록 4건, 쓰기 차단 403을 확인했다.
-- 2026-11-27: 첫 재확인 시 `/api/health`가 **503**이었으나, 이후 health `200`·목록 4건·POST
-  `403`은 재확인했다. 새 `/api/evaluation/reports`는 `404`이므로 이전 이미지가 남아 있다.
-- 남은 재확인 항목: Render 대시보드에서 수동 재배포한 뒤 `/api/evaluation/reports` 200(2건),
-  `/evaluation`의 두 레이아웃 리포트 렌더.
+- 2026-11-27: 첫 재확인 시 `/api/health`가 **503**이었으나, 최신 commit `4341fb0` 수동 배포 뒤
+  health `200`·목록 4건·POST `403`·`/api/evaluation/reports` 2건·`/evaluation` 두 리포트를 확인했다.
 - 무료 인스턴스 재시작으로 SQLite가 초기화되어도 합성 fixture가 다시 적재되는 것이 의도된 동작이다.

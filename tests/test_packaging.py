@@ -199,7 +199,7 @@ def test_handoff_seed_is_valid_and_tracks_state() -> None:
     assert data["verified"]["evaluation_reports"]["files"]["evaluation_layout2"].endswith(
         "evaluation_report_evaluation_layout2.json"
     )
-    assert data["verified"]["public_demo"]["status"] == "deployed_unverified"
+    assert data["verified"]["public_demo"]["status"] == "deployed_verified"
     assert data["verified"]["corrections"]["model"] == "original_quote_only"
     assert data["verified"]["tests_collected_after_phase_6"] == 133
     assert data["verified"]["evaluation_exit_code"] == 0

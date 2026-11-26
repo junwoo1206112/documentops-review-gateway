@@ -77,10 +77,10 @@ verified:
     api: ["/api/evaluation/latest", "/api/evaluation/reports"]
     ui: "/evaluation"
   public_demo:
-    status: deployed_unverified
+    status: deployed_verified
     url: "https://documentops-review-gateway-demo.onrender.com"
     last_verified: "2026-11-26"
-    observed: "2026-11-27 health=200, documents=4, POST=403; 새 /api/evaluation/reports=404로 이전 이미지가 남아 수동 재배포 후 두 리포트 재확인 필요"
+    observed: "2026-11-27 commit 4341fb0 수동 배포 후 health=200, documents=4, POST=403, /api/evaluation/reports=2, /evaluation 두 리포트 확인"
     checks_expected: ["GET /api/health = 200", "GET /api/documents total = 4", "POST /api/documents = E_PUBLIC_DEMO_READ_ONLY 403", "GET /evaluation 두 리포트"]
 
 commands:
