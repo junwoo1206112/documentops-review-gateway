@@ -153,6 +153,8 @@ def test_phase_roadmap_preserves_decision_gates() -> None:
         "P-004",
         "P-005",
         "P-006",
+        "Gate D",
+        "Phase 14-I",
         "자동 승인 없음",
     ):
         assert token in roadmap
@@ -173,7 +175,7 @@ def test_handoff_seed_is_valid_and_tracks_state() -> None:
     assert data["verified"]["ci_remote"]["run_url"].endswith("/45697512065")
 
     task_ids = {task["id"] for task in data["remaining"]}
-    assert {"R-001", "R-002", "R-003", "R-004", "R-005"} <= task_ids
+    assert {"R-001", "R-002", "R-003", "R-004", "R-005", "R-008"} <= task_ids
     assert data["do_not"]
     assert data["resume"]["read_first"][0] == "HANDOFF.md"
     assert data["resume"]["phase_plan"] == "docs/ROADMAP_PHASES.md"

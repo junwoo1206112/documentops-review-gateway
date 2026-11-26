@@ -156,6 +156,18 @@ remaining:
       - "텍스트 기준선 수치 불변"
     notes: "CI 기본 경로에 외부 바이너리 의존을 넣지 않는다."
 
+  - id: R-008
+    title: 품목(items[]) 원문 재인용 수정
+    priority: P2
+    state: blocked_on_decision
+    depends_on: [Gate-D]
+    acceptance:
+      - "행 식별·허용 편집·근거 단위·합계 처리·감사 표시를 ADR로 확정"
+      - "원본 items/effective_items 분리와 append-only 수정 이력"
+      - "행 추가·삭제·재정렬·원문 없는 품목은 명시적으로 차단 또는 재업로드 경로"
+      - "산술·중복 재검증 및 기존 36건 기준선 불변"
+    notes: "권장안: original ordinal + row anchor를 고정하고 기존 행의 단일 셀만 원문 재인용으로 수정한다."
+
   - id: R-005
     title: LLM 추출 어댑터
     priority: P2
