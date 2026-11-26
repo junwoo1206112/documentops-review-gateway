@@ -2,7 +2,7 @@
 
 - 작성일: 2026-11-27
 - 대상: 다음 인수자(사람)와 다음 LLM 세션
-- 현재 브랜치 상태: `main`, Phase 0~17-I 완료(13 사람 검증 포함); Render 공개 데모 재확인과 OCR·실제 LLM·운영화 Gate 대기
+- 현재 브랜치 상태: `main`, Phase 0~17-I 완료(13 사람 검증 포함); Render 공개 데모 재확인 완료, OCR은 현 릴리스 미도입(텍스트 전용 유지), 실제 LLM·운영화 Gate 대기
 - 최신 커밋: `git log --oneline`으로 확인한다. 커밋 해시는 이동하므로 이 문서에 고정하지 않는다.
 
 이 문서 하나로 **무엇을 만들었고, 무엇이 검증됐고, 무엇이 남았고, 어떻게 이어서 하는지**를
@@ -23,7 +23,7 @@
 | Docker | `docker compose up --build` → `healthy`, 데모 4건 처리, 컨테이너 내 평가 동일 |
 | 원격 CI | `main`의 첫 `ci` 성공. README 배지는 실제 실행으로 연결됨 |
 | 공개 데모 | [Render 읽기 전용 데모](https://documentops-review-gateway-demo.onrender.com) — 2026-11-27 최신 commit `4341fb0` 수동 배포 후 health `200`·문서 4건·POST `403`·평가 리포트 2건·`/evaluation` 두 레이아웃 표시 확인 |
-| 남은 일 | OCR·실제 LLM·운영화 Gate 중 하나 선택 → [페이즈 로드맵](docs/ROADMAP_PHASES.md#인수자용-현재-상태와-실행-순서) |
+| 남은 일 | 실제 LLM·운영화 Gate 중 실제 요구 하나 선택. OCR은 실제 스캔 요구가 생길 때만 재개 → [페이즈 로드맵](docs/ROADMAP_PHASES.md#인수자용-현재-상태와-실행-순서) |
 
 3개 명령으로 상태를 확인할 수 있다.
 
@@ -309,11 +309,11 @@ POST /api/documents/{id}/revalidate
 - 비범위: 행 추가·삭제·재정렬, 원문에 없는 품목, 자동 금액 보정. 이 경우는 재업로드한다.
 - 증거: [Phase 14-I](docs/ROADMAP_PHASES.md#phase-14-i--품목-수정-완료) 및 회귀 테스트.
 
-### R-004 — OCR 확장 (P2, 결정 필요: P-001)
+### R-004 — OCR 확장 (P2, 현재 릴리스 미도입)
 
 - 왜: 이미지 문서는 현재 415/422로 끝난다.
-- 시작 입력: [P-001 OCR Gate 결정 패킷](docs/decisions/p001-ocr-gate.md)의 모든 `미결정`을
-  오너 선택값으로 확정한다. 이 전에는 scan 스키마·가짜 OCR 경로·이미지/PDF 업로드를 추가하지 않는다.
+- 결정: 현재 릴리스에서 채택하지 않는다. 실제 스캔 요구가 생기면 [P-001 OCR Gate 결정 패킷](docs/decisions/p001-ocr-gate.md)의
+  남은 입력을 확정한 새 Gate로 재개한다. 그 전에는 scan 스키마·가짜 OCR 경로·이미지/PDF 업로드를 추가하지 않는다.
 - 조건: `source_kind=scan` 전용 데이터셋(별도 36건), 별도 지표표, 낮은 신뢰도·span 미확보 시
   자동 HOLD, 텍스트 평가와 혼합 금지.
 - 수용 기준: 텍스트 기준선이 변하지 않고, OCR 표가 분리 보고되며, CI에 외부 바이너리 의존을
@@ -418,6 +418,6 @@ POST /api/documents/{id}/revalidate
 | `docs(handoff)` | 인수인계 문서와 `handoff.seed.yaml` |
 
 각 페이즈의 발견·수정 이유는 `docs/reviews/`의 해당 `phase-*.md`에 있다.
-Phase 13은 사람 청취 검증 기록이며, Phase 16은 OCR Gate 입력 전까지 만들지 않는다.
+Phase 13은 사람 청취 검증 기록이며, Phase 16은 실제 스캔 요구가 생겨 P-001 Gate를 다시 열기 전까지 만들지 않는다.
 
 

@@ -10,8 +10,9 @@
 
 **상태: Phase 0~12·14·14-I·15·17·17-I 완료** (계약 → 데이터 → 추출·검증 → 검토 UI/감사 → 평가 → Docker/CI → 운영·접근성 → 데모 공개 → 사람·품목 수정 → 두 번째 레이아웃 → LLM 계약 하네스 → 평가 증거 격리).
 원격 CI·배지와 56.8초 데모 영상 공개를 완료했고, Gate A 결정에 따라 **원문 재인용 필드 수정**을 추가했습니다.
-레이아웃별 평가 리포트를 분리해 `/evaluation`에서 함께 확인할 수 있습니다. 남은 것은 OCR·실제 LLM·운영화 Gate입니다. 실제 LLM·인증은 의도적으로 보류했고,
-[보류 결정](docs/decisions/pending.md)에 근거를 남겼습니다.
+레이아웃별 평가 리포트를 분리해 `/evaluation`에서 함께 확인할 수 있습니다. OCR은 현재 릴리스에서
+의도적으로 채택하지 않고 텍스트 전용으로 유지합니다. 실제 LLM·운영화는 별도 Gate이며,
+[결정 기록](docs/decisions/pending.md)에 근거를 남겼습니다.
 
 ![문서 목록 화면](docs/images/documents.jpg)
 
@@ -219,8 +220,8 @@ OpenAPI는 `/api/openapi.json`에서 확인할 수 있습니다.
   `deterministic`이며, 모든 결과는 기존 원문 span 검증을 통과해야 한다.
 - **비목표**: 실제 업무 실행(메일·결제·ERP), 자동 승인, 로그인·권한·멀티테넌시,
   실제 OCR 정확도 주장, PDF 레이아웃 일반화.
-- OCR은 MVP 범위가 아니다. [ADR 0001](docs/adr/0001-text-first.md)과
-  [보류 결정 P-001](docs/decisions/pending.md)을 참고한다.
+- OCR은 현재 릴리스 범위가 아니다. [ADR 0001](docs/adr/0001-text-first.md),
+  [ADR 0004](docs/adr/0004-text-only-current-release.md), [P-001 결정](docs/decisions/pending.md)을 참고한다.
 
 ## 알려진 한계
 

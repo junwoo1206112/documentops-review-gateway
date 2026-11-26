@@ -97,6 +97,17 @@ def test_p001_ocr_gate_packet_keeps_required_decisions_explicit() -> None:
         "자동 `HOLD`",
     ):
         assert token in packet
+    assert "현재 릴리스 미도입" in packet
+
+
+def test_p001_text_only_decision_is_consistent_across_handoff_docs() -> None:
+    for path in (
+        "docs/adr/0004-text-only-current-release.md",
+        "docs/decisions/pending.md",
+        "docs/ROADMAP_PHASES.md",
+        "HANDOFF.md",
+    ):
+        assert "텍스트 전용" in read(path), path
 
 
 def test_readme_documents_runbook_and_limits() -> None:

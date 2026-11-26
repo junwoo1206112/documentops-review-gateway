@@ -12,7 +12,7 @@ constraints:
   - 실제 개인정보와 실제 고객 문서를 사용하지 않는다.
   - 승인과 반려는 사람만 수행하며 자동 승인 경로를 만들지 않는다.
   - 기본 실행 경로는 외부 LLM API 키와 네트워크 없이 재현되어야 한다.
-  - OCR은 별도 결정 전까지 MVP 범위가 아니다.
+  - OCR은 현재 릴리스에서 채택하지 않으며, 실제 스캔 요구와 새 Gate 결정 전까지 텍스트 전용을 유지한다.
   - fixtures/evaluation은 생성기로만 수정하고 테스트 중에는 읽기 전용이다.
 
 invariants:
@@ -42,7 +42,7 @@ versions:
 verified:
   date: "2026-11-27"
   platform: "Windows 11, Python 3.12.10"
-  tests_passed: 175
+  tests_passed: 177
   tests_collected_after_phase_6: 133
   dataset_check: pass
   evaluation_exit_code: 0
@@ -163,13 +163,13 @@ remaining:
   - id: R-004
     title: OCR 확장
     priority: P2
-    state: blocked_on_decision
-    depends_on: [P-001]
+    state: deferred_not_adopted
+    depends_on: []
     acceptance:
       - "source_kind=scan 전용 데이터셋과 지표표 분리"
       - "낮은 신뢰도 또는 span 미확보 시 자동 HOLD"
       - "텍스트 기준선 수치 불변"
-    notes: "CI 기본 경로에 외부 바이너리 의존을 넣지 않는다."
+    notes: "현재 릴리스는 텍스트 전용으로 유지한다. 실제 스캔 요구가 생기면 P-001 Gate를 새로 열며, CI 기본 경로에 외부 바이너리 의존을 넣지 않는다."
 
   - id: R-008
     title: 품목(items[]) 원문 재인용 수정
