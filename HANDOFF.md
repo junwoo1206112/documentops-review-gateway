@@ -18,12 +18,12 @@
 | 핵심 주장 | "AI가 답한다"가 아니라 **근거 없는 값은 승인 불가, blocking 오류는 HOLD, 판정은 사람만** |
 | 스택 | Python 3.12, FastAPI, SQLite, Jinja2 서버 렌더링, pytest, Docker, GitHub Actions |
 | 실행 | `uvicorn app.asgi:app` (주의: `app.main:app` 아님) |
-| 테스트 | **175 passed** (2026-11-27, Python 3.12.10, Windows 11) |
+| 테스트 | **178 passed** (2026-11-27, Python 3.12.10, Windows 11) |
 | 평가 | 공백 표·파이프 표 독립 36건씩: 문서 EM 36/36, HOLD 재현 19/19, 오보류 0/17, 규칙 일치 36/36, 근거 410/412 |
 | Docker | `docker compose up --build` → `healthy`, 데모 4건 처리, 컨테이너 내 평가 동일 |
 | 원격 CI | `main`의 첫 `ci` 성공. README 배지는 실제 실행으로 연결됨 |
 | 공개 데모 | [Render 읽기 전용 데모](https://documentops-review-gateway-demo.onrender.com) — 2026-11-27 최신 commit `4341fb0` 수동 배포 후 health `200`·문서 4건·POST `403`·평가 리포트 2건·`/evaluation` 두 레이아웃 표시 확인 |
-| 남은 일 | 실제 LLM·운영화 Gate 중 실제 요구 하나 선택. OCR은 실제 스캔 요구가 생길 때만 재개 → [페이즈 로드맵](docs/ROADMAP_PHASES.md#인수자용-현재-상태와-실행-순서) |
+| 남은 일 | 실제 LLM·운영화 Gate 중 실제 요구 하나 선택. OCR은 실제 스캔 요구가 생길 때만 재개 → [페이즈별 실행 안내](docs/NEXT_PHASES_HANDOFF.md) |
 
 3개 명령으로 상태를 확인할 수 있다.
 

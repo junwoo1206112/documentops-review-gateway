@@ -195,6 +195,20 @@ def test_handoff_document_covers_resume_and_backlog() -> None:
     assert "docs/ROADMAP_PHASES.md" in handoff
 
 
+def test_next_phases_handoff_covers_each_remaining_gate() -> None:
+    handoff = read("docs/NEXT_PHASES_HANDOFF.md")
+    for token in (
+        "Phase 16",
+        "Phase 17 후속",
+        "Phase 18",
+        "Phase 19",
+        "Phase 20",
+        "한 번에 Gate 하나만 연다",
+        "178 passed",
+    ):
+        assert token in handoff
+
+
 def test_phase_roadmap_preserves_decision_gates() -> None:
     roadmap = read("docs/ROADMAP_PHASES.md")
     for token in (

@@ -12,7 +12,7 @@
   WebM asset 5,850,941 bytes, SHA-256
   `841e5e92990b56fc2c1342d9738c7dfc0c8fe35b888b1aba24415f285ccbe664`.
 - 원격 검증: [CI run 45702069278](https://github.com/junwoo1206112/documentops-review-gateway/actions/runs/45702069278) 성공 (`7b2c1ba`).
-- 재현 기준선: 174 tests, 각 텍스트 레이아웃 36/36 문서 일치, HOLD 19/19, false HOLD 0/17, 규칙 36/36,
+- 재현 기준선: 178 tests, 각 텍스트 레이아웃 36/36 문서 일치, HOLD 19/19, false HOLD 0/17, 규칙 36/36,
   근거 410/412(의도된 파생 총액 2건).
 - 평가 증거: 레이아웃별 리포트 분리(`dataset_name`), `/evaluation` 두 표, CI artifact 2개.
 - 불변 계약: 자동 승인 없음, `HOLD → APPROVED` 직접 전이 금지, blocking이면 HOLD,
@@ -47,6 +47,8 @@
    `python -m app.evaluate --dataset ...`를 모두 통과시킨다.
 3. 위 표에서 **한 개 Gate만** 사용자와 결정한다. OCR·실제 LLM·운영화를 묶어 시작하지 않는다.
 4. 선택한 페이즈는 독립 fixture/지표/테스트와 `docs/reviews/phase-N.md`를 같은 커밋에 남긴다.
+
+페이즈별 Gate·구현·검증을 한 화면에서 보려면 [남은 페이즈 실행 안내](NEXT_PHASES_HANDOFF.md)를 따른다.
 
 ## A/B/C 교차 검증과 권장 순서
 
