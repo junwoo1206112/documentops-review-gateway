@@ -18,11 +18,13 @@ from app.errors import UnprocessableError
 from app.services.evidence import apply_evidence
 from app.services.extraction.base import (
     EVIDENCE_VERIFIED,
+    ExtractionProvider,
     ExtractedField,
     ExtractionResult,
     Item,
 )
 from app.services.extraction.deterministic import DocumentFormatError, parse_document
+from app.services.extraction.providers import ExtractionProviderError
 from app.services.validation import (
     ValidationIssue,
     find_duplicate,
@@ -86,12 +88,17 @@ def process_document(
     registry: VendorRegistry,
     existing: Sequence[ExistingDocument] = (),
     corrections: Sequence[FieldCorrection] = (),
+    extractor: ExtractionProvider | None = None,
 ) -> ProcessedDocument:
     started = perf_counter()
     try:
-        extraction: ExtractionResult = parse_document(raw_text)
+        extraction: ExtractionResult = (
+            parse_document(raw_text) if extractor is None else extractor.extract(raw_text)
+        )
     except DocumentFormatError as exc:
         raise UnprocessableError(f"문서 레이아웃을 해석할 수 없습니다: {exc}") from exc
+    except ExtractionProviderError as exc:
+        raise UnprocessableError(f"추출 provider가 문서를 처리하지 못했습니다: {exc}") from exc
 
     extraction = apply_corrections(extraction, corrections)
     extraction = ExtractionResult(

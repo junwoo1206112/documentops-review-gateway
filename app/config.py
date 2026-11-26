@@ -56,6 +56,7 @@ class Settings:
     rate_limit_per_minute: int = DEFAULT_RATE_LIMIT_PER_MINUTE
     trust_proxy_headers: bool = False
     public_demo_read_only: bool = False
+    extraction_provider: str = "deterministic"
 
     @classmethod
     def from_env(cls) -> Settings:
@@ -69,6 +70,8 @@ class Settings:
             rate_limit_per_minute=_env_int("RATE_LIMIT_PER_MINUTE", DEFAULT_RATE_LIMIT_PER_MINUTE),
             trust_proxy_headers=_env_bool("TRUST_PROXY_HEADERS", False),
             public_demo_read_only=_env_bool("PUBLIC_DEMO_READ_ONLY", False),
+            extraction_provider=os.getenv("EXTRACTION_PROVIDER", "deterministic").strip()
+            or "deterministic",
         )
 
     def ensure_dirs(self) -> None:

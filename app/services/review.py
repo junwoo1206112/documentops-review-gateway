@@ -28,6 +28,7 @@ from app.domain.statuses import (
 )
 from app.errors import ConflictError, NotFoundError, UnprocessableError
 from app.services.evidence import normalized_matches
+from app.services.extraction.providers import build_extractor
 from app.services.ingestion import ingest_bytes
 from app.services.pipeline import process_document
 from app.services.textnorm import (
@@ -38,7 +39,7 @@ from app.services.textnorm import (
     parse_money,
 )
 from app.services.vendors import VendorRegistry
-from app.version import EXTRACTOR_VERSION, RULESET_VERSION
+from app.version import RULESET_VERSION
 
 EVENT_INGESTED = "DOCUMENT_INGESTED"
 EVENT_VALIDATED = "VALIDATION_COMPLETED"
@@ -62,6 +63,7 @@ class ReviewService:
         self.settings = settings
         self.registry = registry
         self.db = db
+        self.extractor = build_extractor(settings.extraction_provider)
 
     # ------------------------------------------------------------------ ingest
     def ingest(self, filename: str, data: bytes) -> dict[str, Any]:
@@ -72,6 +74,7 @@ class ReviewService:
             sha256=document.sha256,
             registry=self.registry,
             existing=existing,
+            extractor=self.extractor,
         )
         document_id = uuid.uuid4().hex
         now = utcnow()
@@ -97,7 +100,7 @@ class ReviewService:
                     result.status,
                     doc_no,
                     result.duplicate_of,
-                    EXTRACTOR_VERSION,
+                    self.extractor.version,
                     RULESET_VERSION,
                     now,
                 ),
@@ -124,7 +127,7 @@ class ReviewService:
                 {
                     "issue_count": len(result.issues),
                     "rule_ids": [issue.rule_id for issue in result.issues],
-                    "extractor_version": EXTRACTOR_VERSION,
+                    "extractor_version": self.extractor.version,
                     "ruleset_version": RULESET_VERSION,
                 },
                 now,
@@ -656,6 +659,7 @@ class ReviewService:
             registry=self.registry,
             existing=existing,
             corrections=corrections,
+            extractor=self.extractor,
         )
 
     def _effective_corrections(self, document_id: str) -> list[FieldCorrection]:

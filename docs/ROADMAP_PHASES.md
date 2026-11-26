@@ -119,13 +119,16 @@
   의존은 피하거나 격리한다.
 - 완료 기준: 텍스트 기준선 불변, scan 지표표 별도 보고, 낮은 품질 입력이 승인으로 새지 않음.
 
-## Phase 17 — LLM 추출 어댑터 (조건부: P-002 결정 후)
+## Phase 17 — LLM 추출 어댑터 계약 하네스 (완료)
 
 - 순서: 네트워크 없는 contract stub → `ExtractionProvider` 계약 테스트 → evidence 적용 →
   feature flag/명시적 provider 선택 순서로 진행한다.
 - 안전 장치: API 키 없이 전체 테스트 통과, 기본 extractor는 deterministic, 모델 출력도
   `apply_evidence`를 우회하지 않음.
 - 완료 기준: provider 장애·형식 오류·근거 누락은 HOLD/명시적 오류가 되고 기본 평가 수치는 불변.
+- 완료: `llm-contract-stub`을 opt-in으로 구현했다. 외부 모델·키·네트워크 없이
+  `ExtractionProvider` 계약, span 누락의 `MISSING_EVIDENCE → HOLD`, provider 실패의 명시적
+  422, 문서/감사 provider 버전을 고정했다. 실제 LLM 연결은 별도 Gate다.
 
 ## Gate C — 실제 운영 전환 결정
 
@@ -162,7 +165,8 @@ Phase 18 이후를 시작하지 않는다: 동시 검토자 2명 이상, 다중 
 | 기존 품목 행의 오인식을 고치고 싶다 | Gate D → Phase 14-I | 행 식별·허용 편집·합계 정책 |
 | 다른 텍스트 양식을 받고 싶다 | Phase 15 | 합성 가능한 레이아웃 명세 |
 | 스캔 PDF/이미지를 받고 싶다 | Gate B → Phase 16 | OCR 엔진·품질·운영 환경 |
-| LLM을 연결하고 싶다 | Gate B → Phase 17 | 모델 책임·키 관리·fallback |
+| LLM 계약을 검증하고 싶다 | Phase 17 (완료) | 외부 호출 없는 `llm-contract-stub` |
+| 실제 LLM을 연결하고 싶다 | 후속 Gate | 모델 책임·키 관리·fallback·독립 평가 |
 | 실제 팀 운영/권한/다중 인스턴스가 필요하다 | Gate C → Phase 18/19 | 역할·배포·동시성 요구 |
 
 ## 미해결성 장부
@@ -174,6 +178,7 @@ Phase 18 이후를 시작하지 않는다: 동시 검토자 2명 이상, 다중 
 | 품목 수정 | **완료** | Gate D 결정과 Phase 14-I 구현 완료 |
 | 레이아웃 2 | **완료** | 파이프 품목 표의 명세·독립 평가·422 경계 확정 |
 | P-001 OCR | 의사결정 대기 | Gate B OCR 항목 확정 |
-| P-002 LLM | 의사결정 대기 | Gate B LLM 항목 확정 |
+| P-002 LLM 계약 | **완료** | Phase 17 오프라인 provider 하네스 |
+| 실제 LLM 연결 | 의사결정 대기 | 모델·데이터·키·fallback·평가 확정 |
 | P-004/P-006 운영화 | 비목표 | Gate C의 운영 요구 발생 |
 | P-005 세율 | 비목표 | 세율·관할 시나리오 확정 |

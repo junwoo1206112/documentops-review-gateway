@@ -8,9 +8,9 @@
 증명하려는 역량은 "AI가 답을 낸다"가 아니라,
 **AI 산출물을 실제 업무에 투입하기 전에 검증·보류·승인·추적하는 방법**입니다.
 
-**상태: Phase 0~12·14·14-I 완료** (계약 → 데이터 → 추출·검증 → 검토 UI/감사 → 평가 → Docker/CI → 운영·접근성 → 데모 공개 → 사람·품목 수정).
+**상태: Phase 0~12·14·14-I·15·17 완료** (계약 → 데이터 → 추출·검증 → 검토 UI/감사 → 평가 → Docker/CI → 운영·접근성 → 데모 공개 → 사람·품목 수정 → 두 번째 레이아웃 → LLM 계약 하네스).
 원격 CI·배지와 56.8초 데모 영상 공개를 완료했고, Gate A 결정에 따라 **원문 재인용 필드 수정**을 추가했습니다.
-Phase 13 스크린리더 실사용을 완료했고, 남은 것은 Gate B/C 결정입니다. OCR·LLM 어댑터·인증은 의도적으로 보류했고,
+Phase 13 스크린리더 실사용과 Phase 17 오프라인 LLM 계약 하네스를 완료했고, 남은 것은 OCR·실제 LLM·운영화 Gate입니다. 실제 LLM·인증은 의도적으로 보류했고,
 [보류 결정](docs/decisions/pending.md)에 근거를 남겼습니다.
 
 ![문서 목록 화면](docs/images/documents.jpg)
@@ -91,7 +91,7 @@ python scripts/seed_demo.py     # 4건을 위 순서대로 접수 (서버 실행
 ```text
 합성 .txt 문서 업로드
   → Ingestion        파일 SHA-256, UTF-8 검증, 크기 제한
-  → Extraction       결정론적 파서 (LLM 어댑터는 같은 인터페이스 뒤, 미구현)
+  → Extraction       기본 결정론 파서 (선택형 오프라인 LLM 계약 스텁은 같은 인터페이스 뒤)
   → Evidence Mapper  필드별 원문 span 검증 (verified / derived / missing)
   → Validation       8개 명시 규칙 → blocking issue
   → Review Queue     HOLD 또는 PENDING_REVIEW
@@ -118,7 +118,7 @@ python -m venv .venv
 # source .venv/bin/activate         # Linux/macOS
 pip install -e ".[dev]"
 
-python -m pytest -q                 # 165 passed (2026-11-26, Python 3.12.10)
+python -m pytest -q                 # 170 passed (2026-11-26, Python 3.12.10)
 python tools/generate_dataset.py --check
 python -m app.inspect fixtures/evaluation/DOC-0001.txt
 
@@ -210,6 +210,8 @@ OpenAPI는 `/api/openapi.json`에서 확인할 수 있습니다.
 
 - 실제 고객 문서, 주민번호·계좌·연락처 등 개인정보를 **사용하지 않는다.** 모든 값은 생성기가 만든 합성값이다.
 - 외부 LLM API 키 없이, 네트워크 없이 테스트와 평가가 재현된다.
+- `EXTRACTION_PROVIDER=llm-contract-stub`은 실제 LLM이 아닌 오프라인 계약 검증용이다. 기본값은
+  `deterministic`이며, 모든 결과는 기존 원문 span 검증을 통과해야 한다.
 - **비목표**: 실제 업무 실행(메일·결제·ERP), 자동 승인, 로그인·권한·멀티테넌시,
   실제 OCR 정확도 주장, PDF 레이아웃 일반화.
 - OCR은 MVP 범위가 아니다. [ADR 0001](docs/adr/0001-text-first.md)과

@@ -2,7 +2,7 @@
 
 - 작성일: 2026-11-26
 - 대상: 다음 인수자(사람)와 다음 LLM 세션
-- 현재 브랜치 상태: `main`, Phase 0~15 완료; Render 공개 읽기 전용 데모와 Phase 13(스크린리더 실사용) 완료. Gate B/C 결정 대기
+- 현재 브랜치 상태: `main`, Phase 0~15·17 완료; Render 공개 읽기 전용 데모와 Phase 13(스크린리더 실사용), Phase 17(오프라인 LLM 계약 하네스) 완료. OCR·실제 LLM·운영화 Gate 대기
 - 최신 커밋: `git log --oneline`으로 확인한다. 커밋 해시는 이동하므로 이 문서에 고정하지 않는다.
 
 이 문서 하나로 **무엇을 만들었고, 무엇이 검증됐고, 무엇이 남았고, 어떻게 이어서 하는지**를
@@ -18,7 +18,7 @@
 | 핵심 주장 | "AI가 답한다"가 아니라 **근거 없는 값은 승인 불가, blocking 오류는 HOLD, 판정은 사람만** |
 | 스택 | Python 3.12, FastAPI, SQLite, Jinja2 서버 렌더링, pytest, Docker, GitHub Actions |
 | 실행 | `uvicorn app.asgi:app` (주의: `app.main:app` 아님) |
-| 테스트 | **165 passed** (2026-11-26, Python 3.12.10, Windows 11) |
+| 테스트 | **170 passed** (2026-11-26, Python 3.12.10, Windows 11) |
 | 평가 | 공백 표·파이프 표 독립 36건씩: 문서 EM 36/36, HOLD 재현 19/19, 오보류 0/17, 규칙 일치 36/36, 근거 410/412 |
 | Docker | `docker compose up --build` → `healthy`, 데모 4건 처리, 컨테이너 내 평가 동일 |
 | 원격 CI | `main`의 첫 `ci` 성공. README 배지는 실제 실행으로 연결됨 |
@@ -76,6 +76,8 @@ python -m app.evaluate --dataset fixtures/evaluation
 | 12 | GitHub Release 공개, 데모 영상 asset 확인, README·인수 상태 갱신 | `docs(phase12): …` | [v0.1.0-demo](https://github.com/junwoo1206112/documentops-review-gateway/releases/tag/v0.1.0-demo) |
 | 14 | Gate A 결정, 원문 재인용 필드 수정·재검증·append-only 감사·UI | `feat(phase14): …` | 155 passed, `test_corrections.py` 15개 |
 | 14-I | Gate D 결정, 품목 셀 재인용·행 anchor·effective items·재검증 | `feat(phase14i): …` | 156 passed |
+| 15 | 두 번째 파이프 텍스트 양식, 독립 36건 평가, 혼합 양식 422 | `feat(phase15): …` | 두 레이아웃 36/36 |
+| 17 | opt-in 오프라인 LLM provider 계약, evidence HOLD, 명시적 provider 실패 | `feat(phase17): …` | 170 passed, 외부 API 없음 |
 
 ### 기준선 수치 (재현 가능)
 
@@ -127,7 +129,7 @@ pip install -e ".[dev]"
 python -m pytest -q
 ```
 
-기대 결과: `165 passed`.
+기대 결과: `170 passed`.
 
 > `uv`와 Node.js는 필요 없다. UI는 Jinja2 서버 렌더링이다(ADR 0002).
 > Python은 3.12 이상이어야 한다.
@@ -307,12 +309,15 @@ POST /api/documents/{id}/revalidate
 - 수용 기준: 텍스트 기준선이 변하지 않고, OCR 표가 분리 보고되며, CI에 외부 바이너리 의존을
   넣지 않거나 전용 job으로 격리.
 
-### R-005 — LLM 추출 어댑터 (P2, 결정 필요: P-002)
+### R-005 — LLM 추출 어댑터 계약 하네스 (완료, Phase 17)
 
-- 왜: `ExtractionProvider` 인터페이스는 준비됐지만 구현은 없다.
-- 조건: 오프라인 스텁으로 계약 테스트, LLM 결과도 `apply_evidence`를 통과, 기본 경로 아님,
-  키 없이 전체 테스트 통과.
-- 수용 기준: 어댑터 추가 후에도 `pytest`가 네트워크 없이 통과하고 기본 extractor 버전 불변.
+- 구현: `EXTRACTION_PROVIDER=llm-contract-stub`은 외부 API 없이 provider 선택·결과 계약을
+  검증한다. 기본값은 `deterministic`이며, 새 provider도 항상 `apply_evidence`와 기존 8개 규칙을
+  통과한다.
+- 검증: span 누락은 `MISSING_EVIDENCE → HOLD`, provider 실패·형식 오류는 조용한 fallback 없이
+  명시적 422, 선택된 provider 버전은 문서·감사에 기록된다.
+- 비범위: 실제 LLM, 키, 네트워크 호출, 고객 데이터 전송, 자동 승인. 실제 연결은 모델·데이터·키·
+  fallback·독립 평가가 결정된 뒤의 새 Gate다.
 
 ### R-006 — 두 번째 문서 레이아웃 (완료, Phase 15)
 

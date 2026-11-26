@@ -29,10 +29,11 @@ def health(request: Request) -> dict:
 
 
 @router.get("/meta")
-def meta() -> dict:
+def meta(request: Request) -> dict:
     return {
         "app_version": APP_VERSION,
         "extractor_version": EXTRACTOR_VERSION,
+        "configured_provider": request.app.state.service.extractor.version,
         "ruleset_version": RULESET_VERSION,
         "dataset_version": DATASET_VERSION,
         "statuses": list(STATUSES),
