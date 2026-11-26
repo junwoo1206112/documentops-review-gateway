@@ -1,5 +1,5 @@
 ﻿schema: handoff-seed-1
-as_of: "2026-11-26"
+as_of: "2026-11-27"
 project: documentops-review-gateway
 status: phase-17-llm-contract-harness-complete-public-demo-live
 language: ko
@@ -227,7 +227,7 @@ do_not:
 resume:
   read_first: [HANDOFF.md, README.md, docs/ROADMAP_PHASES.md, docs/schema.md, docs/rules.md, docs/evaluation.md]
   gate: "python -m pytest -q && python tools/generate_dataset.py --check && python -m app.evaluate --dataset fixtures/evaluation"
-  next: [P-001, P-002, P-004, P-005, P-006]
+  next: [P-001, actual_llm_provider, P-004, P-005, P-006]
   phase_plan: docs/ROADMAP_PHASES.md
-  review_log: docs/reviews/phase-{0..12}.md
+  review_log: docs/reviews/phase-*.md
 

@@ -1,6 +1,6 @@
 # 남은 구현 로드맵 — 인수자·LLM 공용
 
-최신화: 2026-11-26 (Phase 14-I 완료, 공개 읽기 전용 Render 데모 배포 준비 기준)
+최신화: 2026-11-27 (Phase 17 완료, 공개 읽기 전용 Render 데모 기준)
 
 이 문서는 구현 순서를 **약속**하는 것이 아니라, 이미 검증된 안전 계약을 훼손하지 않으면서
 다음 인수자가 재개할 수 있게 만드는 권장 실행 경로다. P-001~P-006은 제품·운영 결정이므로,
@@ -12,10 +12,39 @@
   WebM asset 5,850,941 bytes, SHA-256
   `841e5e92990b56fc2c1342d9738c7dfc0c8fe35b888b1aba24415f285ccbe664`.
 - 원격 검증: [CI run 45702069278](https://github.com/junwoo1206112/documentops-review-gateway/actions/runs/45702069278) 성공 (`7b2c1ba`).
-- 재현 기준선: 157 tests, 36/36 문서 일치, HOLD 19/19, false HOLD 0/17, 규칙 36/36,
+- 재현 기준선: 170 tests, 각 텍스트 레이아웃 36/36 문서 일치, HOLD 19/19, false HOLD 0/17, 규칙 36/36,
   근거 410/412(의도된 파생 총액 2건).
 - 불변 계약: 자동 승인 없음, `HOLD → APPROVED` 직접 전이 금지, blocking이면 HOLD,
   근거 span 필수, 감사 append-only. 상세는 [HANDOFF.md](../HANDOFF.md) 1절을 따른다.
+
+## 인수자용 현재 상태와 실행 순서
+
+### 이미 닫힌 페이즈 — 다시 구현하지 않는다
+
+| Phase | 상태 | 인수자가 확인할 증거 |
+|---|---|---|
+| 13 | 완료 | 사람 청취 기록: [phase-13.md](reviews/phase-13.md) |
+| 14 / 14-I | 완료 | 원문 재인용 scalar·기존 품목 셀 수정, 재검증, append-only 감사 |
+| 15 | 완료 | 기존 공백 표와 파이프 표의 **독립** 36건 평가 |
+| 17 | 완료 | `llm-contract-stub`의 opt-in 계약, span 누락 HOLD, provider 실패 422 |
+
+### 아직 구현하면 안 되는 페이즈 — Gate 입력이 먼저다
+
+| 다음 Phase | 목적 | 반드시 먼저 확정할 입력 | 완료 판정 |
+|---|---|---|---|
+| 16 — OCR | 스캔 이미지/PDF 수용 | 실제 입력 형식·OCR 엔진/라이선스·실행 환경·최소 품질 임계값·데이터 보존 정책 | `source_kind=scan` 전용 36건 이상, 별도 지표/CI, 낮은 신뢰도·좌표 없음은 HOLD, 텍스트 기준선 불변 |
+| 실제 LLM 연결 (17 후속) | 실제 provider로 추출 보조 | 모델/계정 책임, 전송·보존 정책, 키 보관, 실패 fallback, 독립 평가셋 | 기본 deterministic 불변, 키 없는 CI, evidence 우회 없음, provider 실패 안전 종료 |
+| 18 — 인증·권한 | 실제 사용자별 역할/승인 위임 | 역할표, 위임 규칙, 세션 수명, 감사 주체 ID | 401/403·역할별 API/UI·감사 주체 계약 테스트 |
+| 19 — Postgres | 다중 인스턴스/동시성 | 동시 검토자 2명 이상 또는 다중 인스턴스/감사 외부화 요구 | migration/rollback, append-only·동시 승인 경쟁 통합 테스트 |
+| 20 — 세율 확장 | 10% 고정 규칙 해제 | 관할, 세율표/적용일, 면세·영세율, 반올림 | 기존 10%와 새 세율 fixture·지표를 분리 보고 |
+
+### 새 인수자/LLM의 안전한 재개 절차
+
+1. `HANDOFF.md` → 이 문서 → `docs/decisions/pending.md` 순서로 읽는다.
+2. `python -m pytest -q`, `python tools/generate_dataset.py --check`, 두 레이아웃의
+   `python -m app.evaluate --dataset ...`를 모두 통과시킨다.
+3. 위 표에서 **한 개 Gate만** 사용자와 결정한다. OCR·실제 LLM·운영화를 묶어 시작하지 않는다.
+4. 선택한 페이즈는 독립 fixture/지표/테스트와 `docs/reviews/phase-N.md`를 같은 커밋에 남긴다.
 
 ## A/B/C 교차 검증과 권장 순서
 

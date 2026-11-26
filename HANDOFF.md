@@ -23,7 +23,7 @@
 | Docker | `docker compose up --build` → `healthy`, 데모 4건 처리, 컨테이너 내 평가 동일 |
 | 원격 CI | `main`의 첫 `ci` 성공. README 배지는 실제 실행으로 연결됨 |
 | 공개 데모 | [Render 읽기 전용 데모](https://documentops-review-gateway-demo.onrender.com) — health `ok`, 합성 문서 4건, POST 403 확인(2026-11-26) |
-| 남은 일 | Gate B/C 결정 → 6절 |
+| 남은 일 | OCR·실제 LLM·운영화 Gate 중 하나 선택 → [페이즈 로드맵](docs/ROADMAP_PHASES.md#인수자용-현재-상태와-실행-순서) |
 
 3개 명령으로 상태를 확인할 수 있다.
 
