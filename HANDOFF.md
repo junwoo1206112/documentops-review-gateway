@@ -289,16 +289,12 @@ POST /api/documents/{id}/revalidate
 - 제약: 원문에 없는 `MISSING_REQUIRED` 값은 만들 수 없다(재업로드). 품목 수정은 범위 밖.
 - 근거: [ADR 0003](docs/adr/0003-human-correction.md), [Phase 14 리뷰](docs/reviews/phase-14.md).
 
-### R-008 — 품목(`items[]`) 수정 (Gate D 결정 필요)
+### R-008 — 품목(`items[]`) 수정 (완료, Phase 14-I)
 
-- 왜: Phase 14는 스칼라 6개만 고친다. 품목 행은 ordinal·행 인용·산술·합계와 연결되어
-  동일 API를 무비판적으로 넓히면 잘못된 행을 고치거나 자동 보정할 위험이 있다.
-- 결정할 것: 행 식별, 허용 편집(셀만/행 구조 포함), 셀·행 근거 단위, 합계 재검증 방식, 감사 표시.
-- 권장안: 원본 ordinal + 행 anchor를 고정하고, 기존 행의 단일 셀만 원문 재인용으로 수정한다.
-  행 추가·삭제·재정렬·원문 없는 품목은 재업로드로 제한한다.
-- 수용 기준: Gate D ADR, `effective_items` 원본 분리, 전면 재검증, append-only 이력,
-  잘못된 행/근거/산술 변경을 막는 회귀 테스트.
-- 상세: [Phase 로드맵의 Gate D](docs/ROADMAP_PHASES.md#gate-d--품목items-수정-정책-결정).
+- 결정·구현: 원본 `ordinal`과 행 anchor를 고정하고 기존 행의 단일 셀만 원문 재인용으로 수정한다.
+  `effective_items`를 원본 `items`와 분리하고, 수정 뒤 전체 규칙·중복·산술을 재검증하며 이력은 append-only다.
+- 비범위: 행 추가·삭제·재정렬, 원문에 없는 품목, 자동 금액 보정. 이 경우는 재업로드한다.
+- 증거: [Phase 14-I](docs/ROADMAP_PHASES.md#phase-14-i--품목-수정-완료) 및 회귀 테스트.
 
 ### R-004 — OCR 확장 (P2, 결정 필요: P-001)
 
