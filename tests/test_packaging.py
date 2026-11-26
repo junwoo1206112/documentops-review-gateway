@@ -121,6 +121,7 @@ def test_phase_reviews_exist_for_every_phase() -> None:
         "phase-10.md",
         "phase-11.md",
         "phase-12.md",
+        "phase-13.md",
         "phase-14.md",
     ]
 
