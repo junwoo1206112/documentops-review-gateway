@@ -18,7 +18,7 @@
 | 핵심 주장 | "AI가 답한다"가 아니라 **근거 없는 값은 승인 불가, blocking 오류는 HOLD, 판정은 사람만** |
 | 스택 | Python 3.12, FastAPI, SQLite, Jinja2 서버 렌더링, pytest, Docker, GitHub Actions |
 | 실행 | `uvicorn app.asgi:app` (주의: `app.main:app` 아님) |
-| 테스트 | **140 passed** (2026-11-26, Python 3.12.10, Windows 11) |
+| 테스트 | **141 passed** (2026-11-26, Python 3.12.10, Windows 11) |
 | 평가 | 36건 기준 문서 EM 36/36, HOLD 재현 19/19, 오보류 0/17, 규칙 일치 36/36, 근거 410/412 |
 | Docker | `docker compose up --build` → `healthy`, 데모 4건 처리, 컨테이너 내 평가 동일 |
 | 원격 CI | `main`의 첫 `ci` 성공. README 배지는 실제 실행으로 연결됨 |
@@ -124,7 +124,7 @@ pip install -e ".[dev]"
 python -m pytest -q
 ```
 
-기대 결과: `140 passed`.
+기대 결과: `141 passed`.
 
 > `uv`와 Node.js는 필요 없다. UI는 Jinja2 서버 렌더링이다(ADR 0002).
 > Python은 3.12 이상이어야 한다.
@@ -203,7 +203,7 @@ app/
 │  └─ pages.py               HTML 6경로, 원문 하이라이트(escape 후 mark)
 ├─ templates/                base/index/detail/evaluation.html
 ├─ static/style.css          다크 테마, 상태 배지, 반응형
-tests/                       12개 파일, 140 tests
+tests/                       12개 파일, 141 tests
 tools/generate_dataset.py    합성 데이터·정답·manifest·vendors 생성기 (--check)
 scripts/seed_demo.py         데모 4건 HTTP 업로드
 fixtures/                    vendors.json, demo 4건, evaluation 36건+정답+manifest

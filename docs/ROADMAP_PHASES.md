@@ -12,7 +12,7 @@
   WebM asset 5,850,941 bytes, SHA-256
   `841e5e92990b56fc2c1342d9738c7dfc0c8fe35b888b1aba24415f285ccbe664`.
 - 원격 검증: [CI run 45702069278](https://github.com/junwoo1206112/documentops-review-gateway/actions/runs/45702069278) 성공 (`7b2c1ba`).
-- 재현 기준선: 140 tests, 36/36 문서 일치, HOLD 19/19, false HOLD 0/17, 규칙 36/36,
+- 재현 기준선: 141 tests, 36/36 문서 일치, HOLD 19/19, false HOLD 0/17, 규칙 36/36,
   근거 410/412(의도된 파생 총액 2건).
 - 불변 계약: 자동 승인 없음, `HOLD → APPROVED` 직접 전이 금지, blocking이면 HOLD,
   근거 span 필수, 감사 append-only. 상세는 [HANDOFF.md](../HANDOFF.md) 1절을 따른다.

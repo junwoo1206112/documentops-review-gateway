@@ -102,7 +102,7 @@ python -m venv .venv
 # source .venv/bin/activate         # Linux/macOS
 pip install -e ".[dev]"
 
-python -m pytest -q                 # 140 passed (2026-11-26, Python 3.12.10)
+python -m pytest -q                 # 141 passed (2026-11-26, Python 3.12.10)
 python tools/generate_dataset.py --check
 python -m app.inspect fixtures/evaluation/DOC-0001.txt
 
@@ -136,7 +136,7 @@ docker compose exec -T gateway python -m app.evaluate --dataset fixtures/evaluat
 6. `python -m app.evaluate …` 후 리포트 artifact 업로드
 
 [`ci` 워크플로 첫 실행](https://github.com/junwoo1206112/documentops-review-gateway/actions/runs/45697512065)이
-`main`에서 성공했습니다. 배지는 이 실제 실행으로 연결되며, 포맷·린트·데이터셋·140개 테스트·평가·
+`main`에서 성공했습니다. 배지는 이 실제 실행으로 연결되며, 포맷·린트·데이터셋·141개 테스트·평가·
 리포트 artifact 업로드를 모두 통과한 상태만 나타냅니다.
 
 ## 데모 영상 촬영
